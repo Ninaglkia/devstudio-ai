@@ -89,7 +89,7 @@
     /* ═══ FLOATING 3D OBJECTS (contained in trust/tech area) ═══ */
     .shapes-area {
       position: relative;
-      overflow: hidden;
+      overflow: visible;
     }
     .float-shape {
       position: absolute;
@@ -108,6 +108,7 @@
     .float-shape .shape-inner {
       width: 100%; height: 100%;
       transform-style: preserve-3d;
+      pointer-events: none;
     }
 
     /* Sphere — large, gradient, inner glow */
@@ -1577,93 +1578,108 @@
     });
 
     // ═══ SPLINE-STYLE 3D SHAPES: DRAG + CURSOR ROTATION ═══
-    const shapesArea = document.getElementById('shapesArea');
-    const floatShapes = shapesArea ? shapesArea.querySelectorAll('.float-shape') : [];
+    (function() {
+      const floatShapes = document.querySelectorAll('.float-shape');
+      if (!floatShapes.length) return;
 
-    // Store each shape's offset position
-    floatShapes.forEach((shape, idx) => {
-      shape._offsetX = 0;
-      shape._offsetY = 0;
-      shape._mult = 0.6 + (idx * 0.1);
-    });
+      let mouseX = window.innerWidth / 2;
+      let mouseY = window.innerHeight / 2;
+      let dragTarget = null;
+      let dragStartMouseX = 0, dragStartMouseY = 0;
+      let dragStartShapeX = 0, dragStartShapeY = 0;
 
-    // Global mouse tracking for rotation
-    let mouseX = window.innerWidth / 2;
-    let mouseY = window.innerHeight / 2;
-
-    document.addEventListener('mousemove', (e) => {
-      mouseX = e.clientX;
-      mouseY = e.clientY;
-      const centerX = window.innerWidth / 2;
-      const centerY = window.innerHeight / 2;
-      const ry = ((mouseX - centerX) / centerX) * 20;
-      const rx = ((mouseY - centerY) / centerY) * -15;
-
-      floatShapes.forEach(shape => {
-        if (shape._dragging) return;
-        const m = shape._mult;
-        shape.style.transform = `translate(${shape._offsetX}px, ${shape._offsetY}px) rotateX(${rx * m}deg) rotateY(${ry * m}deg)`;
+      // Init each shape
+      floatShapes.forEach((shape, i) => {
+        shape._ox = 0; shape._oy = 0;
+        shape._mult = 0.5 + (i * 0.12);
       });
-    });
 
-    document.addEventListener('mouseleave', () => {
-      floatShapes.forEach(shape => {
-        if (shape._dragging) return;
-        shape.style.transform = `translate(${shape._offsetX}px, ${shape._offsetY}px) rotateX(0deg) rotateY(0deg)`;
+      function getRotation(cx, cy) {
+        const rx = ((cy - window.innerHeight / 2) / (window.innerHeight / 2)) * -15;
+        const ry = ((cx - window.innerWidth / 2) / (window.innerWidth / 2)) * 20;
+        return { rx, ry };
+      }
+
+      function updateShapes() {
+        const { rx, ry } = getRotation(mouseX, mouseY);
+        floatShapes.forEach(shape => {
+          if (shape === dragTarget) return;
+          const m = shape._mult;
+          shape.style.transform = `translate(${shape._ox}px, ${shape._oy}px) rotateX(${rx * m}deg) rotateY(${ry * m}deg)`;
+        });
+      }
+
+      // Mouse rotation tracking
+      document.addEventListener('mousemove', (e) => {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+
+        // If dragging, move the shape
+        if (dragTarget) {
+          dragTarget._ox = dragStartShapeX + (e.clientX - dragStartMouseX);
+          dragTarget._oy = dragStartShapeY + (e.clientY - dragStartMouseY);
+          const { rx, ry } = getRotation(e.clientX, e.clientY);
+          dragTarget.style.transform = `translate(${dragTarget._ox}px, ${dragTarget._oy}px) rotateX(${rx}deg) rotateY(${ry}deg) scale(1.15)`;
+          return;
+        }
+
+        updateShapes();
       });
-    });
 
-    // Drag functionality
-    let dragTarget = null;
-    let dragStartX = 0, dragStartY = 0;
-    let dragOffsetX = 0, dragOffsetY = 0;
+      // Drag start — attach to each shape directly
+      floatShapes.forEach(shape => {
+        shape.addEventListener('mousedown', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          dragTarget = shape;
+          dragTarget.classList.add('dragging');
+          dragTarget.style.transition = 'none';
+          dragStartMouseX = e.clientX;
+          dragStartMouseY = e.clientY;
+          dragStartShapeX = shape._ox;
+          dragStartShapeY = shape._oy;
+        });
 
-    function onDragStart(e) {
-      const shape = e.target.closest('.float-shape');
-      if (!shape) return;
-      e.preventDefault();
-      dragTarget = shape;
-      dragTarget._dragging = true;
-      dragTarget.classList.add('dragging');
-      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-      dragStartX = clientX - dragTarget._offsetX;
-      dragStartY = clientY - dragTarget._offsetY;
-    }
+        shape.addEventListener('touchstart', (e) => {
+          e.preventDefault();
+          dragTarget = shape;
+          dragTarget.classList.add('dragging');
+          dragTarget.style.transition = 'none';
+          dragStartMouseX = e.touches[0].clientX;
+          dragStartMouseY = e.touches[0].clientY;
+          dragStartShapeX = shape._ox;
+          dragStartShapeY = shape._oy;
+        }, { passive: false });
+      });
 
-    function onDragMove(e) {
-      if (!dragTarget) return;
-      e.preventDefault();
-      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-      dragTarget._offsetX = clientX - dragStartX;
-      dragTarget._offsetY = clientY - dragStartY;
-      const centerX = window.innerWidth / 2;
-      const centerY = window.innerHeight / 2;
-      const ry = ((clientX - centerX) / centerX) * 25;
-      const rx = ((clientY - centerY) / centerY) * -20;
-      dragTarget.style.transform = `translate(${dragTarget._offsetX}px, ${dragTarget._offsetY}px) rotateX(${rx}deg) rotateY(${ry}deg) scale(1.15)`;
-    }
+      document.addEventListener('touchmove', (e) => {
+        if (!dragTarget) return;
+        e.preventDefault();
+        const t = e.touches[0];
+        dragTarget._ox = dragStartShapeX + (t.clientX - dragStartMouseX);
+        dragTarget._oy = dragStartShapeY + (t.clientY - dragStartMouseY);
+        const { rx, ry } = getRotation(t.clientX, t.clientY);
+        dragTarget.style.transform = `translate(${dragTarget._ox}px, ${dragTarget._oy}px) rotateX(${rx}deg) rotateY(${ry}deg) scale(1.15)`;
+      }, { passive: false });
 
-    function onDragEnd() {
-      if (!dragTarget) return;
-      dragTarget._dragging = false;
-      dragTarget.classList.remove('dragging');
-      const centerX = window.innerWidth / 2;
-      const centerY = window.innerHeight / 2;
-      const ry = ((mouseX - centerX) / centerX) * 20;
-      const rx = ((mouseY - centerY) / centerY) * -15;
-      const m = dragTarget._mult;
-      dragTarget.style.transform = `translate(${dragTarget._offsetX}px, ${dragTarget._offsetY}px) rotateX(${rx * m}deg) rotateY(${ry * m}deg)`;
-      dragTarget = null;
-    }
+      function endDrag() {
+        if (!dragTarget) return;
+        dragTarget.classList.remove('dragging');
+        dragTarget.style.transition = 'transform 0.15s ease-out, filter 0.3s';
+        dragTarget = null;
+        updateShapes();
+      }
 
-    document.addEventListener('mousedown', onDragStart);
-    document.addEventListener('mousemove', onDragMove);
-    document.addEventListener('mouseup', onDragEnd);
-    document.addEventListener('touchstart', onDragStart, { passive: false });
-    document.addEventListener('touchmove', onDragMove, { passive: false });
-    document.addEventListener('touchend', onDragEnd);
+      document.addEventListener('mouseup', endDrag);
+      document.addEventListener('touchend', endDrag);
+
+      document.addEventListener('mouseleave', () => {
+        endDrag();
+        floatShapes.forEach(shape => {
+          shape.style.transform = `translate(${shape._ox}px, ${shape._oy}px) rotateX(0deg) rotateY(0deg)`;
+        });
+      });
+    })();
 
     // ═══ PRICE COUNTER ANIMATION ═══
     const priceCounters = document.querySelectorAll('.price-counter');
