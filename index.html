@@ -93,13 +93,17 @@
     }
     .float-shape {
       position: absolute;
-      pointer-events: none;
+      pointer-events: auto;
       z-index: 2;
       perspective: 800px;
-      transition: transform 0.3s ease-out, filter 0.3s;
+      transition: transform 0.15s ease-out, filter 0.3s;
       filter: blur(0.5px);
+      cursor: grab;
+      user-select: none;
+      -webkit-user-select: none;
     }
-    .float-shape:hover { filter: brightness(1.3) blur(0.5px); }
+    .float-shape:hover { filter: brightness(1.4) blur(0px); transform: scale(1.1); }
+    .float-shape.dragging { cursor: grabbing; z-index: 10; filter: brightness(1.5) blur(0px) drop-shadow(0 0 20px rgba(109,92,255,0.6)); transition: none; }
 
     .float-shape .shape-inner {
       width: 100%; height: 100%;
@@ -1572,30 +1576,94 @@
       navbar.classList.toggle('scrolled', window.scrollY > 50);
     });
 
-    // ═══ CURSOR-TRACKING 3D SHAPES (Spline-style) ═══
+    // ═══ SPLINE-STYLE 3D SHAPES: DRAG + CURSOR ROTATION ═══
     const shapesArea = document.getElementById('shapesArea');
     const floatShapes = shapesArea ? shapesArea.querySelectorAll('.float-shape') : [];
 
+    // Store each shape's offset position
+    floatShapes.forEach((shape, idx) => {
+      shape._offsetX = 0;
+      shape._offsetY = 0;
+      shape._mult = 0.6 + (idx * 0.1);
+    });
+
+    // Global mouse tracking for rotation
+    let mouseX = window.innerWidth / 2;
+    let mouseY = window.innerHeight / 2;
+
     document.addEventListener('mousemove', (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
       const centerX = window.innerWidth / 2;
       const centerY = window.innerHeight / 2;
-      const rotateY = ((e.clientX - centerX) / centerX) * 18; // max ~18deg
-      const rotateX = ((e.clientY - centerY) / centerY) * -15; // max ~15deg
+      const ry = ((mouseX - centerX) / centerX) * 20;
+      const rx = ((mouseY - centerY) / centerY) * -15;
 
       floatShapes.forEach(shape => {
-        // Each shape gets a slightly different multiplier for natural feel
-        const factor = 0.7 + Math.random() * 0; // consistent per frame
-        const idx = Array.from(floatShapes).indexOf(shape);
-        const mult = 0.6 + (idx * 0.08);
-        shape.style.transform = `rotateX(${rotateX * mult}deg) rotateY(${rotateY * mult}deg)`;
+        if (shape._dragging) return;
+        const m = shape._mult;
+        shape.style.transform = `translate(${shape._offsetX}px, ${shape._offsetY}px) rotateX(${rx * m}deg) rotateY(${ry * m}deg)`;
       });
     });
 
     document.addEventListener('mouseleave', () => {
       floatShapes.forEach(shape => {
-        shape.style.transform = 'rotateX(0deg) rotateY(0deg)';
+        if (shape._dragging) return;
+        shape.style.transform = `translate(${shape._offsetX}px, ${shape._offsetY}px) rotateX(0deg) rotateY(0deg)`;
       });
     });
+
+    // Drag functionality
+    let dragTarget = null;
+    let dragStartX = 0, dragStartY = 0;
+    let dragOffsetX = 0, dragOffsetY = 0;
+
+    function onDragStart(e) {
+      const shape = e.target.closest('.float-shape');
+      if (!shape) return;
+      e.preventDefault();
+      dragTarget = shape;
+      dragTarget._dragging = true;
+      dragTarget.classList.add('dragging');
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      dragStartX = clientX - dragTarget._offsetX;
+      dragStartY = clientY - dragTarget._offsetY;
+    }
+
+    function onDragMove(e) {
+      if (!dragTarget) return;
+      e.preventDefault();
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      dragTarget._offsetX = clientX - dragStartX;
+      dragTarget._offsetY = clientY - dragStartY;
+      const centerX = window.innerWidth / 2;
+      const centerY = window.innerHeight / 2;
+      const ry = ((clientX - centerX) / centerX) * 25;
+      const rx = ((clientY - centerY) / centerY) * -20;
+      dragTarget.style.transform = `translate(${dragTarget._offsetX}px, ${dragTarget._offsetY}px) rotateX(${rx}deg) rotateY(${ry}deg) scale(1.15)`;
+    }
+
+    function onDragEnd() {
+      if (!dragTarget) return;
+      dragTarget._dragging = false;
+      dragTarget.classList.remove('dragging');
+      const centerX = window.innerWidth / 2;
+      const centerY = window.innerHeight / 2;
+      const ry = ((mouseX - centerX) / centerX) * 20;
+      const rx = ((mouseY - centerY) / centerY) * -15;
+      const m = dragTarget._mult;
+      dragTarget.style.transform = `translate(${dragTarget._offsetX}px, ${dragTarget._offsetY}px) rotateX(${rx * m}deg) rotateY(${ry * m}deg)`;
+      dragTarget = null;
+    }
+
+    document.addEventListener('mousedown', onDragStart);
+    document.addEventListener('mousemove', onDragMove);
+    document.addEventListener('mouseup', onDragEnd);
+    document.addEventListener('touchstart', onDragStart, { passive: false });
+    document.addEventListener('touchmove', onDragMove, { passive: false });
+    document.addEventListener('touchend', onDragEnd);
 
     // ═══ PRICE COUNTER ANIMATION ═══
     const priceCounters = document.querySelectorAll('.price-counter');
