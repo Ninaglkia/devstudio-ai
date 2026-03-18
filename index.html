@@ -380,15 +380,10 @@
 
     .hero .container {
       position: relative; z-index: 3;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 4rem;
+      display: flex;
+      flex-direction: column;
       align-items: center;
-    }
-    @media (max-width: 900px) {
-      .hero .container { grid-template-columns: 1fr; text-align: center; }
-      .hero-content { order: 1; }
-      .hero-visual { order: 2; }
+      text-align: center;
     }
 
     /* Robot image card */
@@ -505,22 +500,18 @@
       -webkit-text-fill-color: transparent;
     }
     .hero-subtitle {
-      font-size: 1.05rem;
+      font-size: 1.1rem;
       font-weight: 400;
       color: var(--text-secondary);
-      max-width: 480px;
+      max-width: 550px;
       line-height: 1.7;
       margin-bottom: 2.5rem;
-    }
-    @media (max-width: 900px) {
-      .hero-subtitle { margin-inline: auto; }
+      margin-inline: auto;
     }
     .hero-ctas {
       display: flex; gap: 1rem;
       flex-wrap: wrap;
-    }
-    @media (max-width: 900px) {
-      .hero-ctas { justify-content: center; }
+      justify-content: center;
     }
     .btn-glow {
       display: inline-flex; align-items: center; gap: 0.5rem;
@@ -1220,16 +1211,7 @@
           <a href="#processo" class="btn-ghost">Come lavoriamo</a>
         </div>
       </div>
-      <div class="hero-visual reveal reveal-delay-2">
-        <div class="robot-card">
-          <img src="robot-ai.png" alt="DevStudio AI — Intelligenza artificiale al lavoro">
-          <div class="robot-card-glow"></div>
-          <div class="robot-card-label">
-            <div class="robot-status-dot"></div>
-            <span><strong>AI Engine</strong> &mdash; Building your website...</span>
-          </div>
-        </div>
-      </div>
+      <div class="hero-visual reveal reveal-delay-2" style="display: none;"></div>
     </div>
     <div class="hero-scroll">
       <span>Scroll</span>
@@ -1316,6 +1298,69 @@
 
   <div class="section-divider"></div>
 
+  <!-- ROBOT VIDEO SHOWCASE -->
+  <section style="position: relative; overflow: hidden; padding: 0; min-height: 60vh;">
+    <video autoplay muted loop playsinline style="width: 100%; height: 60vh; object-fit: cover; display: block; filter: brightness(0.8);">
+      <source src="robot-video.mp4" type="video/mp4">
+    </video>
+    <div style="position: absolute; inset: 0; background: linear-gradient(180deg, var(--bg-primary) 0%, transparent 15%, transparent 70%, rgba(5,5,5,0.9) 100%); display: flex; align-items: flex-end; padding: 3rem;">
+      <div class="container">
+        <div class="reveal" style="max-width: 500px;">
+          <span class="section-label" style="margin-bottom: 0.75rem; display: block;">Potenziato dall'intelligenza artificiale</span>
+          <h2 style="font-family: var(--font-heading); font-size: clamp(1.5rem, 4vw, 2.5rem); font-weight: 700; line-height: 1.15; letter-spacing: -0.02em;">La nostra AI lavora<br><span class="gradient-text">24/7 per te</span></h2>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <!-- PROCESS -->
+  <section class="process" id="processo">
+    <div class="container">
+      <div style="text-align: center; margin-bottom: 3rem;">
+        <span class="section-label reveal">Come lavoriamo</span>
+        <h2 class="section-title reveal reveal-delay-1" style="margin-inline: auto;">Da zero al lancio<br>in 4 step</h2>
+      </div>
+      <div class="process-steps" style="gap: 1rem;">
+        <div class="step reveal" style="background: var(--bg-card); border: 1px solid var(--glass-border); border-radius: var(--radius-lg); padding: 2rem 1.5rem; transition: all 0.4s ease;">
+          <div style="width: 48px; height: 48px; border-radius: 12px; background: var(--accent-subtle); display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem;">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="var(--accent-light)" stroke-width="1.5"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+          </div>
+          <div class="step-number">01</div>
+          <h3>Briefing</h3>
+          <p>Ci racconti il tuo progetto in una call gratuita. Capiamo obiettivi, pubblico e budget.</p>
+        </div>
+        <div class="step reveal reveal-delay-1" style="background: var(--bg-card); border: 1px solid var(--glass-border); border-radius: var(--radius-lg); padding: 2rem 1.5rem; transition: all 0.4s ease;">
+          <div style="width: 48px; height: 48px; border-radius: 12px; background: var(--accent-subtle); display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem;">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="var(--accent-light)" stroke-width="1.5"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+          </div>
+          <div class="step-number">02</div>
+          <h3>Design</h3>
+          <p>Progettiamo il design su misura. Lo rivedi, dai feedback, approvi.</p>
+        </div>
+        <div class="step reveal reveal-delay-2" style="background: var(--bg-card); border: 1px solid var(--glass-border); border-radius: var(--radius-lg); padding: 2rem 1.5rem; transition: all 0.4s ease;">
+          <div style="width: 48px; height: 48px; border-radius: 12px; background: var(--accent-subtle); display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem;">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="var(--accent-light)" stroke-width="1.5"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+          </div>
+          <div class="step-number">03</div>
+          <h3>Sviluppo</h3>
+          <p>Costruiamo con le tecnologie pi&ugrave; moderne. Veloce, sicuro, performante.</p>
+        </div>
+        <div class="step reveal reveal-delay-3" style="background: var(--bg-card); border: 1px solid var(--glass-border); border-radius: var(--radius-lg); padding: 2rem 1.5rem; transition: all 0.4s ease;">
+          <div style="width: 48px; height: 48px; border-radius: 12px; background: var(--accent-subtle); display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem;">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="var(--accent-light)" stroke-width="1.5"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+          </div>
+          <div class="step-number">04</div>
+          <h3>Lancio</h3>
+          <p>Pubblichiamo, ti formiamo sulla gestione e restiamo a disposizione.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
   <!-- PRICING -->
   <section class="pricing" id="prezzi">
     <div class="container">
@@ -1381,62 +1426,37 @@
 
   <div class="section-divider"></div>
 
-  <!-- PROCESS -->
-  <section class="process" id="processo">
-    <div class="container">
-      <span class="section-label reveal">Come lavoriamo</span>
-      <h2 class="section-title reveal reveal-delay-1">Da zero al lancio<br>in 4 step</h2>
-      <div class="process-steps">
-        <div class="step reveal">
-          <div class="step-number">01</div>
-          <h3>Briefing</h3>
-          <p>Capiamo il tuo business, i tuoi obiettivi e il tuo pubblico. Gratis, senza impegno.</p>
-        </div>
-        <div class="step reveal reveal-delay-1">
-          <div class="step-number">02</div>
-          <h3>Design</h3>
-          <p>Creiamo il design su misura. Lo rivedi e approvi prima di andare avanti.</p>
-        </div>
-        <div class="step reveal reveal-delay-2">
-          <div class="step-number">03</div>
-          <h3>Sviluppo</h3>
-          <p>Costruiamo il sito con tecnologie moderne. Veloce, sicuro, ottimizzato.</p>
-        </div>
-        <div class="step reveal reveal-delay-3">
-          <div class="step-number">04</div>
-          <h3>Lancio</h3>
-          <p>Pubblichiamo il sito e ti formiamo sulla gestione. Supporto incluso.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <div class="section-divider"></div>
-
   <!-- WHY US -->
   <section class="testimonials" style="position: relative; overflow: hidden;">
-    <div style="position: absolute; inset: 0; z-index: 0;">
-      <video autoplay muted loop playsinline style="width: 100%; height: 100%; object-fit: cover; opacity: 0.12;">
-        <source src="robot-video.mp4" type="video/mp4">
-      </video>
-      <div style="position: absolute; inset: 0; background: linear-gradient(180deg, var(--bg-primary) 0%, transparent 20%, transparent 80%, var(--bg-primary) 100%);"></div>
-    </div>
     <div class="container" style="position: relative; z-index: 1;">
-      <span class="section-label reveal">Perch&eacute; noi</span>
-      <h2 class="section-title reveal reveal-delay-1">Cosa ci rende diversi</h2>
-      <p class="section-subtitle reveal reveal-delay-2"></p>
+      <div style="text-align: center; margin-bottom: 3rem;">
+        <span class="section-label reveal">Perch&eacute; scegliere noi</span>
+        <h2 class="section-title reveal reveal-delay-1" style="margin-inline: auto;">Cosa ci rende <span class="gradient-text">diversi</span></h2>
+      </div>
       <div class="testimonials-grid">
-        <div class="testimonial-card reveal">
-          <div class="testimonial-stars" style="color: var(--accent-light);">&#9889;</div>
-          <blockquote style="font-style: normal;"><strong style="color: var(--text-primary);">Potenziati dall'AI</strong><br>Utilizziamo l'intelligenza artificiale per accelerare design e sviluppo. Risultati di alta qualit&agrave; in tempi record.</blockquote>
+        <div class="testimonial-card reveal" data-tilt-light>
+          <div class="tilt-glow"></div>
+          <div style="width: 48px; height: 48px; border-radius: 12px; background: var(--accent-subtle); display: flex; align-items: center; justify-content: center; margin-bottom: 1.25rem;">
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="var(--accent-light)" stroke-width="1.5"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+          </div>
+          <h3 style="font-family: var(--font-heading); font-size: 1.1rem; font-weight: 600; margin-bottom: 0.6rem;">Potenziati dall'AI</h3>
+          <p style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.7;">Utilizziamo l'intelligenza artificiale per accelerare design e sviluppo. Risultati premium in tempi record.</p>
         </div>
-        <div class="testimonial-card reveal reveal-delay-1">
-          <div class="testimonial-stars" style="color: var(--accent-light);">&#128640;</div>
-          <blockquote style="font-style: normal;"><strong style="color: var(--text-primary);">Consegna in 7-21 giorni</strong><br>Niente mesi di attesa. Il tuo sito &egrave; online rapidamente, senza sacrificare la qualit&agrave; del risultato finale.</blockquote>
+        <div class="testimonial-card reveal reveal-delay-1" data-tilt-light>
+          <div class="tilt-glow"></div>
+          <div style="width: 48px; height: 48px; border-radius: 12px; background: var(--accent-subtle); display: flex; align-items: center; justify-content: center; margin-bottom: 1.25rem;">
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="var(--accent-light)" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </div>
+          <h3 style="font-family: var(--font-heading); font-size: 1.1rem; font-weight: 600; margin-bottom: 0.6rem;">Consegna in 7-21 giorni</h3>
+          <p style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.7;">Niente mesi di attesa. Il tuo sito &egrave; online rapidamente, senza sacrificare la qualit&agrave;.</p>
         </div>
-        <div class="testimonial-card reveal reveal-delay-2">
-          <div class="testimonial-stars" style="color: var(--accent-light);">&#128176;</div>
-          <blockquote style="font-style: normal;"><strong style="color: var(--text-primary);">Prezzi trasparenti</strong><br>Sai esattamente cosa paghi. Nessun costo nascosto, nessuna sorpresa. Il prezzo che vedi &egrave; il prezzo che paghi.</blockquote>
+        <div class="testimonial-card reveal reveal-delay-2" data-tilt-light>
+          <div class="tilt-glow"></div>
+          <div style="width: 48px; height: 48px; border-radius: 12px; background: var(--accent-subtle); display: flex; align-items: center; justify-content: center; margin-bottom: 1.25rem;">
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="var(--accent-light)" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/><path d="m9 12 2 2 4-4"/></svg>
+          </div>
+          <h3 style="font-family: var(--font-heading); font-size: 1.1rem; font-weight: 600; margin-bottom: 0.6rem;">Prezzi trasparenti</h3>
+          <p style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.7;">Sai esattamente cosa paghi. Nessun costo nascosto, nessuna sorpresa. Il prezzo che vedi &egrave; il prezzo finale.</p>
         </div>
       </div>
     </div>
