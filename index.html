@@ -221,19 +221,9 @@
     }
 
     /* Float/bob animations */
-    @keyframes bobA { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-18px); } }
-    @keyframes bobB { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-14px); } }
-    @keyframes bobC { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
-    @keyframes bobD { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
-    @keyframes bobE { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-16px); } }
-    @keyframes bobF { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-22px); } }
+    /* keyframes bobA-F removed — JS handles bobbing + drag */
 
-    .float-anim-a { animation: bobA 6s ease-in-out infinite; }
-    .float-anim-b { animation: bobB 7s ease-in-out infinite; }
-    .float-anim-c { animation: bobC 5s ease-in-out infinite; }
-    .float-anim-d { animation: bobD 8s ease-in-out infinite; }
-    .float-anim-e { animation: bobE 6.5s ease-in-out infinite; }
-    .float-anim-f { animation: bobF 5.5s ease-in-out infinite; }
+    /* Bob animations removed — handled by JS for drag compatibility */
 
     /* ═══ SECTION DIVIDER LINES ═══ */
     .section-divider {
@@ -1597,10 +1587,14 @@
       let dragStartMouseX = 0, dragStartMouseY = 0;
       let dragStartShapeX = 0, dragStartShapeY = 0;
 
-      // Init each shape
+      // Init each shape with bob parameters
+      const bobSpeeds = [1.0, 0.85, 1.15, 0.75, 0.95, 1.1];
+      const bobAmps = [18, 14, 20, 12, 16, 22];
       floatShapes.forEach((shape, i) => {
         shape._ox = 0; shape._oy = 0;
         shape._mult = 0.5 + (i * 0.12);
+        shape._bobSpeed = bobSpeeds[i % 6];
+        shape._bobAmp = bobAmps[i % 6];
       });
 
       function getRotation(cx, cy) {
@@ -1611,12 +1605,16 @@
 
       function updateShapes() {
         const { rx, ry } = getRotation(mouseX, mouseY);
+        const t = performance.now() / 1000;
         floatShapes.forEach(shape => {
           if (shape === dragTarget) return;
           const m = shape._mult;
-          shape.style.transform = `translate(${shape._ox}px, ${shape._oy}px) rotateX(${rx * m}deg) rotateY(${ry * m}deg)`;
+          const bob = Math.sin(t * shape._bobSpeed) * shape._bobAmp;
+          shape.style.transform = `translate(${shape._ox}px, ${shape._oy + bob}px) rotateX(${rx * m}deg) rotateY(${ry * m}deg)`;
         });
+        requestAnimationFrame(updateShapes);
       }
+      requestAnimationFrame(updateShapes);
 
       // Mouse rotation tracking
       document.addEventListener('mousemove', (e) => {
@@ -1921,16 +1919,17 @@
         mouseRY = ((e.clientX / window.innerWidth) - 0.5) * 0.5;
         mouseRX = ((e.clientY / window.innerHeight) - 0.5) * -0.3;
 
-        if (!robotDrag) return;
-        const dx = e.clientX - robotStartX;
-        const dy = e.clientY - robotStartY;
-        if (Math.abs(dx) > 3 || Math.abs(dy) > 3) robotDragMoved = true;
-        if (robotDragMoved) {
-          robotOX += dx;
-          robotOY += dy;
-          robotStartX = e.clientX;
-          robotStartY = e.clientY;
-          container.style.transform = `translate(calc(-50% + ${robotOX}px), calc(-50% + ${robotOY}px))`;
+        if (robotDrag) {
+          const dx = e.clientX - robotStartX;
+          const dy = e.clientY - robotStartY;
+          if (Math.abs(dx) > 3 || Math.abs(dy) > 3) robotDragMoved = true;
+          if (robotDragMoved) {
+            robotOX += dx;
+            robotOY += dy;
+            robotStartX = e.clientX;
+            robotStartY = e.clientY;
+            container.style.transform = `translate(calc(-50% + ${robotOX}px), calc(-50% + ${robotOY}px))`;
+          }
         }
       });
 
