@@ -334,7 +334,7 @@
 
     /* ═══ HERO ═══ */
     .hero {
-      min-height: 100vh;
+      min-height: 90vh;
       display: flex; align-items: center;
       padding-top: 5rem;
       position: relative;
@@ -588,7 +588,7 @@
 
     /* ═══ TRUST LOGOS ═══ */
     .trust {
-      padding: 3rem 0;
+      padding: 2rem 0;
       border-top: 1px solid var(--glass-border);
       border-bottom: 1px solid var(--glass-border);
     }
@@ -609,7 +609,7 @@
     }
 
     /* ═══ SERVICES ═══ */
-    .services { padding: clamp(4rem, 10vh, 8rem) 0; }
+    .services { padding: clamp(2.5rem, 6vh, 5rem) 0; }
     .section-label {
       font-family: var(--font-mono);
       font-size: 0.65rem; font-weight: 600;
@@ -629,7 +629,7 @@
       color: var(--text-secondary);
       font-weight: 400;
       max-width: 550px;
-      margin-bottom: 3rem;
+      margin-bottom: 2rem;
     }
 
     .services-grid {
@@ -692,7 +692,7 @@
     }
 
     /* ═══ PRICING ═══ */
-    .pricing { padding: clamp(4rem, 10vh, 8rem) 0; }
+    .pricing { padding: clamp(2.5rem, 6vh, 5rem) 0; }
     .pricing-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -819,12 +819,12 @@
     }
 
     /* ═══ PROCESS ═══ */
-    .process { padding: clamp(4rem, 10vh, 8rem) 0; }
+    .process { padding: clamp(2.5rem, 6vh, 5rem) 0; }
     .process-steps {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       gap: 1.5rem;
-      margin-top: 3rem;
+      margin-top: 2rem;
     }
     @media (max-width: 900px) { .process-steps { grid-template-columns: 1fr 1fr; } }
     @media (max-width: 500px) { .process-steps { grid-template-columns: 1fr; } }
@@ -855,7 +855,7 @@
     }
 
     /* ═══ PORTFOLIO ═══ */
-    .portfolio { padding: clamp(4rem, 10vh, 8rem) 0; }
+    .portfolio { padding: clamp(2.5rem, 6vh, 5rem) 0; }
     .portfolio-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -897,7 +897,7 @@
     }
 
     /* ═══ TESTIMONIALS ═══ */
-    .testimonials { padding: clamp(4rem, 10vh, 8rem) 0; }
+    .testimonials { padding: clamp(2.5rem, 6vh, 5rem) 0; }
     .testimonials-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -947,7 +947,7 @@
 
     /* ═══ CTA SECTION - WOW REDESIGN ═══ */
     .cta-section {
-      padding: clamp(4rem, 10vh, 8rem) 0;
+      padding: clamp(2.5rem, 6vh, 5rem) 0;
     }
     .cta-box {
       background: var(--bg-elevated);
@@ -1171,6 +1171,13 @@
       0% { transform: translateX(0); }
       100% { transform: translateX(-50%); }
     }
+
+    /* ═══ MOBILE SPACING REDUCTIONS ═══ */
+    @media (max-width: 768px) {
+      .services, .pricing, .process, .testimonials, .cta-section { padding: 2.5rem 0; }
+      .section-subtitle { margin-bottom: 1.5rem; }
+      .hero { min-height: 85vh; padding-top: 4rem; }
+    }
   </style>
 </head>
 <body>
@@ -1290,7 +1297,7 @@
     <div class="section-divider"></div>
 
     <!-- TECH PARTNERS -->
-    <section style="padding: 4rem 0; text-align: center;">
+    <section style="padding: 2.5rem 0; text-align: center;">
       <div class="container">
         <p class="reveal" style="font-family: var(--font-body); font-size: 0.85rem; color: var(--text-muted); margin-bottom: 2.5rem;">Tecnologie e partner che utilizziamo <strong style="color: var(--text-secondary);">per i nostri progetti</strong></p>
         <!-- Row 1 -->
@@ -1337,9 +1344,10 @@
         </div>
       </div>
       <!-- 3D ROBOT centered under logos -->
-      <div id="robot3dContainer" style="width: 320px; height: 400px; margin: 2rem auto 0; cursor: grab; position: relative; z-index: 5;">
+      <div id="robot3dContainer" style="width: 320px; height: 400px; margin: 1rem auto 0; cursor: grab; position: relative; z-index: 5;">
         <canvas id="robotCanvas" style="width: 100%; height: 100%;"></canvas>
         <div id="robotClickHint" style="position: absolute; bottom: -5px; left: 50%; transform: translateX(-50%); font-family: var(--font-mono); font-size: 0.55rem; color: var(--accent-light); letter-spacing: 0.1em; text-transform: uppercase; opacity: 0.7; white-space: nowrap; animation: pulse-soft 2s ease-in-out infinite;">Clicca per ballare &bull; Trascina per spostare</div>
+        <script>if ('ontouchstart' in window) document.getElementById('robotClickHint').textContent = 'Tieni premuto per ballare \u2022 Trascina per spostare';</script>
       </div>
     </section>
 
@@ -1404,7 +1412,7 @@
   <!-- PROCESS -->
   <section class="process" id="processo">
     <div class="container">
-      <div style="text-align: center; margin-bottom: 3rem;">
+      <div style="text-align: center; margin-bottom: 2rem;">
         <span class="section-label reveal">Come lavoriamo</span>
         <h2 class="section-title reveal reveal-delay-1" style="margin-inline: auto;">Da zero al lancio<br>in 4 step</h2>
       </div>
@@ -1515,7 +1523,7 @@
   <!-- WHY US -->
   <section class="testimonials" style="position: relative; overflow: hidden;">
     <div class="container" style="position: relative; z-index: 1;">
-      <div style="text-align: center; margin-bottom: 3rem;">
+      <div style="text-align: center; margin-bottom: 2rem;">
         <span class="section-label reveal">Perch&eacute; scegliere noi</span>
         <h2 class="section-title reveal reveal-delay-1" style="margin-inline: auto;">Cosa ci rende <span class="gradient-text">diversi</span></h2>
       </div>
@@ -1996,11 +2004,28 @@
         container.style.cursor = 'grab';
       });
 
+      // ── TOUCH HOLD TO DANCE (mobile) ──
+      let touchHoldTimer = null;
+      let touchHoldDancing = false;
+
       container.addEventListener('touchstart', (e) => {
         robotDrag = true;
         robotDragMoved = false;
+        touchHoldDancing = false;
         robotStartX = e.touches[0].clientX;
         robotStartY = e.touches[0].clientY;
+
+        // Start 500ms hold timer for dance
+        touchHoldTimer = setTimeout(() => {
+          if (!robotDragMoved && model && danceAction) {
+            touchHoldDancing = true;
+            isDancing = true;
+            danceAction.paused = false;
+            danceAction.timeScale = 1;
+            const hint = document.getElementById('robotClickHint');
+            if (hint) hint.textContent = 'Rilascia per fermare';
+          }
+        }, 500);
       }, { passive: true });
 
       document.addEventListener('touchmove', (e) => {
@@ -2008,7 +2033,11 @@
         const t = e.touches[0];
         const dx = t.clientX - robotStartX;
         const dy = t.clientY - robotStartY;
-        if (Math.abs(dx) > 3 || Math.abs(dy) > 3) robotDragMoved = true;
+        if (Math.abs(dx) > 3 || Math.abs(dy) > 3) {
+          robotDragMoved = true;
+          // Cancel hold timer if dragging
+          if (touchHoldTimer) { clearTimeout(touchHoldTimer); touchHoldTimer = null; }
+        }
         if (robotDragMoved) {
           robotOX += dx; robotOY += dy;
           robotStartX = t.clientX; robotStartY = t.clientY;
@@ -2017,12 +2046,16 @@
       }, { passive: true });
 
       document.addEventListener('touchend', () => {
-        if (robotDrag && !robotDragMoved) {
-          if (model && danceAction) {
-            isDancing = !isDancing;
-            danceAction.paused = !isDancing;
-            if (isDancing) danceAction.timeScale = 1;
-          }
+        // Cancel hold timer if finger lifts early
+        if (touchHoldTimer) { clearTimeout(touchHoldTimer); touchHoldTimer = null; }
+
+        // If dancing from hold, stop dance on release
+        if (touchHoldDancing && model && danceAction) {
+          isDancing = false;
+          danceAction.paused = true;
+          const hint = document.getElementById('robotClickHint');
+          if (hint) hint.textContent = 'Tieni premuto per ballare';
+          touchHoldDancing = false;
         }
         robotDrag = false;
       });
