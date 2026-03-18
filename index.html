@@ -90,12 +90,12 @@
     /* ═══ FLOATING 3D OBJECTS (contained in trust/tech area) ═══ */
     .shapes-area {
       position: relative;
-      overflow: visible;
+      overflow: hidden;
     }
     .float-shape {
       position: absolute;
       pointer-events: auto;
-      z-index: 2;
+      z-index: 0;
       perspective: 800px;
       transition: transform 0.15s ease-out, filter 0.3s;
       filter: blur(0.5px);
@@ -491,7 +491,7 @@
       -webkit-text-fill-color: transparent;
     }
     .hero-subtitle {
-      font-size: 1.1rem;
+      font-size: clamp(0.95rem, 1.8vw, 1.1rem);
       font-weight: 400;
       color: var(--text-secondary);
       max-width: 550px;
@@ -697,7 +697,7 @@
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 1.25rem;
-      align-items: start;
+      align-items: stretch;
     }
     @media (max-width: 900px) { .pricing-grid { grid-template-columns: 1fr; max-width: 450px; margin-inline: auto; } }
 
@@ -710,7 +710,8 @@
       transition: all 0.4s ease;
       transform-style: preserve-3d;
       overflow: visible;
-      margin-top: 1.5rem;
+      display: flex;
+      flex-direction: column;
     }
     .pricing-card .tilt-glow {
       position: absolute; inset: 0;
@@ -776,6 +777,7 @@
       list-style: none;
       display: flex; flex-direction: column; gap: 0.75rem;
       margin-bottom: 2rem;
+      flex: 1;
     }
     .pricing-features li {
       display: flex; align-items: flex-start; gap: 0.6rem;
@@ -949,7 +951,7 @@
     }
     .cta-box {
       background: var(--bg-elevated);
-      border: none;
+      border: 1px solid rgba(109, 92, 255, 0.4);
       border-radius: var(--radius-lg);
       padding: clamp(3rem, 6vw, 5rem);
       text-align: center;
@@ -1878,7 +1880,10 @@
         }
 
         scene.add(model);
-      }, undefined, (err) => console.warn('Robot load error:', err));
+      }, undefined, (err) => {
+        console.warn('Robot load error:', err);
+        container.style.display = 'none';
+      });
 
       // ── DRAG + CLICK logic for robot container ──
       let robotDrag = false;
