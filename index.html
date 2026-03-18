@@ -1867,7 +1867,7 @@
         model.position.y = baseY;
         model.position.x = -(center.x * s);
         // Face the camera (front)
-        model.rotation.y = Math.PI * 0.95;
+        model.rotation.y = Math.PI * 1.15;
 
         if (gltf.animations.length > 0) {
           mixer = new THREE.AnimationMixer(model);
@@ -1970,7 +1970,7 @@
 
         if (model) {
           // Rotation toward cursor — base frontal + follows mouse
-          model.rotation.y += ((Math.PI * 0.95 + mouseRY) - model.rotation.y) * 0.04;
+          model.rotation.y += ((Math.PI * 1.15 + mouseRY) - model.rotation.y) * 0.04;
           model.rotation.x += (mouseRX * 0.5 - model.rotation.x) * 0.04;
 
           // Gentle floating when not dancing
