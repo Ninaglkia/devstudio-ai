@@ -1866,8 +1866,8 @@
         baseY = -(box.min.y * s);
         model.position.y = baseY;
         model.position.x = -(center.x * s);
-        // Face the camera (front) — model is facing away by default
-        model.rotation.y = Math.PI;
+        // Face the camera (front)
+        model.rotation.y = Math.PI * 0.95;
 
         if (gltf.animations.length > 0) {
           mixer = new THREE.AnimationMixer(model);
@@ -1896,9 +1896,9 @@
       });
 
       document.addEventListener('mousemove', (e) => {
-        // Subtle mouse tracking for robot head tilt
-        mouseRY = ((e.clientX / window.innerWidth) - 0.5) * 0.25;
-        mouseRX = ((e.clientY / window.innerHeight) - 0.5) * -0.15;
+        // Mouse tracking for robot rotation
+        mouseRY = ((e.clientX / window.innerWidth) - 0.5) * 0.8;
+        mouseRX = ((e.clientY / window.innerHeight) - 0.5) * -0.4;
 
         if (robotDrag) {
           const dx = e.clientX - robotStartX;
@@ -1969,9 +1969,9 @@
         if (mixer) mixer.update(delta);
 
         if (model) {
-          // Subtle rotation toward cursor — stays mostly frontal (base is PI = facing camera)
-          model.rotation.y += ((Math.PI + mouseRY * 0.4) - model.rotation.y) * 0.03;
-          model.rotation.x += (mouseRX * 0.15 - model.rotation.x) * 0.03;
+          // Rotation toward cursor — base frontal + follows mouse
+          model.rotation.y += ((Math.PI * 0.95 + mouseRY) - model.rotation.y) * 0.04;
+          model.rotation.x += (mouseRX * 0.5 - model.rotation.x) * 0.04;
 
           // Gentle floating when not dancing
           if (!isDancing) {
