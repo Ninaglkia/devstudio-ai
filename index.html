@@ -1615,11 +1615,21 @@
   <script>
     // ═══ PRELOADER ═══
     // Always start at top on page load/refresh
-    window.scrollTo(0, 0);
     if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+
+    window.addEventListener('beforeunload', () => {
+      window.scrollTo(0, 0);
+    });
 
     window.addEventListener('load', () => {
-      setTimeout(() => document.getElementById('preloader').classList.add('hidden'), 600);
+      window.scrollTo(0, 0);
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        document.getElementById('preloader').classList.add('hidden');
+      }, 600);
     });
 
     // ═══ SCROLL REVEAL ═══
