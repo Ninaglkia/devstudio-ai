@@ -1138,8 +1138,11 @@
     .footer-social a:hover svg { stroke: var(--accent-light); }
 
     /* Tech partners hover */
-    .tech-logos { opacity: 0.4; transition: opacity 0.6s ease; }
-    .tech-logos:hover { opacity: 0.9; filter: grayscale(0) !important; }
+    .tech-logos { opacity: 0.6; filter: grayscale(1); transition: all 0.6s ease; }
+    .tech-logos:hover { opacity: 0.9; filter: grayscale(0); }
+    @media (max-width: 768px) {
+      .float-shape { pointer-events: none !important; }
+    }
     .tech-logos span { transition: all 0.3s ease; cursor: default; }
     .tech-logos span:hover { color: var(--accent-light) !important; transform: scale(1.1); }
   </style>
@@ -1262,7 +1265,7 @@
   <section style="padding: 4rem 0; text-align: center;">
     <div class="container">
       <p class="reveal" style="font-family: var(--font-body); font-size: 0.85rem; color: var(--text-muted); margin-bottom: 2.5rem;">Tecnologie e partner che utilizziamo <strong style="color: var(--text-secondary);">per i nostri progetti</strong></p>
-      <div class="reveal reveal-delay-1 tech-logos" style="display: flex; justify-content: center; align-items: center; gap: clamp(2rem, 5vw, 4rem); flex-wrap: wrap; filter: grayscale(1);">
+      <div class="reveal reveal-delay-1 tech-logos" style="display: flex; justify-content: center; align-items: center; gap: clamp(2rem, 5vw, 4rem); flex-wrap: wrap;">
         <span style="font-family: var(--font-heading); font-size: clamp(1.2rem, 2.5vw, 1.8rem); font-weight: 700; color: var(--text-primary); letter-spacing: -0.02em;">Claude</span>
         <span style="font-family: var(--font-heading); font-size: clamp(1.2rem, 2.5vw, 1.8rem); font-weight: 700; color: var(--text-primary); letter-spacing: -0.02em;">GitHub</span>
         <span style="font-family: var(--font-heading); font-size: clamp(1.2rem, 2.5vw, 1.8rem); font-weight: 700; color: var(--text-primary); letter-spacing: -0.02em; display: flex; align-items: center; gap: 0.3rem;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2z" fill="#4285F4"/><path d="M12 2C6.477 2 2 6.477 2 12h10V2z" fill="#EA4335"/><path d="M2 12c0 5.523 4.477 10 10 10V12H2z" fill="#34A853"/><path d="M12 22c5.523 0 10-4.477 10-10H12v10z" fill="#FBBC05"/></svg> Google</span>
