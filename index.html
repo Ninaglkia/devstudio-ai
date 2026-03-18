@@ -1129,11 +1129,25 @@
     /* Tech partners */
     .tech-logos { opacity: 0.7; transition: all 0.6s ease; }
     .tech-logos:hover { opacity: 1; }
+    .tech-logos span { transition: all 0.3s ease; cursor: default; display: flex; align-items: center; gap: 0.5rem; white-space: nowrap; }
+    .tech-logos span:hover { transform: scale(1.08); }
+
     @media (max-width: 768px) {
       .float-shape { display: none; }
+      .tech-logos {
+        flex-wrap: nowrap !important;
+        overflow: hidden !important;
+        gap: 2.5rem !important;
+        justify-content: flex-start !important;
+        animation: marquee 15s linear infinite;
+        opacity: 0.85;
+      }
+      .tech-logos span { flex-shrink: 0; }
     }
-    .tech-logos span { transition: all 0.3s ease; cursor: default; display: flex; align-items: center; gap: 0.5rem; }
-    .tech-logos span:hover { transform: scale(1.08); }
+    @keyframes marquee {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
   </style>
 </head>
 <body>
@@ -1671,6 +1685,14 @@
         });
       });
     })();
+
+    // ═══ MOBILE MARQUEE: duplicate logos for infinite scroll ═══
+    if (window.innerWidth <= 768) {
+      document.querySelectorAll('.tech-logos').forEach(row => {
+        const items = row.innerHTML;
+        row.innerHTML = items + items; // duplicate for seamless loop
+      });
+    }
 
     // ═══ ROBOT VIDEO AUDIO ON SCROLL ═══
     const robotVideo = document.getElementById('robotVideo');
