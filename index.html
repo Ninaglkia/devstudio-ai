@@ -1896,9 +1896,9 @@
       });
 
       document.addEventListener('mousemove', (e) => {
-        // Mouse tracking for robot rotation — aggressive
-        mouseRY = ((e.clientX / window.innerWidth) - 0.5) * 2.0;
-        mouseRX = ((e.clientY / window.innerHeight) - 0.5) * -1.0;
+        // Mouse tracking for robot rotation — max
+        mouseRY = ((e.clientX / window.innerWidth) - 0.5) * 4.0;
+        mouseRX = ((e.clientY / window.innerHeight) - 0.5) * -2.0;
 
         if (robotDrag) {
           const dx = e.clientX - robotStartX;
@@ -1970,8 +1970,8 @@
 
         if (model) {
           // Rotation toward cursor — strong follow
-          model.rotation.y += ((Math.PI * 1.15 + mouseRY) - model.rotation.y) * 0.06;
-          model.rotation.x += (mouseRX - model.rotation.x) * 0.06;
+          model.rotation.y += ((Math.PI * 1.15 + mouseRY) - model.rotation.y) * 0.08;
+          model.rotation.x += (mouseRX - model.rotation.x) * 0.08;
 
           // Gentle floating when not dancing
           if (!isDancing) {
