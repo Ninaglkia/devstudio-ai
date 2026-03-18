@@ -1614,6 +1614,10 @@
 
   <script>
     // ═══ PRELOADER ═══
+    // Always start at top on page load/refresh
+    window.scrollTo(0, 0);
+    if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+
     window.addEventListener('load', () => {
       setTimeout(() => document.getElementById('preloader').classList.add('hidden'), 600);
     });
