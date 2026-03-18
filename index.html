@@ -1841,10 +1841,10 @@
     if (canvas && container) {
       const W = 320, H = 400;
       const scene = new THREE.Scene();
-      const camera = new THREE.PerspectiveCamera(40, W / H, 0.1, 100);
-      // Frontal view — robot faces the user
-      camera.position.set(0, 1.2, 4);
-      camera.lookAt(0, 0.8, 0);
+      const camera = new THREE.PerspectiveCamera(35, W / H, 0.1, 100);
+      // Frontal view — pulled back to see full body + head
+      camera.position.set(0, 1.0, 5.5);
+      camera.lookAt(0, 0.9, 0);
 
       const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
       renderer.setSize(W, H);
