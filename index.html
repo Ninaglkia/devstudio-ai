@@ -196,18 +196,37 @@
       position: relative;
       overflow: hidden;
     }
+
+    /* Video background */
+    .hero-video-bg {
+      position: absolute; inset: 0; z-index: 0;
+    }
+    .hero-video-bg video {
+      width: 100%; height: 100%;
+      object-fit: cover;
+    }
+    .hero-video-overlay {
+      position: absolute; inset: 0;
+      background:
+        linear-gradient(180deg, rgba(5,5,5,0.7) 0%, rgba(5,5,5,0.4) 40%, rgba(5,5,5,0.8) 80%, rgba(5,5,5,1) 100%),
+        linear-gradient(90deg, rgba(5,5,5,0.8) 0%, rgba(5,5,5,0.2) 60%);
+      z-index: 1;
+    }
+
     .hero-glow {
       position: absolute;
       width: 600px; height: 600px;
       border-radius: 50%;
       filter: blur(150px);
-      opacity: 0.15;
+      opacity: 0.12;
       pointer-events: none;
+      z-index: 2;
     }
     .hero-glow-1 { top: -200px; right: -100px; background: var(--accent); }
-    .hero-glow-2 { bottom: -200px; left: -100px; background: var(--accent-cyan); opacity: 0.08; }
+    .hero-glow-2 { bottom: -200px; left: -100px; background: var(--accent-cyan); opacity: 0.06; }
 
     .hero .container {
+      position: relative; z-index: 3;
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 4rem;
@@ -217,6 +236,83 @@
       .hero .container { grid-template-columns: 1fr; text-align: center; }
       .hero-content { order: 1; }
       .hero-visual { order: 2; }
+    }
+
+    /* Robot image card */
+    .robot-card {
+      position: relative;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      border: 1px solid var(--glass-border);
+      box-shadow: 0 30px 100px rgba(109, 92, 255, 0.15), 0 0 0 1px rgba(109, 92, 255, 0.05);
+    }
+    .robot-card img {
+      width: 100%; height: auto;
+      display: block;
+    }
+    .robot-card-glow {
+      position: absolute; inset: 0;
+      background: linear-gradient(180deg, transparent 60%, rgba(109, 92, 255, 0.15) 100%);
+      pointer-events: none;
+    }
+    .robot-card-label {
+      position: absolute;
+      bottom: 1rem; left: 1rem; right: 1rem;
+      background: rgba(5, 5, 5, 0.8);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid var(--glass-border);
+      border-radius: 12px;
+      padding: 0.75rem 1rem;
+      display: flex; align-items: center; gap: 0.6rem;
+    }
+    .robot-status-dot {
+      width: 8px; height: 8px;
+      background: var(--accent-green);
+      border-radius: 50%;
+      animation: pulse-dot 2s ease-in-out infinite;
+      flex-shrink: 0;
+    }
+    .robot-card-label span {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      color: var(--text-secondary);
+      letter-spacing: 0.03em;
+    }
+    .robot-card-label strong {
+      color: var(--accent-light);
+    }
+
+    /* Scroll indicator */
+    .hero-scroll {
+      position: absolute;
+      bottom: 2rem; left: 50%; transform: translateX(-50%);
+      z-index: 3;
+      display: flex; flex-direction: column;
+      align-items: center; gap: 0.5rem;
+    }
+    .hero-scroll span {
+      font-family: var(--font-mono);
+      font-size: 0.55rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+    .hero-scroll-line {
+      width: 1px; height: 40px;
+      background: var(--glass-border);
+      position: relative; overflow: hidden;
+    }
+    .hero-scroll-line::after {
+      content: '';
+      position: absolute; top: 0; left: 0;
+      width: 100%; height: 50%;
+      background: var(--accent);
+      animation: scroll-anim 1.5s ease-in-out infinite;
+    }
+    @keyframes scroll-anim {
+      0% { transform: translateY(-100%); }
+      100% { transform: translateY(200%); }
     }
 
     .hero-badge {
@@ -791,6 +887,12 @@
 
   <!-- HERO -->
   <section class="hero">
+    <div class="hero-video-bg" aria-hidden="true">
+      <video autoplay muted loop playsinline>
+        <source src="hero-bg.mp4" type="video/mp4">
+      </video>
+    </div>
+    <div class="hero-video-overlay"></div>
     <div class="hero-glow hero-glow-1"></div>
     <div class="hero-glow hero-glow-2"></div>
     <div class="container">
@@ -803,7 +905,7 @@
           Il tuo business<br>merita un sito<br><span class="gradient-text">che spacca.</span>
         </h1>
         <p class="hero-subtitle reveal reveal-delay-2">
-          Creiamo siti web moderni, veloci e ottimizzati per convertire visitatori in clienti. Dal design al lancio in 7 giorni.
+          Siti web moderni potenziati dall'AI. Progettiamo esperienze digitali che convertono visitatori in clienti. Dal design al lancio in 7 giorni.
         </p>
         <div class="hero-ctas reveal reveal-delay-3">
           <a href="#prezzi" class="btn-glow">Vedi i pacchetti &darr;</a>
@@ -811,27 +913,19 @@
         </div>
       </div>
       <div class="hero-visual reveal reveal-delay-2">
-        <div class="terminal">
-          <div class="terminal-header">
-            <div class="terminal-dot red"></div>
-            <div class="terminal-dot yellow"></div>
-            <div class="terminal-dot green"></div>
-            <span class="terminal-title">devstudio-ai &mdash; zsh</span>
-          </div>
-          <div class="terminal-body">
-            <div><span class="prompt">$</span> <span class="cmd">devstudio init</span> <span class="accent">--client</span> il-tuo-brand</div>
-            <div class="output">&raquo; Analisi brand completata</div>
-            <div class="output">&raquo; Design system generato</div>
-            <div class="output">&raquo; 5 pagine create</div>
-            <div class="output">&raquo; SEO ottimizzato</div>
-            <div class="output">&raquo; Performance score: 98/100</div>
-            <br>
-            <div><span class="prompt">$</span> <span class="cmd">devstudio deploy</span> <span class="accent">--prod</span></div>
-            <div class="output">&raquo; Il tuo sito &egrave; live! &check;</div>
-            <div><span class="prompt">$</span> <span class="cursor-blink"></span></div>
+        <div class="robot-card">
+          <img src="robot-ai.png" alt="DevStudio AI — Intelligenza artificiale al lavoro">
+          <div class="robot-card-glow"></div>
+          <div class="robot-card-label">
+            <div class="robot-status-dot"></div>
+            <span><strong>AI Engine</strong> &mdash; Building your website...</span>
           </div>
         </div>
       </div>
+    </div>
+    <div class="hero-scroll">
+      <span>Scroll</span>
+      <div class="hero-scroll-line"></div>
     </div>
   </section>
 
