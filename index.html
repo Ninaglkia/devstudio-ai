@@ -112,112 +112,94 @@
       pointer-events: none;
     }
 
-    /* Sphere — large, gradient, inner glow */
-    .shape-sphere {
-      width: 80px; height: 80px;
-    }
+    /* Sphere — glass orb with shine */
+    .shape-sphere { width: 100px; height: 100px; }
     .shape-sphere .shape-inner {
       border-radius: 50%;
-      background: radial-gradient(circle at 35% 30%, #8b7dff, #6d5cff 40%, #00e5ff 100%);
-      box-shadow: 0 0 40px rgba(109,92,255,0.5), 0 0 80px rgba(0,229,255,0.2), inset 0 -8px 20px rgba(0,0,0,0.3), inset 0 8px 20px rgba(255,255,255,0.15);
-      opacity: 0.8;
+      background: radial-gradient(circle at 30% 25%, rgba(255,255,255,0.25), #8b7dff 30%, #6d5cff 50%, #00e5ff 100%);
+      box-shadow: 0 0 50px rgba(109,92,255,0.6), 0 0 100px rgba(0,229,255,0.25), inset 0 -10px 25px rgba(0,0,0,0.4), inset 0 10px 25px rgba(255,255,255,0.2);
+      opacity: 0.9;
     }
 
-    /* Cube — real 3D CSS cube */
-    .shape-cube {
-      width: 50px; height: 50px;
-    }
+    /* Cube — 3D glass cube, bigger */
+    .shape-cube { width: 65px; height: 65px; }
     .shape-cube .shape-inner {
       transform-style: preserve-3d;
-      animation: cubeRotate 12s linear infinite;
-      position: relative;
-      width: 50px; height: 50px;
+      animation: cubeRotate 14s linear infinite;
+      position: relative; width: 65px; height: 65px;
     }
     .cube-face {
-      position: absolute;
-      width: 50px; height: 50px;
-      border: 1px solid rgba(255,255,255,0.1);
-      opacity: 0.85;
+      position: absolute; width: 65px; height: 65px;
+      border: 1px solid rgba(255,255,255,0.15);
+      backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
     }
-    .cube-face.front  { background: linear-gradient(135deg, rgba(109,92,255,0.7), rgba(0,229,255,0.5)); transform: translateZ(25px); }
-    .cube-face.back   { background: linear-gradient(135deg, rgba(0,229,255,0.5), rgba(109,92,255,0.7)); transform: rotateY(180deg) translateZ(25px); }
-    .cube-face.right  { background: linear-gradient(135deg, rgba(139,125,255,0.6), rgba(0,100,255,0.5)); transform: rotateY(90deg) translateZ(25px); }
-    .cube-face.left   { background: linear-gradient(135deg, rgba(0,100,255,0.5), rgba(139,125,255,0.6)); transform: rotateY(-90deg) translateZ(25px); }
-    .cube-face.top    { background: linear-gradient(135deg, rgba(109,92,255,0.8), rgba(0,229,255,0.6)); transform: rotateX(90deg) translateZ(25px); }
-    .cube-face.bottom { background: linear-gradient(135deg, rgba(0,229,255,0.6), rgba(109,92,255,0.8)); transform: rotateX(-90deg) translateZ(25px); }
+    .cube-face.front  { background: linear-gradient(135deg, rgba(109,92,255,0.6), rgba(0,229,255,0.4)); transform: translateZ(32.5px); }
+    .cube-face.back   { background: linear-gradient(135deg, rgba(0,229,255,0.4), rgba(109,92,255,0.6)); transform: rotateY(180deg) translateZ(32.5px); }
+    .cube-face.right  { background: linear-gradient(135deg, rgba(160,140,255,0.5), rgba(0,180,255,0.4)); transform: rotateY(90deg) translateZ(32.5px); }
+    .cube-face.left   { background: linear-gradient(135deg, rgba(0,180,255,0.4), rgba(160,140,255,0.5)); transform: rotateY(-90deg) translateZ(32.5px); }
+    .cube-face.top    { background: linear-gradient(135deg, rgba(109,92,255,0.7), rgba(0,229,255,0.5)); transform: rotateX(90deg) translateZ(32.5px); }
+    .cube-face.bottom { background: linear-gradient(135deg, rgba(0,229,255,0.5), rgba(109,92,255,0.7)); transform: rotateX(-90deg) translateZ(32.5px); }
     @keyframes cubeRotate {
       0% { transform: rotateX(0deg) rotateY(0deg); }
       100% { transform: rotateX(360deg) rotateY(360deg); }
     }
 
-    /* Torus/Ring — thick gradient border, rotating */
-    .shape-torus {
-      width: 65px; height: 65px;
-    }
+    /* Torus/Ring — neon ring */
+    .shape-torus { width: 85px; height: 85px; }
     .shape-torus .shape-inner {
       border-radius: 50%;
       background: transparent;
-      border: 8px solid;
-      border-image: linear-gradient(135deg, #6d5cff, #00e5ff) 1;
-      border-radius: 50%;
-      box-shadow: 0 0 30px rgba(109,92,255,0.4), 0 0 60px rgba(0,229,255,0.15), inset 0 0 20px rgba(139,125,255,0.2);
-      animation: torusRotate 8s linear infinite;
-      opacity: 0.85;
+      border: 6px solid #6d5cff;
+      box-shadow: 0 0 20px rgba(109,92,255,0.6), 0 0 40px rgba(109,92,255,0.3), 0 0 80px rgba(0,229,255,0.15), inset 0 0 20px rgba(109,92,255,0.3);
+      animation: torusRotate 10s linear infinite;
+      opacity: 0.9;
     }
     @keyframes torusRotate {
-      0% { transform: rotateX(60deg) rotateZ(0deg); }
-      100% { transform: rotateX(60deg) rotateZ(360deg); }
+      0% { transform: rotateX(65deg) rotateZ(0deg); }
+      100% { transform: rotateX(65deg) rotateZ(360deg); }
     }
 
-    /* Diamond/Triangle — larger, gradient */
-    .shape-diamond {
-      width: 60px; height: 60px;
-    }
+    /* Diamond — rotated square, glass effect */
+    .shape-diamond { width: 70px; height: 70px; }
     .shape-diamond .shape-inner {
-      background: linear-gradient(135deg, #8b7dff, #00e5ff);
-      box-shadow: 0 0 30px rgba(109,92,255,0.4), 0 0 60px rgba(0,229,255,0.15);
-      transform: rotate(45deg) scale(0.8);
-      border-radius: 6px;
-      opacity: 0.8;
+      background: linear-gradient(135deg, #a78bfa, #6d5cff, #00e5ff);
+      box-shadow: 0 0 40px rgba(109,92,255,0.5), 0 0 80px rgba(0,229,255,0.2);
+      transform: rotate(45deg);
+      border-radius: 8px;
+      opacity: 0.85;
+      border: 1px solid rgba(255,255,255,0.15);
     }
 
-    /* Pyramid — 3D pyramid with faces */
-    .shape-pyramid {
-      width: 60px; height: 60px;
-    }
+    /* Pyramid — 3D triangle */
+    .shape-pyramid { width: 70px; height: 70px; }
     .shape-pyramid .shape-inner {
       transform-style: preserve-3d;
-      animation: pyramidRotate 10s linear infinite;
-      position: relative;
-      width: 60px; height: 60px;
+      animation: pyramidRotate 12s linear infinite;
+      position: relative; width: 70px; height: 70px;
     }
     .pyramid-face {
       position: absolute;
       width: 0; height: 0;
-      border-left: 30px solid transparent;
-      border-right: 30px solid transparent;
-      border-bottom: 52px solid;
-      opacity: 0.75;
+      border-left: 35px solid transparent;
+      border-right: 35px solid transparent;
+      border-bottom: 60px solid;
     }
-    .pyramid-face.pf1 { border-bottom-color: rgba(109,92,255,0.7); transform: translateZ(15px) translateY(4px); }
-    .pyramid-face.pf2 { border-bottom-color: rgba(0,229,255,0.5); transform: rotateY(90deg) translateZ(15px) translateY(4px); }
-    .pyramid-face.pf3 { border-bottom-color: rgba(139,125,255,0.6); transform: rotateY(180deg) translateZ(15px) translateY(4px); }
-    .pyramid-face.pf4 { border-bottom-color: rgba(0,100,255,0.5); transform: rotateY(270deg) translateZ(15px) translateY(4px); }
+    .pyramid-face.pf1 { border-bottom-color: rgba(109,92,255,0.8); transform: translateZ(18px) translateY(5px); }
+    .pyramid-face.pf2 { border-bottom-color: rgba(0,229,255,0.6); transform: rotateY(90deg) translateZ(18px) translateY(5px); }
+    .pyramid-face.pf3 { border-bottom-color: rgba(167,139,250,0.7); transform: rotateY(180deg) translateZ(18px) translateY(5px); }
+    .pyramid-face.pf4 { border-bottom-color: rgba(0,180,255,0.6); transform: rotateY(270deg) translateZ(18px) translateY(5px); }
     @keyframes pyramidRotate {
-      0% { transform: rotateY(0deg) rotateX(-15deg); }
-      100% { transform: rotateY(360deg) rotateX(-15deg); }
+      0% { transform: rotateY(0deg) rotateX(-20deg); }
+      100% { transform: rotateY(360deg) rotateX(-20deg); }
     }
 
-    /* Hexagon — clip-path with gradient */
-    .shape-hexagon {
-      width: 55px; height: 55px;
-    }
+    /* Hexagon — larger, vivid gradient */
+    .shape-hexagon { width: 72px; height: 72px; }
     .shape-hexagon .shape-inner {
-      background: linear-gradient(135deg, #6d5cff, #00e5ff, #8b7dff);
+      background: linear-gradient(160deg, #6d5cff, #00e5ff, #a78bfa, #6d5cff);
       clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
-      box-shadow: 0 0 30px rgba(109,92,255,0.4);
-      opacity: 0.8;
-      filter: drop-shadow(0 0 15px rgba(0,229,255,0.3));
+      opacity: 0.85;
+      filter: drop-shadow(0 0 25px rgba(109,92,255,0.5)) drop-shadow(0 0 50px rgba(0,229,255,0.2));
     }
 
     /* Float/bob animations */
@@ -1992,9 +1974,9 @@
         if (mixer) mixer.update(delta);
 
         if (model) {
-          // Smooth rotation toward cursor — Spline style
-          model.rotation.y += (mouseRY * Math.PI * 0.6 - model.rotation.y) * 0.04;
-          model.rotation.x += (mouseRX * Math.PI * 0.3 - model.rotation.x) * 0.04;
+          // Subtle rotation toward cursor — stays mostly frontal
+          model.rotation.y += (mouseRY * 0.4 - model.rotation.y) * 0.03;
+          model.rotation.x += (mouseRX * 0.2 - model.rotation.x) * 0.03;
 
           // Gentle floating when not dancing
           if (!isDancing) {
