@@ -1222,9 +1222,9 @@
   <div class="shapes-area" id="shapesArea">
 
     <!-- 3D ROBOT -->
-    <div id="robot3dContainer" style="position: absolute; top: 50%; right: 5%; transform: translateY(-50%); width: 280px; height: 350px; z-index: 5; cursor: pointer;" title="Cliccami per farmi ballare!">
+    <div id="robot3dContainer" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 320px; height: 400px; z-index: 5; cursor: grab;" title="Cliccami per farmi ballare!">
       <canvas id="robotCanvas" style="width: 100%; height: 100%;"></canvas>
-      <div id="robotClickHint" style="position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%); font-family: var(--font-mono); font-size: 0.55rem; color: var(--accent-light); letter-spacing: 0.1em; text-transform: uppercase; opacity: 0.7; white-space: nowrap; animation: pulse-soft 2s ease-in-out infinite;">Clicca per farmi ballare</div>
+      <div id="robotClickHint" style="position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%); font-family: var(--font-mono); font-size: 0.55rem; color: var(--accent-light); letter-spacing: 0.1em; text-transform: uppercase; opacity: 0.7; white-space: nowrap; animation: pulse-soft 2s ease-in-out infinite;">Clicca per ballare &bull; Trascina per spostare</div>
     </div>
 
     <!-- FLOATING 3D SHAPES (contained here) -->
@@ -1839,61 +1839,60 @@
     const canvas = document.getElementById('robotCanvas');
     const container = document.getElementById('robot3dContainer');
     if (canvas && container) {
+      const W = 320, H = 400;
       const scene = new THREE.Scene();
-      const camera = new THREE.PerspectiveCamera(45, 280 / 350, 0.1, 100);
-      camera.position.set(0, 1, 3.5);
+      const camera = new THREE.PerspectiveCamera(40, W / H, 0.1, 100);
+      // Frontal view — robot faces the user
+      camera.position.set(0, 1.2, 4);
       camera.lookAt(0, 0.8, 0);
 
       const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
-      renderer.setSize(280, 350);
+      renderer.setSize(W, H);
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
       renderer.outputColorSpace = THREE.SRGBColorSpace;
       renderer.toneMapping = THREE.ACESFilmicToneMapping;
       renderer.toneMappingExposure = 1.2;
 
-      // Lighting
-      const ambientLight = new THREE.AmbientLight(0x6d5cff, 0.5);
-      scene.add(ambientLight);
-      const dirLight = new THREE.DirectionalLight(0xffffff, 2);
-      dirLight.position.set(2, 3, 2);
-      scene.add(dirLight);
-      const rimLight = new THREE.DirectionalLight(0x00e5ff, 1);
+      // Lighting — frontal key + rim
+      scene.add(new THREE.AmbientLight(0x6d5cff, 0.6));
+      const keyLight = new THREE.DirectionalLight(0xffffff, 2.5);
+      keyLight.position.set(0, 3, 4); // front light
+      scene.add(keyLight);
+      const rimLight = new THREE.DirectionalLight(0x00e5ff, 1.2);
       rimLight.position.set(-2, 1, -2);
       scene.add(rimLight);
-      const pointLight = new THREE.PointLight(0x6d5cff, 1, 10);
-      pointLight.position.set(0, 2, 1);
-      scene.add(pointLight);
+      const fillLight = new THREE.PointLight(0x6d5cff, 0.8, 10);
+      fillLight.position.set(2, 1, 2);
+      scene.add(fillLight);
 
       let model = null;
       let mixer = null;
       let danceAction = null;
       let isDancing = false;
       let baseY = 0;
-      let modelScale = 1;
-      let mouseRotY = 0;
+      let mouseRX = 0, mouseRY = 0;
 
       const loader = new GLTFLoader();
       loader.setMeshoptDecoder(MeshoptDecoder);
       loader.load('robot-3d.glb', (gltf) => {
         model = gltf.scene;
 
-        // Center and scale model
         const box = new THREE.Box3().setFromObject(model);
         const center = box.getCenter(new THREE.Vector3());
         const size = box.getSize(new THREE.Vector3());
         const maxDim = Math.max(size.x, size.y, size.z);
-        modelScale = 2.2 / maxDim;
-        model.scale.set(modelScale, modelScale, modelScale);
-        baseY = -(box.min.y * modelScale);
+        const s = 2.4 / maxDim;
+        model.scale.set(s, s, s);
+        baseY = -(box.min.y * s);
         model.position.y = baseY;
-        model.position.x = -(center.x * modelScale);
+        model.position.x = -(center.x * s);
+        // Face the camera (front)
+        model.rotation.y = 0;
 
-        // Setup animation mixer
         if (gltf.animations.length > 0) {
           mixer = new THREE.AnimationMixer(model);
           danceAction = mixer.clipAction(gltf.animations[0]);
           danceAction.setLoop(THREE.LoopRepeat);
-          // Start paused
           danceAction.play();
           danceAction.paused = true;
         }
@@ -1901,24 +1900,87 @@
         scene.add(model);
       }, undefined, (err) => console.warn('Robot load error:', err));
 
-      // Click to toggle dance
-      container.addEventListener('click', () => {
-        if (!model || !danceAction) return;
-        isDancing = !isDancing;
-        const hint = document.getElementById('robotClickHint');
-        if (isDancing) {
-          danceAction.paused = false;
-          danceAction.timeScale = 1;
-          if (hint) hint.textContent = 'Clicca per fermarmi';
-        } else {
-          danceAction.paused = true;
-          if (hint) hint.textContent = 'Clicca per farmi ballare';
+      // ── DRAG + CLICK logic for robot container ──
+      let robotDrag = false;
+      let robotDragMoved = false;
+      let robotStartX = 0, robotStartY = 0;
+      let robotOX = 0, robotOY = 0; // offset from center
+
+      container.addEventListener('mousedown', (e) => {
+        e.preventDefault();
+        robotDrag = true;
+        robotDragMoved = false;
+        robotStartX = e.clientX;
+        robotStartY = e.clientY;
+        container.style.cursor = 'grabbing';
+        container.style.transition = 'none';
+      });
+
+      document.addEventListener('mousemove', (e) => {
+        // Update mouse rotation for 3D model
+        mouseRY = ((e.clientX / window.innerWidth) - 0.5) * 0.5;
+        mouseRX = ((e.clientY / window.innerHeight) - 0.5) * -0.3;
+
+        if (!robotDrag) return;
+        const dx = e.clientX - robotStartX;
+        const dy = e.clientY - robotStartY;
+        if (Math.abs(dx) > 3 || Math.abs(dy) > 3) robotDragMoved = true;
+        if (robotDragMoved) {
+          robotOX += dx;
+          robotOY += dy;
+          robotStartX = e.clientX;
+          robotStartY = e.clientY;
+          container.style.transform = `translate(calc(-50% + ${robotOX}px), calc(-50% + ${robotOY}px))`;
         }
       });
 
-      // Mouse rotation — robot faces cursor
-      document.addEventListener('mousemove', (e) => {
-        mouseRotY = ((e.clientX / window.innerWidth) - 0.5) * 0.6;
+      document.addEventListener('mouseup', () => {
+        if (robotDrag && !robotDragMoved) {
+          // It was a click, not a drag — toggle dance
+          if (model && danceAction) {
+            isDancing = !isDancing;
+            danceAction.paused = !isDancing;
+            if (isDancing) danceAction.timeScale = 1;
+            const hint = document.getElementById('robotClickHint');
+            if (hint) hint.textContent = isDancing ? 'Clicca per fermarmi' : 'Clicca per ballare';
+          }
+        }
+        robotDrag = false;
+        container.style.cursor = 'grab';
+      });
+
+      // Touch support
+      container.addEventListener('touchstart', (e) => {
+        robotDrag = true;
+        robotDragMoved = false;
+        robotStartX = e.touches[0].clientX;
+        robotStartY = e.touches[0].clientY;
+      }, { passive: true });
+
+      document.addEventListener('touchmove', (e) => {
+        if (!robotDrag) return;
+        const t = e.touches[0];
+        const dx = t.clientX - robotStartX;
+        const dy = t.clientY - robotStartY;
+        if (Math.abs(dx) > 3 || Math.abs(dy) > 3) robotDragMoved = true;
+        if (robotDragMoved) {
+          robotOX += dx;
+          robotOY += dy;
+          robotStartX = t.clientX;
+          robotStartY = t.clientY;
+          container.style.transform = `translate(calc(-50% + ${robotOX}px), calc(-50% + ${robotOY}px))`;
+        }
+      }, { passive: true });
+
+      document.addEventListener('touchend', () => {
+        if (robotDrag && !robotDragMoved) {
+          if (model && danceAction) {
+            isDancing = !isDancing;
+            danceAction.paused = !isDancing;
+            if (isDancing) danceAction.timeScale = 1;
+          }
+        }
+        robotDrag = false;
       });
 
       // Render loop
@@ -1928,14 +1990,14 @@
         const delta = clock.getDelta();
         const elapsed = clock.getElapsedTime();
 
-        // Update animation mixer
         if (mixer) mixer.update(delta);
 
         if (model) {
-          // Smooth mouse rotation — robot faces cursor
-          model.rotation.y += (mouseRotY * Math.PI - model.rotation.y) * 0.05;
+          // Smooth rotation toward cursor — Spline style
+          model.rotation.y += (mouseRY * Math.PI * 0.6 - model.rotation.y) * 0.04;
+          model.rotation.x += (mouseRX * Math.PI * 0.3 - model.rotation.x) * 0.04;
 
-          // Gentle idle floating when not dancing
+          // Gentle floating when not dancing
           if (!isDancing) {
             model.position.y = baseY + Math.sin(elapsed * 1.5) * 0.03;
           }
