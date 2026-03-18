@@ -1592,14 +1592,14 @@
       const bobAmps = [18, 14, 20, 12, 16, 22];
       floatShapes.forEach((shape, i) => {
         shape._ox = 0; shape._oy = 0;
-        shape._mult = 0.5 + (i * 0.12);
+        shape._mult = 0.7 + (i * 0.15);
         shape._bobSpeed = bobSpeeds[i % 6];
         shape._bobAmp = bobAmps[i % 6];
       });
 
       function getRotation(cx, cy) {
-        const rx = ((cy - window.innerHeight / 2) / (window.innerHeight / 2)) * -15;
-        const ry = ((cx - window.innerWidth / 2) / (window.innerWidth / 2)) * 20;
+        const rx = ((cy - window.innerHeight / 2) / (window.innerHeight / 2)) * -35;
+        const ry = ((cx - window.innerWidth / 2) / (window.innerWidth / 2)) * 45;
         return { rx, ry };
       }
 
