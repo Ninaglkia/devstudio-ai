@@ -1387,8 +1387,14 @@
   <div class="section-divider"></div>
 
   <!-- WHY US -->
-  <section class="testimonials">
-    <div class="container">
+  <section class="testimonials" style="position: relative; overflow: hidden;">
+    <div style="position: absolute; inset: 0; z-index: 0;">
+      <video autoplay muted loop playsinline style="width: 100%; height: 100%; object-fit: cover; opacity: 0.12;">
+        <source src="robot-video.mp4" type="video/mp4">
+      </video>
+      <div style="position: absolute; inset: 0; background: linear-gradient(180deg, var(--bg-primary) 0%, transparent 20%, transparent 80%, var(--bg-primary) 100%);"></div>
+    </div>
+    <div class="container" style="position: relative; z-index: 1;">
       <span class="section-label reveal">Perch&eacute; noi</span>
       <h2 class="section-title reveal reveal-delay-1">Cosa ci rende diversi</h2>
       <p class="section-subtitle reveal reveal-delay-2"></p>
