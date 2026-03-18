@@ -86,6 +86,157 @@
       padding-inline: clamp(1.25rem, 5vw, 4rem);
     }
 
+    /* ═══ CURSOR FOLLOWER ═══ */
+    .cursor-follower {
+      position: fixed;
+      width: 250px; height: 250px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(109,92,255,0.08) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 1;
+      transform: translate(-50%, -50%);
+      transition: transform 0.1s ease-out, opacity 0.3s;
+      opacity: 0;
+    }
+    .cursor-follower.active { opacity: 1; }
+
+    /* ═══ FLOATING 3D OBJECTS ═══ */
+    .floating-objects {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 2;
+      overflow: hidden;
+    }
+    .float-shape {
+      position: absolute;
+      pointer-events: auto;
+      cursor: grab;
+      z-index: 2;
+      perspective: 800px;
+      transition: filter 0.3s;
+    }
+    .float-shape:active { cursor: grabbing; }
+    .float-shape:hover { filter: brightness(1.3); }
+
+    .float-shape .shape-inner {
+      width: 100%; height: 100%;
+      transform-style: preserve-3d;
+    }
+
+    /* Sphere */
+    .shape-sphere {
+      width: 50px; height: 50px;
+    }
+    .shape-sphere .shape-inner {
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, rgba(139,125,255,0.5), rgba(109,92,255,0.15));
+      box-shadow: 0 0 20px rgba(109,92,255,0.2), inset 0 -5px 15px rgba(0,0,0,0.3);
+      backdrop-filter: blur(4px);
+      border: 1px solid rgba(139,125,255,0.2);
+    }
+
+    /* Cube */
+    .shape-cube {
+      width: 40px; height: 40px;
+    }
+    .shape-cube .shape-inner {
+      border-radius: 6px;
+      background: linear-gradient(135deg, rgba(0,229,255,0.3), rgba(109,92,255,0.2));
+      box-shadow: 0 0 18px rgba(0,229,255,0.15), inset 0 -4px 12px rgba(0,0,0,0.3);
+      backdrop-filter: blur(4px);
+      border: 1px solid rgba(0,229,255,0.2);
+      transform: rotateX(25deg) rotateY(25deg);
+    }
+
+    /* Torus - ring shape */
+    .shape-torus {
+      width: 55px; height: 55px;
+    }
+    .shape-torus .shape-inner {
+      border-radius: 50%;
+      background: transparent;
+      border: 6px solid rgba(109,92,255,0.25);
+      box-shadow: 0 0 20px rgba(109,92,255,0.15), inset 0 0 15px rgba(139,125,255,0.1);
+      transform: rotateX(60deg);
+    }
+
+    /* Diamond */
+    .shape-diamond {
+      width: 40px; height: 40px;
+    }
+    .shape-diamond .shape-inner {
+      background: linear-gradient(135deg, rgba(139,125,255,0.4), rgba(0,229,255,0.2));
+      box-shadow: 0 0 20px rgba(109,92,255,0.2);
+      backdrop-filter: blur(4px);
+      border: 1px solid rgba(139,125,255,0.25);
+      transform: rotate(45deg) scale(0.8);
+      border-radius: 4px;
+    }
+
+    /* Cone - triangle shape */
+    .shape-cone {
+      width: 0; height: 0;
+    }
+    .shape-cone .shape-inner {
+      width: 0; height: 0;
+      border-left: 22px solid transparent;
+      border-right: 22px solid transparent;
+      border-bottom: 40px solid rgba(109,92,255,0.25);
+      filter: drop-shadow(0 0 12px rgba(109,92,255,0.2));
+      background: transparent;
+      border-radius: 0;
+    }
+
+    /* Octahedron */
+    .shape-octa {
+      width: 35px; height: 35px;
+    }
+    .shape-octa .shape-inner {
+      background: linear-gradient(180deg, rgba(0,229,255,0.35), rgba(109,92,255,0.2));
+      box-shadow: 0 0 18px rgba(0,229,255,0.15);
+      backdrop-filter: blur(4px);
+      border: 1px solid rgba(0,229,255,0.2);
+      clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+    }
+
+    /* Float animations */
+    @keyframes floatA { 0%,100% { transform: translate(0,0) rotate(0deg); } 25% { transform: translate(15px,-20px) rotate(5deg); } 50% { transform: translate(-10px,-35px) rotate(-3deg); } 75% { transform: translate(20px,-15px) rotate(4deg); } }
+    @keyframes floatB { 0%,100% { transform: translate(0,0) rotate(0deg); } 25% { transform: translate(-20px,15px) rotate(-5deg); } 50% { transform: translate(15px,25px) rotate(3deg); } 75% { transform: translate(-15px,10px) rotate(-4deg); } }
+    @keyframes floatC { 0%,100% { transform: translate(0,0) rotate(0deg); } 33% { transform: translate(25px,-15px) rotate(8deg); } 66% { transform: translate(-20px,20px) rotate(-6deg); } }
+    @keyframes floatD { 0%,100% { transform: translate(0,0) rotate(0deg); } 20% { transform: translate(-15px,-25px) rotate(-4deg); } 50% { transform: translate(20px,10px) rotate(6deg); } 80% { transform: translate(-10px,20px) rotate(-2deg); } }
+    @keyframes floatE { 0%,100% { transform: translate(0,0) rotate(0deg); } 30% { transform: translate(20px,20px) rotate(6deg); } 60% { transform: translate(-25px,-10px) rotate(-8deg); } }
+    @keyframes floatF { 0%,100% { transform: translate(0,0) rotate(0deg); } 40% { transform: translate(-10px,-30px) rotate(5deg); } 70% { transform: translate(15px,15px) rotate(-3deg); } }
+
+    .float-anim-a { animation: floatA 12s ease-in-out infinite; }
+    .float-anim-b { animation: floatB 15s ease-in-out infinite; }
+    .float-anim-c { animation: floatC 10s ease-in-out infinite; }
+    .float-anim-d { animation: floatD 13s ease-in-out infinite; }
+    .float-anim-e { animation: floatE 11s ease-in-out infinite; }
+    .float-anim-f { animation: floatF 14s ease-in-out infinite; }
+
+    /* ═══ SECTION DIVIDER LINES ═══ */
+    .section-divider {
+      position: relative;
+      height: 1px;
+      overflow: hidden;
+      margin: 0 auto;
+      max-width: 1200px;
+      padding: 0 clamp(1.25rem, 5vw, 4rem);
+    }
+    .section-divider::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 10%; right: 10%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--accent), var(--accent-cyan), var(--accent), transparent);
+      animation: scanline 4s ease-in-out infinite;
+    }
+    @keyframes scanline {
+      0%, 100% { opacity: 0.2; transform: scaleX(0.5); }
+      50% { opacity: 0.6; transform: scaleX(1); }
+    }
+
     /* ═══ REVEAL ═══ */
     .reveal {
       opacity: 0;
@@ -101,6 +252,8 @@
 
     @media (prefers-reduced-motion: reduce) {
       .reveal { opacity: 1; transform: none; transition: none; }
+      .float-shape { display: none; }
+      .cursor-follower { display: none; }
     }
 
     /* ═══ PRELOADER ═══ */
@@ -512,6 +665,7 @@
       transition: all 0.4s ease;
       position: relative;
       overflow: hidden;
+      transform-style: preserve-3d;
     }
     .service-card::before {
       content: '';
@@ -521,12 +675,17 @@
       opacity: 0;
       transition: opacity 0.4s;
     }
-    .service-card:hover {
-      border-color: var(--glass-border-hover);
-      transform: translateY(-4px);
-      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-    }
     .service-card:hover::before { opacity: 1; }
+
+    /* Service card tilt glow overlay */
+    .service-card .tilt-glow {
+      position: absolute; inset: 0;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.3s;
+      border-radius: var(--radius-lg);
+    }
+    .service-card:hover .tilt-glow { opacity: 1; }
 
     .service-icon {
       width: 48px; height: 48px;
@@ -567,11 +726,19 @@
       padding: 2.5rem 2rem;
       position: relative;
       transition: all 0.4s ease;
+      transform-style: preserve-3d;
+      overflow: hidden;
     }
-    .pricing-card:hover {
-      border-color: var(--glass-border-hover);
-      transform: translateY(-4px);
+    .pricing-card .tilt-glow {
+      position: absolute; inset: 0;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.3s;
+      border-radius: var(--radius-lg);
     }
+    .pricing-card:hover .tilt-glow { opacity: 1; }
+    .pricing-card.featured .tilt-glow { filter: brightness(1.5); }
+
     .pricing-card.featured {
       border-color: var(--accent);
       background: linear-gradient(180deg, rgba(109,92,255,0.05) 0%, var(--bg-card) 40%);
@@ -789,30 +956,138 @@
       color: var(--text-muted);
     }
 
-    /* ═══ CTA ═══ */
+    /* ═══ CTA SECTION - WOW REDESIGN ═══ */
     .cta-section {
       padding: clamp(4rem, 10vh, 8rem) 0;
     }
     .cta-box {
       background: var(--bg-elevated);
-      border: 1px solid var(--glass-border);
+      border: none;
       border-radius: var(--radius-lg);
       padding: clamp(3rem, 6vw, 5rem);
       text-align: center;
-      position: relative; overflow: hidden;
+      position: relative;
+      overflow: hidden;
+      isolation: isolate;
     }
+
+    /* Animated gradient border */
     .cta-box::before {
       content: '';
-      position: absolute; top: -50%; left: -50%;
-      width: 200%; height: 200%;
-      background: radial-gradient(ellipse at center, rgba(109,92,255,0.06) 0%, transparent 60%);
-      pointer-events: none;
+      position: absolute;
+      inset: -2px;
+      border-radius: calc(var(--radius-lg) + 2px);
+      background: conic-gradient(from var(--cta-angle, 0deg), var(--accent), var(--accent-cyan), var(--accent-green), var(--accent-cyan), var(--accent));
+      z-index: -2;
+      animation: rotateBorder 4s linear infinite;
     }
-    .cta-box .section-title { margin-bottom: 1rem; }
+    @keyframes rotateBorder {
+      to { --cta-angle: 360deg; }
+    }
+    @property --cta-angle {
+      syntax: '<angle>';
+      initial-value: 0deg;
+      inherits: false;
+    }
+
+    /* Inner bg to mask out the border center */
+    .cta-box::after {
+      content: '';
+      position: absolute;
+      inset: 2px;
+      background: var(--bg-elevated);
+      border-radius: calc(var(--radius-lg) - 1px);
+      z-index: -1;
+    }
+
+    /* Animated mesh gradient background */
+    .cta-bg-mesh {
+      position: absolute; inset: 2px;
+      border-radius: calc(var(--radius-lg) - 1px);
+      overflow: hidden;
+      z-index: -1;
+    }
+    .cta-bg-mesh::before {
+      content: '';
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse at 20% 50%, rgba(109,92,255,0.08) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 50%, rgba(0,229,255,0.06) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 80%, rgba(109,92,255,0.05) 0%, transparent 50%);
+      animation: meshShift 8s ease-in-out infinite alternate;
+    }
+    @keyframes meshShift {
+      0% { transform: scale(1) rotate(0deg); }
+      100% { transform: scale(1.1) rotate(3deg); }
+    }
+
+    /* Floating particles inside CTA */
+    .cta-particles {
+      position: absolute; inset: 2px;
+      border-radius: calc(var(--radius-lg) - 1px);
+      overflow: hidden;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .cta-particle {
+      position: absolute;
+      width: 3px; height: 3px;
+      border-radius: 50%;
+      background: rgba(139,125,255,0.5);
+      animation: particleFloat linear infinite;
+    }
+    @keyframes particleFloat {
+      0% { transform: translateY(100%) scale(0); opacity: 0; }
+      10% { opacity: 1; transform: translateY(90%) scale(1); }
+      90% { opacity: 0.6; }
+      100% { transform: translateY(-20%) scale(0.5); opacity: 0; }
+    }
+
+    .cta-box .section-title {
+      margin-bottom: 1rem;
+      font-size: clamp(2rem, 4.5vw, 3.2rem);
+      background: linear-gradient(135deg, var(--text-primary), var(--accent-light), var(--accent-cyan));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      position: relative;
+      z-index: 1;
+    }
+    .cta-box .section-label {
+      position: relative; z-index: 1;
+    }
     .cta-box p {
       color: var(--text-secondary);
       max-width: 500px;
       margin: 0 auto 2rem;
+      position: relative;
+      z-index: 1;
+    }
+    .cta-box .cta-buttons-wrap {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Pulsing glow behind CTA buttons */
+    .cta-btn-glow-wrap {
+      position: relative;
+      display: inline-flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .cta-btn-glow-wrap::before {
+      content: '';
+      position: absolute;
+      inset: -20px;
+      border-radius: 20px;
+      background: radial-gradient(ellipse at center, var(--accent-glow) 0%, transparent 70%);
+      filter: blur(20px);
+      animation: ctaPulse 2.5s ease-in-out infinite;
+      z-index: -1;
+    }
+    @keyframes ctaPulse {
+      0%, 100% { opacity: 0.4; transform: scale(1); }
+      50% { opacity: 0.7; transform: scale(1.05); }
     }
 
     /* ═══ FOOTER ═══ */
@@ -864,6 +1139,31 @@
   </style>
 </head>
 <body>
+
+  <!-- CURSOR FOLLOWER -->
+  <div class="cursor-follower" id="cursorFollower"></div>
+
+  <!-- FLOATING 3D OBJECTS -->
+  <div class="floating-objects" id="floatingObjects">
+    <div class="float-shape shape-sphere float-anim-a" style="top:12%;left:8%;" data-float>
+      <div class="shape-inner"></div>
+    </div>
+    <div class="float-shape shape-cube float-anim-b" style="top:35%;right:6%;" data-float>
+      <div class="shape-inner"></div>
+    </div>
+    <div class="float-shape shape-torus float-anim-c" style="top:55%;left:4%;" data-float>
+      <div class="shape-inner"></div>
+    </div>
+    <div class="float-shape shape-diamond float-anim-d" style="top:75%;right:10%;" data-float>
+      <div class="shape-inner"></div>
+    </div>
+    <div class="float-shape shape-cone float-anim-e" style="top:22%;right:15%;" data-float>
+      <div class="shape-inner"></div>
+    </div>
+    <div class="float-shape shape-octa float-anim-f" style="top:88%;left:15%;" data-float>
+      <div class="shape-inner"></div>
+    </div>
+  </div>
 
   <!-- PRELOADER -->
   <div id="preloader">
@@ -950,6 +1250,8 @@
     </div>
   </div>
 
+  <div class="section-divider"></div>
+
   <!-- SERVICES -->
   <section class="services" id="servizi">
     <div class="container">
@@ -957,21 +1259,24 @@
       <h2 class="section-title reveal reveal-delay-1">Tutto quello che serve<br>al tuo business online</h2>
       <p class="section-subtitle reveal reveal-delay-2">Dal sito vetrina all'e-commerce completo, progettiamo soluzioni su misura.</p>
       <div class="services-grid">
-        <div class="service-card reveal">
+        <div class="service-card reveal" data-tilt-light>
+          <div class="tilt-glow"></div>
           <div class="service-icon">
             <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
           </div>
           <h3>Siti Web & Landing Page</h3>
           <p>Design moderno, responsive e ottimizzato per le conversioni. Il tuo business merita una presenza online professionale.</p>
         </div>
-        <div class="service-card reveal reveal-delay-1">
+        <div class="service-card reveal reveal-delay-1" data-tilt-light>
+          <div class="tilt-glow"></div>
           <div class="service-icon">
             <svg viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
           </div>
           <h3>E-Commerce</h3>
           <p>Negozio online completo con gestione prodotti, pagamenti sicuri e dashboard vendite. Shopify, custom o WooCommerce.</p>
         </div>
-        <div class="service-card reveal reveal-delay-2">
+        <div class="service-card reveal reveal-delay-2" data-tilt-light>
+          <div class="tilt-glow"></div>
           <div class="service-icon">
             <svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
           </div>
@@ -982,6 +1287,8 @@
     </div>
   </section>
 
+  <div class="section-divider"></div>
+
   <!-- PRICING -->
   <section class="pricing" id="prezzi">
     <div class="container">
@@ -991,9 +1298,10 @@
       <div class="pricing-grid">
 
         <!-- STARTER -->
-        <div class="pricing-card reveal">
+        <div class="pricing-card reveal" data-tilt>
+          <div class="tilt-glow"></div>
           <div class="pricing-name">Starter</div>
-          <div class="pricing-price"><span class="currency">&euro;</span>497</div>
+          <div class="pricing-price"><span class="currency">&euro;</span><span class="price-counter" data-target="497">497</span></div>
           <div class="pricing-desc">Perfetto per chi parte da zero o ha bisogno di una landing page d'impatto.</div>
           <ul class="pricing-features">
             <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Landing page o sito fino a 5 pagine</li>
@@ -1006,10 +1314,11 @@
         </div>
 
         <!-- BUSINESS -->
-        <div class="pricing-card featured reveal reveal-delay-1">
+        <div class="pricing-card featured reveal reveal-delay-1" data-tilt>
+          <div class="tilt-glow"></div>
           <div class="popular-badge">Consigliato</div>
           <div class="pricing-name">Business</div>
-          <div class="pricing-price"><span class="currency">&euro;</span>997</div>
+          <div class="pricing-price"><span class="currency">&euro;</span><span class="price-counter" data-target="997">997</span></div>
           <div class="pricing-desc">Per chi vuole un sito completo con e-commerce e funzionalita' avanzate.</div>
           <ul class="pricing-features">
             <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Sito completo fino a 10 pagine</li>
@@ -1023,9 +1332,10 @@
         </div>
 
         <!-- PREMIUM -->
-        <div class="pricing-card reveal reveal-delay-2">
+        <div class="pricing-card reveal reveal-delay-2" data-tilt>
+          <div class="tilt-glow"></div>
           <div class="pricing-name">Premium</div>
-          <div class="pricing-price"><span class="currency">&euro;</span>1.997</div>
+          <div class="pricing-price"><span class="currency">&euro;</span><span class="price-counter" data-target="1997" data-formatted="1.997">1.997</span></div>
           <div class="pricing-desc">Soluzione completa per chi vuole il massimo: e-commerce avanzato + web app custom.</div>
           <ul class="pricing-features">
             <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Tutto del pacchetto Business</li>
@@ -1041,6 +1351,8 @@
       </div>
     </div>
   </section>
+
+  <div class="section-divider"></div>
 
   <!-- PROCESS -->
   <section class="process" id="processo">
@@ -1072,6 +1384,8 @@
     </div>
   </section>
 
+  <div class="section-divider"></div>
+
   <!-- WHY US -->
   <section class="testimonials">
     <div class="container">
@@ -1095,22 +1409,28 @@
     </div>
   </section>
 
+  <div class="section-divider"></div>
+
   <!-- CTA -->
   <section class="cta-section" id="contatti">
     <div class="container">
       <div class="cta-box">
+        <div class="cta-bg-mesh"></div>
+        <div class="cta-particles" id="ctaParticles"></div>
         <span class="section-label reveal">Pronto a partire?</span>
         <h2 class="section-title reveal reveal-delay-1">Raccontaci il tuo progetto</h2>
         <p class="reveal reveal-delay-2">Scrivici su WhatsApp o mandaci un'email. Rispondiamo in meno di 2 ore. La consulenza iniziale &egrave; gratuita.</p>
-        <div class="reveal reveal-delay-3" style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
-          <a href="https://wa.me/393285515590?text=Ciao%20DevStudio%20AI!%20Sono%20interessato%20a%20creare%20un%20sito%20web%20%2F%20e-commerce%20%2F%20web%20app%20per%20la%20mia%20attivit%C3%A0.%20Vorrei%20sapere%20di%20pi%C3%B9%20sui%20vostri%20pacchetti.%20Grazie!" class="btn-glow" target="_blank">
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
-            Scrivici su WhatsApp
-          </a>
-          <a href="mailto:ninaglia089@gmail.com?subject=Richiesta%20preventivo%20DevStudio%20AI&body=Ciao%20DevStudio%20AI!%0A%0ASono%20interessato%20a%20creare%20un%20sito%20web%20%2F%20e-commerce%20%2F%20web%20app%20per%20la%20mia%20attivit%C3%A0.%0A%0AVorrei%20sapere%20di%20pi%C3%B9%20sui%20vostri%20pacchetti.%0A%0AGrazie!" class="btn-ghost">
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
-            info@devstudio-ai.com
-          </a>
+        <div class="cta-buttons-wrap reveal reveal-delay-3">
+          <div class="cta-btn-glow-wrap">
+            <a href="https://wa.me/393285515590?text=Ciao%20DevStudio%20AI!%20Sono%20interessato%20a%20creare%20un%20sito%20web%20%2F%20e-commerce%20%2F%20web%20app%20per%20la%20mia%20attivit%C3%A0.%20Vorrei%20sapere%20di%20pi%C3%B9%20sui%20vostri%20pacchetti.%20Grazie!" class="btn-glow" target="_blank">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+              Scrivici su WhatsApp
+            </a>
+            <a href="mailto:ninaglia089@gmail.com?subject=Richiesta%20preventivo%20DevStudio%20AI&body=Ciao%20DevStudio%20AI!%0A%0ASono%20interessato%20a%20creare%20un%20sito%20web%20%2F%20e-commerce%20%2F%20web%20app%20per%20la%20mia%20attivit%C3%A0.%0A%0AVorrei%20sapere%20di%20pi%C3%B9%20sui%20vostri%20pacchetti.%0A%0AGrazie!" class="btn-ghost">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+              info@devstudio-ai.com
+            </a>
+          </div>
         </div>
       </div>
     </div>
@@ -1146,23 +1466,226 @@
   </footer>
 
   <script>
-    // Preloader
+    // ═══ PRELOADER ═══
     window.addEventListener('load', () => {
       setTimeout(() => document.getElementById('preloader').classList.add('hidden'), 600);
     });
 
-    // Scroll reveal
+    // ═══ SCROLL REVEAL ═══
     const observer = new IntersectionObserver(
       (entries) => entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } }),
       { threshold: 0.1, rootMargin: '0px 0px -50px 0px' }
     );
     document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
-    // Navbar scroll
+    // ═══ NAVBAR SCROLL ═══
     const navbar = document.getElementById('navbar');
     window.addEventListener('scroll', () => {
       navbar.classList.toggle('scrolled', window.scrollY > 50);
     });
+
+    // ═══ CURSOR FOLLOWER ═══
+    const cursorFollower = document.getElementById('cursorFollower');
+    let cursorX = 0, cursorY = 0, followerX = 0, followerY = 0;
+    let cursorActive = false;
+
+    document.addEventListener('mousemove', (e) => {
+      cursorX = e.clientX;
+      cursorY = e.clientY;
+      if (!cursorActive) {
+        cursorActive = true;
+        cursorFollower.classList.add('active');
+      }
+    });
+
+    document.addEventListener('mouseleave', () => {
+      cursorActive = false;
+      cursorFollower.classList.remove('active');
+    });
+
+    function animateCursor() {
+      followerX += (cursorX - followerX) * 0.08;
+      followerY += (cursorY - followerY) * 0.08;
+      cursorFollower.style.left = followerX + 'px';
+      cursorFollower.style.top = followerY + 'px';
+      requestAnimationFrame(animateCursor);
+    }
+    animateCursor();
+
+    // ═══ DRAGGABLE FLOATING OBJECTS ═══
+    document.querySelectorAll('[data-float]').forEach(shape => {
+      let isDragging = false;
+      let startX, startY, origLeft, origTop;
+
+      shape.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        shape.style.animation = 'none';
+        shape.style.zIndex = '50';
+        startX = e.clientX;
+        startY = e.clientY;
+        const rect = shape.getBoundingClientRect();
+        origLeft = rect.left;
+        origTop = rect.top;
+        e.preventDefault();
+      });
+
+      document.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+        const dx = e.clientX - startX;
+        const dy = e.clientY - startY;
+        shape.style.position = 'fixed';
+        shape.style.left = (origLeft + dx) + 'px';
+        shape.style.top = (origTop + dy) + 'px';
+        shape.style.right = 'auto';
+      });
+
+      document.addEventListener('mouseup', () => {
+        if (isDragging) {
+          isDragging = false;
+          shape.style.zIndex = '2';
+        }
+      });
+
+      // Touch support
+      shape.addEventListener('touchstart', (e) => {
+        isDragging = true;
+        shape.style.animation = 'none';
+        shape.style.zIndex = '50';
+        const touch = e.touches[0];
+        startX = touch.clientX;
+        startY = touch.clientY;
+        const rect = shape.getBoundingClientRect();
+        origLeft = rect.left;
+        origTop = rect.top;
+      }, { passive: true });
+
+      document.addEventListener('touchmove', (e) => {
+        if (!isDragging) return;
+        const touch = e.touches[0];
+        const dx = touch.clientX - startX;
+        const dy = touch.clientY - startY;
+        shape.style.position = 'fixed';
+        shape.style.left = (origLeft + dx) + 'px';
+        shape.style.top = (origTop + dy) + 'px';
+        shape.style.right = 'auto';
+      }, { passive: true });
+
+      document.addEventListener('touchend', () => {
+        if (isDragging) {
+          isDragging = false;
+          shape.style.zIndex = '2';
+        }
+      });
+    });
+
+    // ═══ PRICE COUNTER ANIMATION ═══
+    const priceCounters = document.querySelectorAll('.price-counter');
+    let priceAnimated = false;
+
+    function formatNumber(num) {
+      return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    }
+
+    function easeOutQuart(t) {
+      return 1 - Math.pow(1 - t, 4);
+    }
+
+    function animatePrice(el) {
+      const target = parseInt(el.getAttribute('data-target'));
+      const duration = 1500;
+      const startTime = performance.now();
+
+      function update(currentTime) {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const easedProgress = easeOutQuart(progress);
+        const current = Math.round(easedProgress * target);
+        el.textContent = formatNumber(current);
+        if (progress < 1) {
+          requestAnimationFrame(update);
+        } else {
+          el.textContent = formatNumber(target);
+        }
+      }
+      requestAnimationFrame(update);
+    }
+
+    const pricingObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting && !priceAnimated) {
+          priceAnimated = true;
+          priceCounters.forEach(el => animatePrice(el));
+          pricingObserver.disconnect();
+        }
+      });
+    }, { threshold: 0.3 });
+
+    const pricingSection = document.getElementById('prezzi');
+    if (pricingSection) pricingObserver.observe(pricingSection);
+
+    // ═══ 3D TILT EFFECT FOR PRICING & SERVICE CARDS ═══
+    function initTilt(card, intensity) {
+      const glowEl = card.querySelector('.tilt-glow');
+
+      card.addEventListener('mousemove', (e) => {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const centerX = rect.width / 2;
+        const centerY = rect.height / 2;
+        const rotateX = ((y - centerY) / centerY) * -intensity;
+        const rotateY = ((x - centerX) / centerX) * intensity;
+
+        card.style.transform = `perspective(800px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
+
+        if (glowEl) {
+          const glowX = (x / rect.width) * 100;
+          const glowY = (y / rect.height) * 100;
+          glowEl.style.background = `radial-gradient(circle at ${glowX}% ${glowY}%, rgba(109,92,255,0.15) 0%, transparent 60%)`;
+        }
+      });
+
+      card.addEventListener('mouseleave', () => {
+        card.style.transform = 'perspective(800px) rotateX(0) rotateY(0) scale3d(1, 1, 1)';
+        card.style.transition = 'transform 0.5s ease';
+        if (glowEl) glowEl.style.background = 'transparent';
+        setTimeout(() => { card.style.transition = 'all 0.4s ease'; }, 500);
+      });
+
+      card.addEventListener('mouseenter', () => {
+        card.style.transition = 'none';
+      });
+    }
+
+    // Pricing cards: stronger tilt
+    document.querySelectorAll('[data-tilt]').forEach(card => initTilt(card, 8));
+    // Service cards: subtler tilt
+    document.querySelectorAll('[data-tilt-light]').forEach(card => initTilt(card, 4));
+
+    // ═══ CTA PARTICLES ═══
+    function createCtaParticles() {
+      const container = document.getElementById('ctaParticles');
+      if (!container) return;
+      const count = 25;
+      for (let i = 0; i < count; i++) {
+        const particle = document.createElement('div');
+        particle.classList.add('cta-particle');
+        particle.style.left = Math.random() * 100 + '%';
+        particle.style.animationDuration = (4 + Math.random() * 6) + 's';
+        particle.style.animationDelay = (Math.random() * 5) + 's';
+        particle.style.width = (2 + Math.random() * 3) + 'px';
+        particle.style.height = particle.style.width;
+        const colors = [
+          'rgba(139,125,255,0.5)',
+          'rgba(0,229,255,0.4)',
+          'rgba(109,92,255,0.6)',
+          'rgba(255,255,255,0.3)'
+        ];
+        particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+        container.appendChild(particle);
+      }
+    }
+    createCtaParticles();
   </script>
 
 </body>
