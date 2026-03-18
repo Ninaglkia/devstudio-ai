@@ -1194,11 +1194,6 @@
   <div class="shapes-area" id="shapesArea">
 
     <!-- 3D ROBOT -->
-    <div id="robot3dContainer" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 320px; height: 400px; z-index: 5; cursor: grab;" title="Cliccami per farmi ballare!">
-      <canvas id="robotCanvas" style="width: 100%; height: 100%;"></canvas>
-      <div id="robotClickHint" style="position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%); font-family: var(--font-mono); font-size: 0.55rem; color: var(--accent-light); letter-spacing: 0.1em; text-transform: uppercase; opacity: 0.7; white-space: nowrap; animation: pulse-soft 2s ease-in-out infinite;">Clicca per ballare &bull; Trascina per spostare</div>
-    </div>
-
     <!-- FLOATING 3D SHAPES (contained here) -->
     <div class="float-shape shape-sphere float-anim-a" style="top:10%;left:5%;">
       <div class="shape-inner"></div>
@@ -1275,6 +1270,11 @@
           <span style="font-family: var(--font-heading); font-size: 1.4rem; font-weight: 600; color: #635BFF;"><svg width="26" height="26" viewBox="0 0 24 24" fill="#635BFF"><path d="M13.976 9.15c-2.172-.806-3.356-1.426-3.356-2.409 0-.831.683-1.305 1.901-1.305 2.227 0 4.515.858 6.09 1.631l.89-5.494C18.252.975 15.697 0 12.165 0 9.667 0 7.589.654 6.104 1.872 4.56 3.147 3.757 4.992 3.757 7.218c0 4.039 2.467 5.76 6.476 7.219 2.585.92 3.445 1.574 3.445 2.583 0 .98-.84 1.545-2.354 1.545-1.875 0-4.965-.921-6.99-2.109l-.9 5.555C5.175 22.99 8.385 24 11.714 24c2.641 0 4.843-.624 6.328-1.813 1.664-1.305 2.525-3.236 2.525-5.732 0-4.128-2.524-5.851-6.594-7.305h.003z"/></svg>Stripe</span>
           <span style="font-family: var(--font-heading); font-size: 1.4rem; font-weight: 600; color: #007ACC;"><svg width="26" height="26" viewBox="0 0 24 24" fill="#007ACC"><path d="M23.15 2.587L18.21.21a1.166 1.166 0 0 0-1.329.211L7.187 9.21l-4.814-3.65a.779.779 0 0 0-.996.044L.25 6.687a.778.778 0 0 0 0 1.125L4.648 12 .25 16.188a.778.778 0 0 0 0 1.125l1.127 1.083a.779.779 0 0 0 .996.044l4.814-3.65 9.694 8.789a1.163 1.163 0 0 0 1.329.212l4.94-2.378A1.167 1.167 0 0 0 24 20.28V3.72a1.167 1.167 0 0 0-.85-1.133zM17.77 17.035l-7.953-5.035L17.77 6.965v10.07z"/></svg>VS Code</span>
         </div>
+      </div>
+      <!-- 3D ROBOT centered under logos -->
+      <div id="robot3dContainer" style="width: 320px; height: 400px; margin: 2rem auto 0; cursor: grab; position: relative; z-index: 5;">
+        <canvas id="robotCanvas" style="width: 100%; height: 100%;"></canvas>
+        <div id="robotClickHint" style="position: absolute; bottom: -5px; left: 50%; transform: translateX(-50%); font-family: var(--font-mono); font-size: 0.55rem; color: var(--accent-light); letter-spacing: 0.1em; text-transform: uppercase; opacity: 0.7; white-space: nowrap; animation: pulse-soft 2s ease-in-out infinite;">Clicca per ballare &bull; Trascina per spostare</div>
       </div>
     </section>
 
@@ -1884,7 +1884,7 @@
       let robotDrag = false;
       let robotDragMoved = false;
       let robotStartX = 0, robotStartY = 0;
-      let robotOX = 0, robotOY = 0; // offset from center
+      let robotOX = 0, robotOY = 0;
 
       container.addEventListener('mousedown', (e) => {
         e.preventDefault();
@@ -1893,13 +1893,12 @@
         robotStartX = e.clientX;
         robotStartY = e.clientY;
         container.style.cursor = 'grabbing';
-        container.style.transition = 'none';
       });
 
       document.addEventListener('mousemove', (e) => {
-        // Update mouse rotation for 3D model
-        mouseRY = ((e.clientX / window.innerWidth) - 0.5) * 0.5;
-        mouseRX = ((e.clientY / window.innerHeight) - 0.5) * -0.3;
+        // Subtle mouse tracking for robot head tilt
+        mouseRY = ((e.clientX / window.innerWidth) - 0.5) * 0.25;
+        mouseRX = ((e.clientY / window.innerHeight) - 0.5) * -0.15;
 
         if (robotDrag) {
           const dx = e.clientX - robotStartX;
@@ -1910,14 +1909,13 @@
             robotOY += dy;
             robotStartX = e.clientX;
             robotStartY = e.clientY;
-            container.style.transform = `translate(calc(-50% + ${robotOX}px), calc(-50% + ${robotOY}px))`;
+            container.style.transform = `translate(${robotOX}px, ${robotOY}px)`;
           }
         }
       });
 
       document.addEventListener('mouseup', () => {
         if (robotDrag && !robotDragMoved) {
-          // It was a click, not a drag — toggle dance
           if (model && danceAction) {
             isDancing = !isDancing;
             danceAction.paused = !isDancing;
@@ -1930,7 +1928,6 @@
         container.style.cursor = 'grab';
       });
 
-      // Touch support
       container.addEventListener('touchstart', (e) => {
         robotDrag = true;
         robotDragMoved = false;
@@ -1945,11 +1942,9 @@
         const dy = t.clientY - robotStartY;
         if (Math.abs(dx) > 3 || Math.abs(dy) > 3) robotDragMoved = true;
         if (robotDragMoved) {
-          robotOX += dx;
-          robotOY += dy;
-          robotStartX = t.clientX;
-          robotStartY = t.clientY;
-          container.style.transform = `translate(calc(-50% + ${robotOX}px), calc(-50% + ${robotOY}px))`;
+          robotOX += dx; robotOY += dy;
+          robotStartX = t.clientX; robotStartY = t.clientY;
+          container.style.transform = `translate(${robotOX}px, ${robotOY}px)`;
         }
       }, { passive: true });
 
