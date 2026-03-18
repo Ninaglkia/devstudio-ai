@@ -1865,9 +1865,11 @@
       scene.add(pointLight);
 
       let model = null;
+      let mixer = null;
+      let danceAction = null;
       let isDancing = false;
-      let danceTime = 0;
       let baseY = 0;
+      let modelScale = 1;
       let mouseRotY = 0;
 
       const loader = new GLTFLoader();
@@ -1880,67 +1882,62 @@
         const center = box.getCenter(new THREE.Vector3());
         const size = box.getSize(new THREE.Vector3());
         const maxDim = Math.max(size.x, size.y, size.z);
-        const scale = 2.2 / maxDim;
-        model.scale.set(scale, scale, scale);
-        baseY = -(box.min.y * scale);
+        modelScale = 2.2 / maxDim;
+        model.scale.set(modelScale, modelScale, modelScale);
+        baseY = -(box.min.y * modelScale);
         model.position.y = baseY;
-        model.position.x = -(center.x * scale);
+        model.position.x = -(center.x * modelScale);
+
+        // Setup animation mixer
+        if (gltf.animations.length > 0) {
+          mixer = new THREE.AnimationMixer(model);
+          danceAction = mixer.clipAction(gltf.animations[0]);
+          danceAction.setLoop(THREE.LoopRepeat);
+          // Start paused
+          danceAction.play();
+          danceAction.paused = true;
+        }
 
         scene.add(model);
       }, undefined, (err) => console.warn('Robot load error:', err));
 
       // Click to toggle dance
       container.addEventListener('click', () => {
-        if (!model) return;
+        if (!model || !danceAction) return;
         isDancing = !isDancing;
-        danceTime = 0;
         const hint = document.getElementById('robotClickHint');
-        if (hint) hint.textContent = isDancing ? 'Clicca per fermarmi' : 'Clicca per farmi ballare';
+        if (isDancing) {
+          danceAction.paused = false;
+          danceAction.timeScale = 1;
+          if (hint) hint.textContent = 'Clicca per fermarmi';
+        } else {
+          danceAction.paused = true;
+          if (hint) hint.textContent = 'Clicca per farmi ballare';
+        }
       });
 
-      // Mouse rotation
+      // Mouse rotation — robot faces cursor
       document.addEventListener('mousemove', (e) => {
         mouseRotY = ((e.clientX / window.innerWidth) - 0.5) * 0.6;
       });
 
-      // Render loop with procedural dance animation
+      // Render loop
       const clock = new THREE.Clock();
       function animate() {
         requestAnimationFrame(animate);
         const delta = clock.getDelta();
         const elapsed = clock.getElapsedTime();
 
+        // Update animation mixer
+        if (mixer) mixer.update(delta);
+
         if (model) {
-          // Smooth mouse rotation
+          // Smooth mouse rotation — robot faces cursor
           model.rotation.y += (mouseRotY * Math.PI - model.rotation.y) * 0.05;
 
-          if (isDancing) {
-            danceTime += delta * 4; // dance speed
-            const t = danceTime;
-
-            // Bounce up and down (main dance move)
-            model.position.y = baseY + Math.abs(Math.sin(t * 2.5)) * 0.15;
-
-            // Tilt side to side
-            model.rotation.z = Math.sin(t * 2.5) * 0.12;
-
-            // Lean forward/back
-            model.rotation.x = Math.sin(t * 1.25) * 0.08;
-
-            // Scale pulse (squash and stretch)
-            const squash = 1 + Math.sin(t * 5) * 0.03;
-            const stretch = 1 + Math.cos(t * 5) * 0.03;
-            model.scale.y = model.scale.x * stretch;
-
-            // Spin occasionally (every ~3 seconds)
-            if (Math.sin(t * 0.8) > 0.95) {
-              model.rotation.y += delta * 8;
-            }
-          } else {
-            // Idle: gentle floating
+          // Gentle idle floating when not dancing
+          if (!isDancing) {
             model.position.y = baseY + Math.sin(elapsed * 1.5) * 0.03;
-            model.rotation.z *= 0.95; // ease back to 0
-            model.rotation.x *= 0.95;
           }
         }
 
