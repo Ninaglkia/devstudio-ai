@@ -1186,38 +1186,8 @@
   <!-- TRUST + TECH PARTNERS (with contained floating 3D shapes) -->
   <div class="shapes-area" id="shapesArea">
 
-    <!-- 3D ROBOT -->
-    <!-- FLOATING 3D SHAPES (contained here) -->
-    <div class="float-shape shape-sphere" style="top:10%;left:5%;">
-      <div class="shape-inner"></div>
-    </div>
-    <div class="float-shape shape-cube" style="top:15%;right:8%;">
-      <div class="shape-inner">
-        <div class="cube-face front"></div>
-        <div class="cube-face back"></div>
-        <div class="cube-face right"></div>
-        <div class="cube-face left"></div>
-        <div class="cube-face top"></div>
-        <div class="cube-face bottom"></div>
-      </div>
-    </div>
-    <div class="float-shape shape-torus" style="top:60%;left:3%;">
-      <div class="shape-inner"></div>
-    </div>
-    <div class="float-shape shape-diamond" style="top:55%;right:6%;">
-      <div class="shape-inner"></div>
-    </div>
-    <div class="float-shape shape-pyramid" style="top:25%;right:20%;">
-      <div class="shape-inner">
-        <div class="pyramid-face pf1"></div>
-        <div class="pyramid-face pf2"></div>
-        <div class="pyramid-face pf3"></div>
-        <div class="pyramid-face pf4"></div>
-      </div>
-    </div>
-    <div class="float-shape shape-hexagon" style="top:70%;left:12%;">
-      <div class="shape-inner"></div>
-    </div>
+    <!-- 3D SHAPES (Three.js canvas) -->
+    <canvas id="shapesCanvas" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:1;"></canvas>
 
     <!-- TRUST -->
     <div class="trust">
@@ -1601,115 +1571,7 @@
       navbar.classList.toggle('scrolled', window.scrollY > 50);
     }, { passive: true });
 
-    // ═══ SPLINE-STYLE 3D SHAPES: DRAG + CURSOR ROTATION ═══
-    (function() {
-      const floatShapes = document.querySelectorAll('.float-shape');
-      if (!floatShapes.length) return;
-
-      let mouseX = window.innerWidth / 2;
-      let mouseY = window.innerHeight / 2;
-      let dragTarget = null;
-      let dragStartMouseX = 0, dragStartMouseY = 0;
-      let dragStartShapeX = 0, dragStartShapeY = 0;
-
-      // Init each shape with bob parameters
-      const bobSpeeds = [1.0, 0.85, 1.15, 0.75, 0.95, 1.1];
-      const bobAmps = [18, 14, 20, 12, 16, 22];
-      floatShapes.forEach((shape, i) => {
-        shape._ox = 0; shape._oy = 0;
-        shape._mult = 0.85 + (i * 0.18);
-        shape._bobSpeed = bobSpeeds[i % 6];
-        shape._bobAmp = bobAmps[i % 6];
-      });
-
-      function getRotation(cx, cy) {
-        const rx = ((cy - window.innerHeight / 2) / (window.innerHeight / 2)) * -60;
-        const ry = ((cx - window.innerWidth / 2) / (window.innerWidth / 2)) * 75;
-        return { rx, ry };
-      }
-
-      function updateShapes() {
-        const { rx, ry } = getRotation(mouseX, mouseY);
-        const t = performance.now() / 1000;
-        floatShapes.forEach(shape => {
-          if (shape === dragTarget) return;
-          const m = shape._mult;
-          const bob = Math.sin(t * shape._bobSpeed) * shape._bobAmp;
-          shape.style.transform = `translate(${shape._ox}px, ${shape._oy + bob}px) rotateX(${rx * m}deg) rotateY(${ry * m}deg)`;
-        });
-        requestAnimationFrame(updateShapes);
-      }
-      requestAnimationFrame(updateShapes);
-
-      // Mouse rotation tracking
-      document.addEventListener('mousemove', (e) => {
-        mouseX = e.clientX;
-        mouseY = e.clientY;
-
-        // If dragging, move the shape
-        if (dragTarget) {
-          dragTarget._ox = dragStartShapeX + (e.clientX - dragStartMouseX);
-          dragTarget._oy = dragStartShapeY + (e.clientY - dragStartMouseY);
-          const { rx, ry } = getRotation(e.clientX, e.clientY);
-          dragTarget.style.transform = `translate(${dragTarget._ox}px, ${dragTarget._oy}px) rotateX(${rx}deg) rotateY(${ry}deg) scale(1.15)`;
-          return;
-        }
-      });
-
-      // Drag start — attach to each shape directly
-      floatShapes.forEach(shape => {
-        shape.addEventListener('mousedown', (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          dragTarget = shape;
-          dragTarget.classList.add('dragging');
-          dragTarget.style.transition = 'none';
-          dragStartMouseX = e.clientX;
-          dragStartMouseY = e.clientY;
-          dragStartShapeX = shape._ox;
-          dragStartShapeY = shape._oy;
-        });
-
-        shape.addEventListener('touchstart', (e) => {
-          e.preventDefault();
-          dragTarget = shape;
-          dragTarget.classList.add('dragging');
-          dragTarget.style.transition = 'none';
-          dragStartMouseX = e.touches[0].clientX;
-          dragStartMouseY = e.touches[0].clientY;
-          dragStartShapeX = shape._ox;
-          dragStartShapeY = shape._oy;
-        }, { passive: false });
-      });
-
-      document.addEventListener('touchmove', (e) => {
-        if (!dragTarget) return;
-        e.preventDefault();
-        const t = e.touches[0];
-        dragTarget._ox = dragStartShapeX + (t.clientX - dragStartMouseX);
-        dragTarget._oy = dragStartShapeY + (t.clientY - dragStartMouseY);
-        const { rx, ry } = getRotation(t.clientX, t.clientY);
-        dragTarget.style.transform = `translate(${dragTarget._ox}px, ${dragTarget._oy}px) rotateX(${rx}deg) rotateY(${ry}deg) scale(1.15)`;
-      }, { passive: false });
-
-      function endDrag() {
-        if (!dragTarget) return;
-        dragTarget.classList.remove('dragging');
-        dragTarget.style.transition = 'transform 0.15s ease-out, filter 0.3s';
-        dragTarget = null;
-        updateShapes();
-      }
-
-      document.addEventListener('mouseup', endDrag);
-      document.addEventListener('touchend', endDrag);
-
-      document.addEventListener('mouseleave', () => {
-        endDrag();
-        floatShapes.forEach(shape => {
-          shape.style.transform = `translate(${shape._ox}px, ${shape._oy}px) rotateX(0deg) rotateY(0deg)`;
-        });
-      });
-    })();
+    // (CSS shapes JS removed — replaced by Three.js shapes)
 
     // ═══ ROBOT VIDEO AUDIO ON SCROLL ═══
     const robotVideo = document.getElementById('robotVideo');
@@ -2019,6 +1881,135 @@
         renderer.render(scene, camera);
       }
       animate();
+    }
+
+    // ═══ 3D FLOATING SHAPES (Three.js) ═══
+    const shapesCanvas = document.getElementById('shapesCanvas');
+    const shapesArea = document.getElementById('shapesArea');
+    if (shapesCanvas && shapesArea) {
+      const sW = shapesArea.offsetWidth;
+      const sH = shapesArea.offsetHeight;
+      const sScene = new THREE.Scene();
+      const sCamera = new THREE.PerspectiveCamera(50, sW / sH, 0.1, 100);
+      sCamera.position.z = 12;
+
+      const sRenderer = new THREE.WebGLRenderer({ canvas: shapesCanvas, alpha: true, antialias: true });
+      sRenderer.setSize(sW, sH);
+      sRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      sRenderer.outputColorSpace = THREE.SRGBColorSpace;
+
+      // Lighting
+      sScene.add(new THREE.AmbientLight(0x6d5cff, 0.4));
+      const sKey = new THREE.DirectionalLight(0xffffff, 1.5);
+      sKey.position.set(3, 5, 5);
+      sScene.add(sKey);
+      const sRim = new THREE.PointLight(0x00e5ff, 1.0, 20);
+      sRim.position.set(-5, 2, 3);
+      sScene.add(sRim);
+
+      // Glass-like material
+      function glassMat(color, emissive) {
+        return new THREE.MeshPhysicalMaterial({
+          color: color,
+          emissive: emissive || 0x000000,
+          emissiveIntensity: 0.3,
+          metalness: 0.1,
+          roughness: 0.05,
+          transmission: 0.6,
+          thickness: 1.5,
+          transparent: true,
+          opacity: 0.85,
+          ior: 1.5,
+          envMapIntensity: 1.0,
+        });
+      }
+
+      // Sphere — top left
+      const sphere = new THREE.Mesh(
+        new THREE.SphereGeometry(0.8, 32, 32),
+        glassMat(0x8b7dff, 0x6d5cff)
+      );
+      sphere.position.set(-5, 3.5, 0);
+      sScene.add(sphere);
+
+      // Cube — top right
+      const cube = new THREE.Mesh(
+        new THREE.BoxGeometry(1, 1, 1),
+        glassMat(0x6d5cff, 0x00e5ff)
+      );
+      cube.position.set(5.5, 3, 0);
+      sScene.add(cube);
+
+      // Torus — mid left
+      const torus = new THREE.Mesh(
+        new THREE.TorusGeometry(0.6, 0.2, 16, 32),
+        glassMat(0x6d5cff, 0x6d5cff)
+      );
+      torus.position.set(-5.5, -0.5, 0);
+      sScene.add(torus);
+
+      // Diamond (Octahedron) — mid right
+      const diamond = new THREE.Mesh(
+        new THREE.OctahedronGeometry(0.7),
+        glassMat(0xa78bfa, 0x00e5ff)
+      );
+      diamond.position.set(5.5, -1, 0);
+      sScene.add(diamond);
+
+      // Pyramid (Cone) — upper right
+      const pyramid = new THREE.Mesh(
+        new THREE.ConeGeometry(0.6, 1.2, 4),
+        glassMat(0x6d5cff, 0xa78bfa)
+      );
+      pyramid.position.set(3, 2, 0);
+      sScene.add(pyramid);
+
+      // Hexagon (Cylinder with 6 sides) — bottom left
+      const hexagon = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.65, 0.65, 0.3, 6),
+        glassMat(0x00e5ff, 0x6d5cff)
+      );
+      hexagon.position.set(-4, -3, 0);
+      sScene.add(hexagon);
+
+      const shapeMeshes = [sphere, cube, torus, diamond, pyramid, hexagon];
+      const bobSpeeds = [1.0, 0.85, 1.15, 0.75, 0.95, 1.1];
+      const bobAmps = [0.3, 0.25, 0.35, 0.2, 0.28, 0.32];
+
+      let sMX = 0, sMY = 0;
+      document.addEventListener('mousemove', (e) => {
+        sMX = (e.clientX / window.innerWidth - 0.5) * 2;
+        sMY = (e.clientY / window.innerHeight - 0.5) * 2;
+      });
+
+      const sClock = new THREE.Clock();
+      function animateShapes() {
+        requestAnimationFrame(animateShapes);
+        const t = sClock.getElapsedTime();
+
+        shapeMeshes.forEach((mesh, i) => {
+          // Bob
+          mesh.position.y += Math.sin(t * bobSpeeds[i]) * 0.002;
+          // Rotate
+          mesh.rotation.x += 0.005 + i * 0.001;
+          mesh.rotation.y += 0.008 + i * 0.002;
+          // Mouse follow (subtle)
+          mesh.rotation.x += sMY * 0.002;
+          mesh.rotation.y += sMX * 0.002;
+        });
+
+        sRenderer.render(sScene, sCamera);
+      }
+      animateShapes();
+
+      // Resize
+      window.addEventListener('resize', () => {
+        const nW = shapesArea.offsetWidth;
+        const nH = shapesArea.offsetHeight;
+        sCamera.aspect = nW / nH;
+        sCamera.updateProjectionMatrix();
+        sRenderer.setSize(nW, nH);
+      });
     }
   </script>
 
