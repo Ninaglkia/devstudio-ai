@@ -1165,7 +1165,7 @@
           <span class="dot"></span>
           Disponibile per nuovi progetti
         </div>
-        <div id="heroText3dContainer" style="width: 100%; height: 220px; position: relative; margin-bottom: 1.5rem;">
+        <div id="heroText3dContainer" style="width: 100%; height: 350px; position: relative; margin-bottom: 1.5rem;">
           <canvas id="heroTextCanvas" style="width: 100%; height: 100%;"></canvas>
         </div>
         <h1 class="hero-title" style="position:absolute;left:-9999px;" aria-hidden="false">Il tuo business merita un sito che spacca.</h1>
@@ -1892,7 +1892,8 @@
       const hH = heroContainer.offsetHeight;
       const hScene = new THREE.Scene();
       const hCamera = new THREE.PerspectiveCamera(40, hW / hH, 0.1, 100);
-      hCamera.position.z = 8;
+      hCamera.position.set(0, -0.3, 6);
+      hCamera.lookAt(0, -0.3, 0);
 
       const hRenderer = new THREE.WebGLRenderer({ canvas: heroCanvas, alpha: true, antialias: true });
       hRenderer.setSize(hW, hH);
@@ -1929,7 +1930,7 @@
         const center = box.getCenter(new THREE.Vector3());
         const size = box.getSize(new THREE.Vector3());
         const maxDim = Math.max(size.x, size.y, size.z);
-        const s = 5.5 / maxDim;
+        const s = 7.0 / maxDim;
         heroTextModel.scale.setScalar(s);
         heroTextModel.position.x = -(center.x * s);
         heroTextModel.position.y = -(center.y * s);
@@ -1947,7 +1948,7 @@
         heroAnimStart = performance.now();
       });
 
-      const targetScale = 5.5;
+      const targetScale = 7.0;
       const hClock = new THREE.Clock();
       function animateHeroText() {
         requestAnimationFrame(animateHeroText);
