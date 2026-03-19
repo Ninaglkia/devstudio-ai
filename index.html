@@ -5,6 +5,35 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>DevStudio AI — Creiamo il tuo sito web perfetto</title>
   <meta name="description" content="DevStudio AI — Siti web moderni, veloci e su misura per il tuo business. Landing page, e-commerce e web app.">
+  <meta name="theme-color" content="#050505">
+  <link rel="canonical" href="https://devstudio-ai.vercel.app">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="DevStudio AI — Creiamo il tuo sito web perfetto">
+  <meta property="og:description" content="Siti web moderni potenziati dall'AI. Progettiamo esperienze digitali che convertono visitatori in clienti.">
+  <meta property="og:url" content="https://devstudio-ai.vercel.app">
+  <meta property="og:image" content="https://devstudio-ai.vercel.app/og-image.jpg">
+  <meta property="og:locale" content="it_IT">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="DevStudio AI — Creiamo il tuo sito web perfetto">
+  <meta name="twitter:description" content="Siti web moderni potenziati dall'AI. Dal design al lancio in 7 giorni.">
+  <meta name="twitter:image" content="https://devstudio-ai.vercel.app/og-image.jpg">
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "DevStudio AI",
+    "url": "https://devstudio-ai.vercel.app",
+    "description": "Siti web moderni potenziati dall'AI. Landing page, e-commerce e web app su misura.",
+    "email": "info@devstudio-ai.com",
+    "sameAs": [],
+    "makesOffer": [
+      {"@type": "Offer", "name": "Starter", "price": "497", "priceCurrency": "EUR", "description": "Landing page o sito fino a 5 pagine"},
+      {"@type": "Offer", "name": "Business", "price": "997", "priceCurrency": "EUR", "description": "Sito completo con e-commerce fino a 50 prodotti"},
+      {"@type": "Offer", "name": "Premium", "price": "1997", "priceCurrency": "EUR", "description": "E-commerce avanzato e web app custom"}
+    ]
+  }
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -102,6 +131,8 @@
       cursor: grab;
       user-select: none;
       -webkit-user-select: none;
+      will-change: transform;
+      contain: layout style paint;
     }
     .float-shape:hover { filter: brightness(1.4) blur(0px); transform: scale(1.1); }
     .float-shape.dragging { cursor: grabbing; z-index: 10; filter: brightness(1.5) blur(0px) drop-shadow(0 0 20px rgba(109,92,255,0.6)); transition: none; }
@@ -202,11 +233,6 @@
       filter: drop-shadow(0 0 25px rgba(109,92,255,0.5)) drop-shadow(0 0 50px rgba(0,229,255,0.2));
     }
 
-    /* Float/bob animations */
-    /* keyframes bobA-F removed — JS handles bobbing + drag */
-
-    /* Bob animations removed — handled by JS for drag compatibility */
-
     /* ═══ SECTION DIVIDER LINES ═══ */
     .section-divider {
       position: relative;
@@ -245,7 +271,39 @@
     @media (prefers-reduced-motion: reduce) {
       .reveal { opacity: 1; transform: none; transition: none; }
       .float-shape { display: none; }
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
     }
+
+    /* Focus styles for keyboard navigation */
+    :focus-visible {
+      outline: 2px solid var(--accent-light);
+      outline-offset: 2px;
+    }
+    a:focus-visible, button:focus-visible {
+      outline: 2px solid var(--accent-light);
+      outline-offset: 2px;
+    }
+
+    /* Skip to content */
+    .skip-link {
+      position: absolute;
+      top: -100%;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 0.75rem 1.5rem;
+      background: var(--accent);
+      color: white;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      border-radius: 0 0 8px 8px;
+      z-index: 10001;
+      transition: top 0.2s;
+    }
+    .skip-link:focus { top: 0; }
 
     /* ═══ PRELOADER ═══ */
     #preloader {
@@ -328,8 +386,42 @@
       background: var(--accent-light);
       box-shadow: 0 0 30px var(--accent-glow);
     }
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      padding: 4px;
+      border: none;
+      background: none;
+    }
+    .hamburger span {
+      width: 22px; height: 2px;
+      background: var(--text-primary);
+      transition: all 0.3s ease;
+      border-radius: 1px;
+    }
+    .hamburger.active span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
+    .hamburger.active span:nth-child(2) { opacity: 0; }
+    .hamburger.active span:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); }
     @media (max-width: 768px) {
-      .navbar-links { display: none; }
+      .hamburger { display: flex; }
+      .navbar-links {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0; right: 0;
+        background: rgba(5, 5, 5, 0.95);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border-bottom: 1px solid var(--glass-border);
+        flex-direction: column;
+        padding: 1.5rem;
+        gap: 1rem;
+      }
+      .navbar-links.open { display: flex; }
+      .navbar-links a { font-size: 1rem; padding: 0.5rem 0; }
+      .navbar-cta { display: none; }
     }
 
     /* ═══ HERO ═══ */
@@ -377,50 +469,7 @@
       text-align: center;
     }
 
-    /* Robot image card */
-    .robot-card {
-      position: relative;
-      border-radius: var(--radius-lg);
-      overflow: hidden;
-      border: 1px solid var(--glass-border);
-      box-shadow: 0 30px 100px rgba(109, 92, 255, 0.15), 0 0 0 1px rgba(109, 92, 255, 0.05);
-    }
-    .robot-card img {
-      width: 100%; height: auto;
-      display: block;
-    }
-    .robot-card-glow {
-      position: absolute; inset: 0;
-      background: linear-gradient(180deg, transparent 60%, rgba(109, 92, 255, 0.15) 100%);
-      pointer-events: none;
-    }
-    .robot-card-label {
-      position: absolute;
-      bottom: 1rem; left: 1rem; right: 1rem;
-      background: rgba(5, 5, 5, 0.8);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border: 1px solid var(--glass-border);
-      border-radius: 12px;
-      padding: 0.75rem 1rem;
-      display: flex; align-items: center; gap: 0.6rem;
-    }
-    .robot-status-dot {
-      width: 8px; height: 8px;
-      background: var(--accent-green);
-      border-radius: 50%;
-      animation: pulse-dot 2s ease-in-out infinite;
-      flex-shrink: 0;
-    }
-    .robot-card-label span {
-      font-family: var(--font-mono);
-      font-size: 0.65rem;
-      color: var(--text-secondary);
-      letter-spacing: 0.03em;
-    }
-    .robot-card-label strong {
-      color: var(--accent-light);
-    }
+    /* (robot-card CSS removed — unused) */
 
     /* Scroll indicator */
     .hero-scroll {
@@ -538,53 +587,7 @@
       color: var(--accent-light);
     }
 
-    /* Hero terminal */
-    .hero-visual { position: relative; }
-    .terminal {
-      background: var(--bg-elevated);
-      border: 1px solid var(--glass-border);
-      border-radius: var(--radius-lg);
-      overflow: hidden;
-      box-shadow: 0 20px 80px rgba(0,0,0,0.5);
-    }
-    .terminal-header {
-      display: flex; align-items: center; gap: 0.5rem;
-      padding: 0.85rem 1.2rem;
-      background: rgba(255,255,255,0.02);
-      border-bottom: 1px solid var(--glass-border);
-    }
-    .terminal-dot {
-      width: 10px; height: 10px; border-radius: 50%;
-    }
-    .terminal-dot.red { background: #ff5f57; }
-    .terminal-dot.yellow { background: #febc2e; }
-    .terminal-dot.green { background: #28c840; }
-    .terminal-title {
-      flex: 1; text-align: center;
-      font-family: var(--font-mono);
-      font-size: 0.65rem;
-      color: var(--text-muted);
-    }
-    .terminal-body {
-      padding: 1.5rem;
-      font-family: var(--font-mono);
-      font-size: 0.75rem;
-      line-height: 2;
-      color: var(--text-secondary);
-    }
-    .terminal-body .prompt { color: var(--accent-green); }
-    .terminal-body .cmd { color: var(--text-primary); }
-    .terminal-body .comment { color: var(--text-ghost); }
-    .terminal-body .output { color: var(--accent-cyan); }
-    .terminal-body .accent { color: var(--accent-light); }
-    .cursor-blink {
-      display: inline-block; width: 8px; height: 14px;
-      background: var(--accent);
-      animation: blink 1s step-end infinite;
-      vertical-align: middle;
-      margin-left: 2px;
-    }
-    @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0; } }
+    /* (terminal/hero-visual CSS removed — unused) */
 
     /* ═══ TRUST LOGOS ═══ */
     .trust {
@@ -854,47 +857,7 @@
       line-height: 1.6;
     }
 
-    /* ═══ PORTFOLIO ═══ */
-    .portfolio { padding: clamp(2.5rem, 6vh, 5rem) 0; }
-    .portfolio-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 1.25rem;
-    }
-    @media (max-width: 768px) { .portfolio-grid { grid-template-columns: 1fr; } }
-
-    .portfolio-card {
-      position: relative;
-      border-radius: var(--radius-lg);
-      overflow: hidden;
-      aspect-ratio: 16/10;
-      cursor: pointer;
-      border: 1px solid var(--glass-border);
-    }
-    .portfolio-card img {
-      width: 100%; height: 100%;
-      object-fit: cover;
-      transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-    .portfolio-card:hover img { transform: scale(1.05); }
-    .portfolio-card-overlay {
-      position: absolute; inset: 0;
-      background: linear-gradient(180deg, transparent 40%, rgba(0,0,0,0.8) 100%);
-      display: flex; flex-direction: column;
-      justify-content: flex-end;
-      padding: 1.5rem;
-    }
-    .portfolio-card-overlay h3 {
-      font-family: var(--font-heading);
-      font-size: 1.15rem; font-weight: 600;
-    }
-    .portfolio-card-overlay span {
-      font-family: var(--font-mono);
-      font-size: 0.65rem;
-      color: var(--accent-light);
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-    }
+    /* (portfolio CSS removed — unused) */
 
     /* ═══ TESTIMONIALS ═══ */
     .testimonials { padding: clamp(2.5rem, 6vh, 5rem) 0; }
@@ -911,39 +874,7 @@
       border-radius: var(--radius-lg);
       padding: 2rem;
     }
-    .testimonial-stars {
-      color: #fbbf24;
-      font-size: 0.85rem;
-      margin-bottom: 1rem;
-      letter-spacing: 2px;
-    }
-    .testimonial-card blockquote {
-      font-size: 0.88rem;
-      color: var(--text-secondary);
-      line-height: 1.7;
-      margin-bottom: 1.5rem;
-      font-style: italic;
-    }
-    .testimonial-author {
-      display: flex; align-items: center; gap: 0.75rem;
-    }
-    .testimonial-avatar {
-      width: 36px; height: 36px;
-      border-radius: 50%;
-      background: var(--accent-subtle);
-      display: flex; align-items: center; justify-content: center;
-      font-family: var(--font-heading);
-      font-size: 0.75rem; font-weight: 600;
-      color: var(--accent-light);
-    }
-    .testimonial-author-info strong {
-      display: block;
-      font-size: 0.82rem; font-weight: 600;
-    }
-    .testimonial-author-info span {
-      font-size: 0.7rem;
-      color: var(--text-muted);
-    }
+    /* (testimonial-stars/avatar/author CSS removed — unused) */
 
     /* ═══ CTA SECTION - WOW REDESIGN ═══ */
     .cta-section {
@@ -1182,24 +1113,33 @@
 </head>
 <body>
 
+  <a href="#main-content" class="skip-link">Vai al contenuto</a>
+
   <!-- PRELOADER -->
-  <div id="preloader">
+  <div id="preloader" role="status" aria-live="polite">
     <div class="logo-pre">DevStudio AI</div>
     <div class="bar"></div>
   </div>
 
   <!-- NAVBAR -->
+  <header>
   <nav class="navbar" id="navbar">
     <div class="container">
       <a href="#" class="navbar-logo">DevStudio <span class="ai-badge">AI</span></a>
-      <ul class="navbar-links">
+      <ul class="navbar-links" id="navLinks">
         <li><a href="#servizi">Servizi</a></li>
         <li><a href="#prezzi">Prezzi</a></li>
         <li><a href="#processo">Come Lavoriamo</a></li>
       </ul>
+      <button class="hamburger" id="hamburger" aria-label="Apri menu di navigazione" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
       <a href="#contatti" class="navbar-cta">Richiedi Preventivo</a>
     </div>
   </nav>
+  </header>
+
+  <main id="main-content">
 
   <!-- HERO -->
   <section class="hero">
@@ -1228,7 +1168,6 @@
           <a href="#processo" class="btn-ghost">Come lavoriamo</a>
         </div>
       </div>
-      <div class="hero-visual reveal reveal-delay-2" style="display: none;"></div>
     </div>
     <div class="hero-scroll">
       <span>Scroll</span>
@@ -1241,10 +1180,10 @@
 
     <!-- 3D ROBOT -->
     <!-- FLOATING 3D SHAPES (contained here) -->
-    <div class="float-shape shape-sphere float-anim-a" style="top:10%;left:5%;">
+    <div class="float-shape shape-sphere" style="top:10%;left:5%;">
       <div class="shape-inner"></div>
     </div>
-    <div class="float-shape shape-cube float-anim-b" style="top:15%;right:8%;">
+    <div class="float-shape shape-cube" style="top:15%;right:8%;">
       <div class="shape-inner">
         <div class="cube-face front"></div>
         <div class="cube-face back"></div>
@@ -1254,13 +1193,13 @@
         <div class="cube-face bottom"></div>
       </div>
     </div>
-    <div class="float-shape shape-torus float-anim-c" style="top:60%;left:3%;">
+    <div class="float-shape shape-torus" style="top:60%;left:3%;">
       <div class="shape-inner"></div>
     </div>
-    <div class="float-shape shape-diamond float-anim-d" style="top:55%;right:6%;">
+    <div class="float-shape shape-diamond" style="top:55%;right:6%;">
       <div class="shape-inner"></div>
     </div>
-    <div class="float-shape shape-pyramid float-anim-e" style="top:25%;right:20%;">
+    <div class="float-shape shape-pyramid" style="top:25%;right:20%;">
       <div class="shape-inner">
         <div class="pyramid-face pf1"></div>
         <div class="pyramid-face pf2"></div>
@@ -1268,7 +1207,7 @@
         <div class="pyramid-face pf4"></div>
       </div>
     </div>
-    <div class="float-shape shape-hexagon float-anim-f" style="top:70%;left:12%;">
+    <div class="float-shape shape-hexagon" style="top:70%;left:12%;">
       <div class="shape-inner"></div>
     </div>
 
@@ -1345,7 +1284,7 @@
       </div>
       <!-- 3D ROBOT centered under logos -->
       <div id="robot3dContainer" style="width: 320px; height: 400px; margin: 1rem auto 0; cursor: grab; position: relative; z-index: 5;">
-        <canvas id="robotCanvas" style="width: 100%; height: 100%;"></canvas>
+        <canvas id="robotCanvas" style="width: 100%; height: 100%;" aria-label="Robot 3D interattivo" role="img"></canvas>
         <div id="robotClickHint" style="position: absolute; bottom: -5px; left: 50%; transform: translateX(-50%); font-family: var(--font-mono); font-size: 0.55rem; color: var(--accent-light); letter-spacing: 0.1em; text-transform: uppercase; opacity: 0.7; white-space: nowrap; animation: pulse-soft 2s ease-in-out infinite;">Clicca per ballare &bull; Trascina per spostare</div>
         <script>if ('ontouchstart' in window) document.getElementById('robotClickHint').textContent = 'Clicca per ballare';</script>
       </div>
@@ -1394,7 +1333,7 @@
 
   <!-- ROBOT VIDEO SHOWCASE -->
   <section id="robotVideoSection" style="position: relative; overflow: hidden; padding: 0; min-height: 85vh;">
-    <video id="robotVideo" autoplay muted loop playsinline style="width: 100%; height: 85vh; object-fit: cover; display: block; filter: brightness(0.85);">
+    <video id="robotVideo" muted loop playsinline preload="none" style="width: 100%; height: 85vh; object-fit: cover; display: block; filter: brightness(0.85);">
       <source src="robot-video.mp4" type="video/mp4">
     </video>
     <div style="position: absolute; inset: 0; background: linear-gradient(180deg, var(--bg-primary) 0%, transparent 15%, transparent 70%, rgba(5,5,5,0.9) 100%); display: flex; align-items: flex-end; padding: 3rem;">
@@ -1476,7 +1415,7 @@
             <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Setup dominio + hosting</li>
             <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Consegna in 7 giorni</li>
           </ul>
-          <a href="https://wa.me/393285515590?text=Ciao!%20Sono%20interessato%20al%20pacchetto%20STARTER%20(%E2%82%AC497)%20per%20una%20landing%20page%20%2F%20sito%20vetrina.%20Possiamo%20parlarne%3F" target="_blank" class="pricing-btn pricing-btn-outline">Inizia ora</a>
+          <a href="https://wa.me/393285515590?text=Ciao!%20Sono%20interessato%20al%20pacchetto%20STARTER%20(%E2%82%AC497)%20per%20una%20landing%20page%20%2F%20sito%20vetrina.%20Possiamo%20parlarne%3F" target="_blank" rel="noopener noreferrer" class="pricing-btn pricing-btn-outline">Inizia ora</a>
         </div>
 
         <!-- BUSINESS -->
@@ -1494,7 +1433,7 @@
             <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Form contatti + WhatsApp</li>
             <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Consegna in 14 giorni</li>
           </ul>
-          <a href="https://wa.me/393285515590?text=Ciao!%20Sono%20interessato%20al%20pacchetto%20BUSINESS%20(%E2%82%AC997)%20con%20e-commerce%20e%20sito%20completo.%20Possiamo%20parlarne%3F" target="_blank" class="pricing-btn pricing-btn-fill">Inizia ora</a>
+          <a href="https://wa.me/393285515590?text=Ciao!%20Sono%20interessato%20al%20pacchetto%20BUSINESS%20(%E2%82%AC997)%20con%20e-commerce%20e%20sito%20completo.%20Possiamo%20parlarne%3F" target="_blank" rel="noopener noreferrer" class="pricing-btn pricing-btn-fill">Inizia ora</a>
         </div>
 
         <!-- PREMIUM -->
@@ -1511,7 +1450,7 @@
             <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Supporto 30 giorni post-lancio</li>
             <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Consegna in 21 giorni</li>
           </ul>
-          <a href="https://wa.me/393285515590?text=Ciao!%20Sono%20interessato%20al%20pacchetto%20PREMIUM%20(%E2%82%AC1.997)%20con%20e-commerce%20avanzato%20e%20web%20app%20custom.%20Possiamo%20parlarne%3F" target="_blank" class="pricing-btn pricing-btn-outline">Inizia ora</a>
+          <a href="https://wa.me/393285515590?text=Ciao!%20Sono%20interessato%20al%20pacchetto%20PREMIUM%20(%E2%82%AC1.997)%20con%20e-commerce%20avanzato%20e%20web%20app%20custom.%20Possiamo%20parlarne%3F" target="_blank" rel="noopener noreferrer" class="pricing-btn pricing-btn-outline">Inizia ora</a>
         </div>
 
       </div>
@@ -1569,11 +1508,11 @@
         <p class="reveal reveal-delay-2">Scrivici su WhatsApp o mandaci un'email. Rispondiamo in meno di 2 ore. La consulenza iniziale &egrave; gratuita.</p>
         <div class="cta-buttons-wrap reveal reveal-delay-3">
           <div class="cta-btn-glow-wrap">
-            <a href="https://wa.me/393285515590?text=Ciao%20DevStudio%20AI!%20Sono%20interessato%20a%20creare%20un%20sito%20web%20%2F%20e-commerce%20%2F%20web%20app%20per%20la%20mia%20attivit%C3%A0.%20Vorrei%20sapere%20di%20pi%C3%B9%20sui%20vostri%20pacchetti.%20Grazie!" class="btn-glow" target="_blank">
+            <a href="https://wa.me/393285515590?text=Ciao%20DevStudio%20AI!%20Sono%20interessato%20a%20creare%20un%20sito%20web%20%2F%20e-commerce%20%2F%20web%20app%20per%20la%20mia%20attivit%C3%A0.%20Vorrei%20sapere%20di%20pi%C3%B9%20sui%20vostri%20pacchetti.%20Grazie!" class="btn-glow" target="_blank" rel="noopener noreferrer">
               <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
               Scrivici su WhatsApp
             </a>
-            <a href="mailto:ninaglia089@gmail.com?subject=Richiesta%20preventivo%20DevStudio%20AI&body=Ciao%20DevStudio%20AI!%0A%0ASono%20interessato%20a%20creare%20un%20sito%20web%20%2F%20e-commerce%20%2F%20web%20app%20per%20la%20mia%20attivit%C3%A0.%0A%0AVorrei%20sapere%20di%20pi%C3%B9%20sui%20vostri%20pacchetti.%0A%0AGrazie!" class="btn-ghost">
+            <a href="mailto:info@devstudio-ai.com?subject=Richiesta%20preventivo%20DevStudio%20AI&body=Ciao%20DevStudio%20AI!%0A%0ASono%20interessato%20a%20creare%20un%20sito%20web%20%2F%20e-commerce%20%2F%20web%20app%20per%20la%20mia%20attivit%C3%A0.%0A%0AVorrei%20sapere%20di%20pi%C3%B9%20sui%20vostri%20pacchetti.%0A%0AGrazie!" class="btn-ghost">
               <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
               info@devstudio-ai.com
             </a>
@@ -1582,6 +1521,8 @@
       </div>
     </div>
   </section>
+
+  </main>
 
   <!-- FOOTER -->
   <footer class="footer">
@@ -1614,23 +1555,30 @@
 
   <script>
     // ═══ PRELOADER ═══
-    // Always start at top on page load/refresh
     if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
-    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
-    document.documentElement.scrollTop = 0;
-    document.body.scrollTop = 0;
-
-    window.addEventListener('beforeunload', () => {
-      window.scrollTo(0, 0);
-    });
 
     window.addEventListener('load', () => {
       window.scrollTo(0, 0);
-      setTimeout(() => {
-        window.scrollTo(0, 0);
-        document.getElementById('preloader').classList.add('hidden');
-      }, 600);
+      document.getElementById('preloader').classList.add('hidden');
     });
+
+    // ═══ HAMBURGER MENU ═══
+    const hamburger = document.getElementById('hamburger');
+    const navLinks = document.getElementById('navLinks');
+    if (hamburger && navLinks) {
+      hamburger.addEventListener('click', () => {
+        hamburger.classList.toggle('active');
+        navLinks.classList.toggle('open');
+        hamburger.setAttribute('aria-expanded', navLinks.classList.contains('open'));
+      });
+      navLinks.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => {
+          hamburger.classList.remove('active');
+          navLinks.classList.remove('open');
+          hamburger.setAttribute('aria-expanded', 'false');
+        });
+      });
+    }
 
     // ═══ SCROLL REVEAL ═══
     const observer = new IntersectionObserver(
@@ -1643,7 +1591,7 @@
     const navbar = document.getElementById('navbar');
     window.addEventListener('scroll', () => {
       navbar.classList.toggle('scrolled', window.scrollY > 50);
-    });
+    }, { passive: true });
 
     // ═══ SPLINE-STYLE 3D SHAPES: DRAG + CURSOR ROTATION ═══
     (function() {
@@ -1698,8 +1646,6 @@
           dragTarget.style.transform = `translate(${dragTarget._ox}px, ${dragTarget._oy}px) rotateX(${rx}deg) rotateY(${ry}deg) scale(1.15)`;
           return;
         }
-
-        updateShapes();
       });
 
       // Drag start — attach to each shape directly
@@ -1768,17 +1714,19 @@
         robotVideo.play().catch(() => {});
         audioUnlocked = true;
       }
-      document.addEventListener('click', tryUnmute, { once: false });
-      document.addEventListener('scroll', tryUnmute, { once: false });
-      document.addEventListener('touchstart', tryUnmute, { once: false });
+      document.addEventListener('click', tryUnmute, { once: true });
+      document.addEventListener('touchstart', tryUnmute, { once: true });
 
       const videoAudioObs = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
           if (entry.isIntersecting) {
-            robotVideo.muted = false;
-            robotVideo.volume = 0.6;
             robotVideo.play().catch(() => {});
+            if (audioUnlocked) {
+              robotVideo.muted = false;
+              robotVideo.volume = 0.6;
+            }
           } else {
+            robotVideo.pause();
             robotVideo.muted = true;
           }
         });
@@ -1900,7 +1848,6 @@
   <script type="module">
     import * as THREE from 'three';
     import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-    import { EXRLoader } from 'three/addons/loaders/EXRLoader.js';
     import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
 
     const canvas = document.getElementById('robotCanvas');
@@ -1968,7 +1915,7 @@
 
         scene.add(model);
       }, undefined, (err) => {
-        console.warn('Robot load error:', err);
+        // silently hide container on load error
         container.style.display = 'none';
       });
 
@@ -2044,10 +1991,18 @@
         if (hint) hint.textContent = isDancing ? 'Clicca per fermare' : 'Clicca per ballare';
       });
 
-      // Render loop
+      // Render loop with visibility pause
       const clock = new THREE.Clock();
+      let robotVisible = true;
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden) { robotVisible = false; clock.stop(); }
+        else { robotVisible = true; clock.start(); }
+      });
+      const robotVisObs = new IntersectionObserver(([e]) => { robotVisible = e.isIntersecting; }, { rootMargin: '100px' });
+      robotVisObs.observe(container);
       function animate() {
         requestAnimationFrame(animate);
+        if (!robotVisible) return;
         const delta = clock.getDelta();
         const elapsed = clock.getElapsedTime();
 
