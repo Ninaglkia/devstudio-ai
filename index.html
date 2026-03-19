@@ -1169,6 +1169,9 @@
           Disponibile per nuovi progetti
         </div>
         <div style="height: 55vh;"></div>
+        <div style="text-align: center; margin-top: -2rem; margin-bottom: 1rem; position: relative; z-index: 11;">
+          <span style="font-family: var(--font-mono); font-size: 0.5rem; color: var(--accent-light); letter-spacing: 0.15em; text-transform: uppercase; opacity: 0.6;">Clicca per cambiare colore</span>
+        </div>
         <h1 class="hero-title" style="position:absolute;left:-9999px;" aria-hidden="false">Il tuo business merita un sito che spacca.</h1>
         <p class="hero-subtitle reveal reveal-delay-2">
           Siti web moderni potenziati dall'AI. Progettiamo esperienze digitali che convertono visitatori in clienti. Dal design al lancio in 7 giorni.
@@ -1962,7 +1965,14 @@
           color: 0xcccccc, emissive: 0x6d5cff, emissiveIntensity: 0.3,
           metalness: 1.0, roughness: 0.0, clearcoat: 1.0, clearcoatRoughness: 0.0,
         });
-        heroTextModel._matCycle = [matGold, matNeon, matChrome, matWhite, matAccent];
+        heroTextModel._matCycle = [
+          matWhite, matAccent, matGold, matNeon, matChrome,
+          new THREE.MeshPhysicalMaterial({ color: 0xff3366, emissive: 0xff0044, emissiveIntensity: 0.6, metalness: 0.5, roughness: 0.05, clearcoat: 1.0 }), // rosa
+          new THREE.MeshPhysicalMaterial({ color: 0xff6600, emissive: 0xff4400, emissiveIntensity: 0.5, metalness: 0.6, roughness: 0.05, clearcoat: 1.0 }), // arancione
+          new THREE.MeshPhysicalMaterial({ color: 0x00ff88, emissive: 0x00cc66, emissiveIntensity: 0.5, metalness: 0.4, roughness: 0.05, clearcoat: 1.0 }), // verde
+          new THREE.MeshPhysicalMaterial({ color: 0x0088ff, emissive: 0x0066cc, emissiveIntensity: 0.5, metalness: 0.5, roughness: 0.05, clearcoat: 1.0 }), // blu
+          new THREE.MeshPhysicalMaterial({ color: 0xff00ff, emissive: 0xcc00cc, emissiveIntensity: 0.6, metalness: 0.4, roughness: 0.05, clearcoat: 1.0 }), // magenta
+        ];
         heroTextModel._matIndex = 0;
         heroTextModel._swapActive = false;
         heroTextModel._swapTime = 0;
@@ -2077,27 +2087,14 @@
           heroTextModel.rotation.x = dragRotX;
           heroTextModel.rotation.y = dragRotY;
 
-          // Material swap animation — hold for 2s then restore
+          // Material swap — quick pulse then stay
           if (heroTextModel._swapActive) {
             heroTextModel._swapTime += 0.016;
             const st = heroTextModel._swapTime;
-
-            if (st < 0.1) {
-              // Quick pulse on swap
-              heroTextModel.scale.setScalar(heroTextModel._baseScale * (1 + st * 3));
-            } else if (st < 2.0) {
-              // Hold new material
-              heroTextModel.scale.setScalar(heroTextModel._baseScale);
-            } else if (st < 2.5) {
-              // Fade back — restore original materials
-              if (st < 2.05) {
-                let idx = 0;
-                heroTextModel._origMats.forEach(({ mesh, mat }) => {
-                  mesh.material = mat;
-                });
-              }
-              heroTextModel.scale.setScalar(heroTextModel._baseScale);
+            if (st < 0.15) {
+              heroTextModel.scale.setScalar(heroTextModel._baseScale * (1 + st * 2));
             } else {
+              heroTextModel.scale.setScalar(heroTextModel._baseScale);
               heroTextModel._swapActive = false;
             }
           }
