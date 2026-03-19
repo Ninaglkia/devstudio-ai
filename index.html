@@ -1934,8 +1934,7 @@
         heroTextModel.scale.setScalar(s);
         heroTextModel.position.x = -(center.x * s);
         heroTextModel.position.y = -(center.y * s);
-        // No rotation needed — baked in Blender
-        // Color: white for first 2 lines, accent for "che spacca."
+        // Colors: white top lines, accent "che spacca."
         let meshIndex = 0;
         heroTextModel.traverse((child) => {
           if (child.isMesh) {
@@ -1943,49 +1942,58 @@
             meshIndex++;
           }
         });
-        // Store final scale, start far away
-        heroTextModel._finalScale = s;
-        heroTextModel.position.z = -15;
-        const startS = s * 0.2;
-        heroTextModel.scale.setScalar(startS);
         hScene.add(heroTextModel);
-        heroAnimStart = performance.now();
       });
 
-      const hClock = new THREE.Clock();
+      // Drag to spin like a wheel
+      let isDraggingText = false;
+      let prevMouseX = 0;
+      let textRotY = 0;
+      let textVelocity = 0;
+
+      heroCanvas.style.cursor = 'grab';
+      heroCanvas.addEventListener('mousedown', (e) => {
+        isDraggingText = true;
+        prevMouseX = e.clientX;
+        textVelocity = 0;
+        heroCanvas.style.cursor = 'grabbing';
+      });
+      document.addEventListener('mousemove', (e) => {
+        if (!isDraggingText) return;
+        const dx = e.clientX - prevMouseX;
+        textVelocity = dx * 0.01;
+        textRotY += dx * 0.01;
+        prevMouseX = e.clientX;
+      });
+      document.addEventListener('mouseup', () => {
+        if (isDraggingText) {
+          isDraggingText = false;
+          heroCanvas.style.cursor = 'grab';
+        }
+      });
+      heroCanvas.addEventListener('touchstart', (e) => {
+        isDraggingText = true;
+        prevMouseX = e.touches[0].clientX;
+        textVelocity = 0;
+      }, { passive: true });
+      heroCanvas.addEventListener('touchmove', (e) => {
+        if (!isDraggingText) return;
+        const dx = e.touches[0].clientX - prevMouseX;
+        textVelocity = dx * 0.01;
+        textRotY += dx * 0.01;
+        prevMouseX = e.touches[0].clientX;
+      }, { passive: true });
+      heroCanvas.addEventListener('touchend', () => { isDraggingText = false; });
+
       function animateHeroText() {
         requestAnimationFrame(animateHeroText);
-        const elapsed = hClock.getElapsedTime();
-
-        if (heroTextModel && heroAnimStart) {
-          const t = (performance.now() - heroAnimStart) / 1000;
-          const fs = heroTextModel._finalScale;
-
-          if (t < 1.8) {
-            // Fly in from behind
-            const p = t / 1.8;
-            const ease = 1 - Math.pow(1 - p, 3);
-            heroTextModel.position.z = -15 + 16 * ease;
-            const sc = fs * (0.2 + 0.85 * ease);
-            heroTextModel.scale.setScalar(sc);
-          } else if (t < 2.4) {
-            // Slam close — slight overshoot
-            heroTextModel.position.z = 1;
-            heroTextModel.scale.setScalar(fs * 1.08);
-          } else if (t < 3.5) {
-            // Settle back
-            const p = (t - 2.4) / 1.1;
-            const ease = 1 - Math.pow(1 - p, 2);
-            heroTextModel.position.z = 1 - 1 * ease;
-            const sc = fs * (1.08 - 0.08 * ease);
-            heroTextModel.scale.setScalar(sc);
-          } else {
-            // Final position
-            heroTextModel.position.z = 0;
-            heroTextModel.scale.setScalar(fs);
-          }
+        if (!isDraggingText) {
+          textRotY += textVelocity;
+          textVelocity *= 0.95;
         }
-
+        if (heroTextModel) {
+          heroTextModel.rotation.y = textRotY;
+        }
         hRenderer.render(hScene, hCamera);
       }
       animateHeroText();
