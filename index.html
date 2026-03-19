@@ -1942,16 +1942,16 @@
       const bobSpeeds = [1.0, 0.85, 1.15, 0.75, 0.95, 1.1, 0.9, 1.05, 0.8, 1.2];
 
       const shapeConfigs = [
-        { file: 'shapes/shape_sphere.glb',  pos: [-6.5, 4, 0],   scale: 1.8 },
-        { file: 'shapes/shape_cube.glb',    pos: [7, 3.5, 0],    scale: 1.5 },
-        { file: 'shapes/shape_torus.glb',   pos: [-7, -1.5, 0],  scale: 1.6 },
-        { file: 'shapes/shape_diamond.glb', pos: [7, -1, 0],     scale: 1.5 },
-        { file: 'shapes/shape_pyramid.glb', pos: [4, 1.5, 0],    scale: 1.4 },
-        { file: 'shapes/shape_hexagon.glb', pos: [-5, -4, 0],    scale: 1.5 },
-        { file: 'shapes/shape_star.glb',    pos: [-3, 2.5, 0],   scale: 1.6 },
-        { file: 'shapes/shape_dodecahedron.glb', pos: [5.5, -3.5, 0], scale: 1.4 },
-        { file: 'shapes/shape_capsule.glb', pos: [-6, 1, 0],     scale: 1.5 },
-        { file: 'shapes/shape_crystal.glb', pos: [2.5, -3, 0],   scale: 1.3 },
+        { file: 'shapes/shape_sphere.glb',  pos: [-8, 4.5, 0],    scale: 1.8 },
+        { file: 'shapes/shape_cube.glb',    pos: [8.5, 4, 0],     scale: 1.5 },
+        { file: 'shapes/shape_torus.glb',   pos: [-8.5, -1, 0],   scale: 1.6 },
+        { file: 'shapes/shape_diamond.glb', pos: [8.5, -1.5, 0],  scale: 1.5 },
+        { file: 'shapes/shape_pyramid.glb', pos: [7, 1.5, 0],     scale: 1.4 },
+        { file: 'shapes/shape_hexagon.glb', pos: [-7, -4.5, 0],   scale: 1.5 },
+        { file: 'shapes/shape_star.glb',    pos: [-7.5, 2, 0],    scale: 1.6 },
+        { file: 'shapes/shape_dodecahedron.glb', pos: [7.5, -4, 0], scale: 1.4 },
+        { file: 'shapes/shape_capsule.glb', pos: [-6.5, -2.5, 0], scale: 1.5 },
+        { file: 'shapes/shape_crystal.glb', pos: [6, -2.5, 0],    scale: 1.3 },
       ];
 
       const shapeGroups = [];
@@ -2080,14 +2080,17 @@
 
         shapeGroups.forEach((group, i) => {
           if (group === dragShape) return;
-          // Gentle bob around base position
+          const mult = 0.8 + i * 0.15;
+          // Bob
           group.position.y = group._basePos.y + Math.sin(t * bobSpeeds[i % bobSpeeds.length]) * 0.25;
-          // Slow rotation
-          group.rotation.x += 0.004 + i * 0.001;
-          group.rotation.y += 0.006 + i * 0.0015;
-          // Subtle mouse tilt
-          group.rotation.x += sMY * 0.001;
-          group.rotation.y += sMX * 0.001;
+          // Cursor follow — shapes shift toward mouse
+          group.position.x = group._basePos.x + sMX * 0.3 * mult;
+          group.position.y += sMY * -0.2 * mult;
+          // Rotation toward cursor
+          group.rotation.x += (sMY * -0.5 * mult - group.rotation.x) * 0.02;
+          group.rotation.y += (sMX * 0.8 * mult - group.rotation.y) * 0.02;
+          // Slow self-spin
+          group.rotation.z += 0.003 + i * 0.001;
         });
 
         sRenderer.render(sScene, sCamera);
