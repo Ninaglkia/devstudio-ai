@@ -1992,6 +1992,7 @@
           textVelocity *= 0.95;
         }
         if (heroTextModel) {
+          heroTextModel.rotation.x = 0; // text already faces camera from GLB Y/Z swap
           heroTextModel.rotation.y = textRotY;
         }
         hRenderer.render(hScene, hCamera);
