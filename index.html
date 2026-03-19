@@ -1930,15 +1930,23 @@
         { file: 'shapes/shape_crystal.glb', pos: [2.5, -3, 0],   scale: 1.3 },
       ];
 
+      const shapeGroups = []; // top-level groups for drag
       shapeConfigs.forEach((cfg, i) => {
         shapeLoader.load(cfg.file, (gltf) => {
-          const mesh = gltf.scene;
-          mesh.position.set(...cfg.pos);
-          mesh.scale.setScalar(cfg.scale);
-          mesh._basePos = mesh.position.clone();
-          mesh._shapeIndex = i;
-          sScene.add(mesh);
-          shapeMeshes.push(mesh);
+          const group = gltf.scene;
+          group.position.set(...cfg.pos);
+          group.scale.setScalar(cfg.scale);
+          group._basePos = group.position.clone();
+          group._shapeIndex = i;
+          sScene.add(group);
+          shapeGroups.push(group);
+          // Collect all child meshes for raycasting
+          group.traverse((child) => {
+            if (child.isMesh) {
+              child._parentGroup = group;
+              shapeMeshes.push(child);
+            }
+          });
         });
       });
 
@@ -1956,12 +1964,16 @@
         mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
       }
 
+      function getGroup(hit) {
+        return hit.object._parentGroup || hit.object;
+      }
+
       shapesCanvas.addEventListener('mousedown', (e) => {
         getMouseNDC(e);
         raycaster.setFromCamera(mouse, sCamera);
         const hits = raycaster.intersectObjects(shapeMeshes);
         if (hits.length > 0) {
-          dragShape = hits[0].object;
+          dragShape = getGroup(hits[0]);
           dragPlane.setFromNormalAndCoplanarPoint(new THREE.Vector3(0, 0, 1), dragShape.position);
           raycaster.ray.intersectPlane(dragPlane, intersection);
           dragOffset.copy(dragShape.position).sub(intersection);
@@ -1979,7 +1991,6 @@
           dragShape._basePos.copy(dragShape.position);
           e.stopPropagation();
         } else {
-          // Check hover
           raycaster.setFromCamera(mouse, sCamera);
           const hits = raycaster.intersectObjects(shapeMeshes);
           shapesCanvas.style.cursor = hits.length > 0 ? 'grab' : 'default';
@@ -1991,14 +2002,13 @@
         shapesCanvas.style.cursor = 'grab';
       });
 
-      // Touch drag
       shapesCanvas.addEventListener('touchstart', (e) => {
         const t = e.touches[0];
         getMouseNDC(t);
         raycaster.setFromCamera(mouse, sCamera);
         const hits = raycaster.intersectObjects(shapeMeshes);
         if (hits.length > 0) {
-          dragShape = hits[0].object;
+          dragShape = getGroup(hits[0]);
           dragPlane.setFromNormalAndCoplanarPoint(new THREE.Vector3(0, 0, 1), dragShape.position);
           raycaster.ray.intersectPlane(dragPlane, intersection);
           dragOffset.copy(dragShape.position).sub(intersection);
@@ -2043,16 +2053,16 @@
         requestAnimationFrame(animateShapes);
         const t = sClock.getElapsedTime();
 
-        shapeMeshes.forEach((mesh, i) => {
-          if (mesh === dragShape) return;
+        shapeGroups.forEach((group, i) => {
+          if (group === dragShape) return;
           // Gentle bob around base position
-          mesh.position.y = mesh._basePos.y + Math.sin(t * bobSpeeds[i]) * 0.25;
+          group.position.y = group._basePos.y + Math.sin(t * bobSpeeds[i % bobSpeeds.length]) * 0.25;
           // Slow rotation
-          mesh.rotation.x += 0.004 + i * 0.001;
-          mesh.rotation.y += 0.006 + i * 0.0015;
+          group.rotation.x += 0.004 + i * 0.001;
+          group.rotation.y += 0.006 + i * 0.0015;
           // Subtle mouse tilt
-          mesh.rotation.x += sMY * 0.001;
-          mesh.rotation.y += sMX * 0.001;
+          group.rotation.x += sMY * 0.001;
+          group.rotation.y += sMX * 0.001;
         });
 
         sRenderer.render(sScene, sCamera);
