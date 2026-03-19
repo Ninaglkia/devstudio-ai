@@ -1915,13 +1915,13 @@
       let heroTextModel = null;
       let heroAnimStart = null;
 
-      const matWhite = new THREE.MeshStandardMaterial({
-        color: 0xf4f4f5, emissive: 0xffffff, emissiveIntensity: 0.15,
-        metalness: 0.3, roughness: 0.15,
+      const matWhite = new THREE.MeshPhysicalMaterial({
+        color: 0xffffff, emissive: 0xeeeeff, emissiveIntensity: 0.2,
+        metalness: 0.7, roughness: 0.05, clearcoat: 1.0, clearcoatRoughness: 0.05,
       });
-      const matAccent = new THREE.MeshStandardMaterial({
-        color: 0x8b7dff, emissive: 0x00e5ff, emissiveIntensity: 0.5,
-        metalness: 0.4, roughness: 0.1,
+      const matAccent = new THREE.MeshPhysicalMaterial({
+        color: 0x8b7dff, emissive: 0x00e5ff, emissiveIntensity: 0.6,
+        metalness: 0.5, roughness: 0.05, clearcoat: 1.0, clearcoatRoughness: 0.02,
       });
 
       heroLoader.load('shapes/hero_text_3d.glb', (gltf) => {
