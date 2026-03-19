@@ -1945,25 +1945,30 @@
         hScene.add(heroTextModel);
       });
 
-      // Drag to spin like a wheel
+      // Drag to rotate in all directions with inertia
       let isDraggingText = false;
-      let prevMouseX = 0;
-      let textRotY = 0;
-      let textVelocity = 0;
+      let prevMX = 0, prevMY = 0;
+      let velX = 0, velY = 0;
+      let rotX = 0, rotY = 0;
 
       heroCanvas.style.cursor = 'grab';
       heroCanvas.addEventListener('mousedown', (e) => {
         isDraggingText = true;
-        prevMouseX = e.clientX;
-        textVelocity = 0;
+        prevMX = e.clientX;
+        prevMY = e.clientY;
+        velX = 0; velY = 0;
         heroCanvas.style.cursor = 'grabbing';
       });
       document.addEventListener('mousemove', (e) => {
         if (!isDraggingText) return;
-        const dx = e.clientX - prevMouseX;
-        textVelocity = dx * 0.01;
-        textRotY += dx * 0.01;
-        prevMouseX = e.clientX;
+        const dx = e.clientX - prevMX;
+        const dy = e.clientY - prevMY;
+        velY = dx * 0.008;
+        velX = dy * 0.008;
+        rotY += dx * 0.008;
+        rotX += dy * 0.008;
+        prevMX = e.clientX;
+        prevMY = e.clientY;
       });
       document.addEventListener('mouseup', () => {
         if (isDraggingText) {
@@ -1973,27 +1978,34 @@
       });
       heroCanvas.addEventListener('touchstart', (e) => {
         isDraggingText = true;
-        prevMouseX = e.touches[0].clientX;
-        textVelocity = 0;
+        prevMX = e.touches[0].clientX;
+        prevMY = e.touches[0].clientY;
+        velX = 0; velY = 0;
       }, { passive: true });
       heroCanvas.addEventListener('touchmove', (e) => {
         if (!isDraggingText) return;
-        const dx = e.touches[0].clientX - prevMouseX;
-        textVelocity = dx * 0.01;
-        textRotY += dx * 0.01;
-        prevMouseX = e.touches[0].clientX;
+        const dx = e.touches[0].clientX - prevMX;
+        const dy = e.touches[0].clientY - prevMY;
+        velY = dx * 0.008;
+        velX = dy * 0.008;
+        rotY += dx * 0.008;
+        rotX += dy * 0.008;
+        prevMX = e.touches[0].clientX;
+        prevMY = e.touches[0].clientY;
       }, { passive: true });
       heroCanvas.addEventListener('touchend', () => { isDraggingText = false; });
 
       function animateHeroText() {
         requestAnimationFrame(animateHeroText);
         if (!isDraggingText) {
-          textRotY += textVelocity;
-          textVelocity *= 0.95;
+          rotX += velX;
+          rotY += velY;
+          velX *= 0.96;
+          velY *= 0.96;
         }
         if (heroTextModel) {
-          heroTextModel.rotation.x = 0; // text already faces camera from GLB Y/Z swap
-          heroTextModel.rotation.y = textRotY;
+          heroTextModel.rotation.x = rotX;
+          heroTextModel.rotation.y = rotY;
         }
         hRenderer.render(hScene, hCamera);
       }
