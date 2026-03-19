@@ -533,6 +533,24 @@
       line-height: 1.05;
       letter-spacing: -0.03em;
       margin-bottom: 1.5rem;
+      animation: heroZoomIn 1.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    @keyframes heroZoomIn {
+      0% {
+        opacity: 0;
+        transform: perspective(800px) translateZ(-600px) scale(0.3);
+        filter: blur(8px);
+      }
+      60% {
+        opacity: 1;
+        transform: perspective(800px) translateZ(50px) scale(1.05);
+        filter: blur(0px);
+      }
+      100% {
+        opacity: 1;
+        transform: perspective(800px) translateZ(0) scale(1);
+        filter: blur(0px);
+      }
     }
     .hero-title .gradient-text {
       background: linear-gradient(135deg, var(--accent), var(--accent-cyan));
