@@ -1940,9 +1940,9 @@
       });
 
       document.addEventListener('mousemove', (e) => {
-        // Mouse tracking for robot rotation — 900 degrees
+        // Mouse tracking for robot rotation — 900° horizontal, ±30° vertical
         mouseRY = ((e.clientX / window.innerWidth) - 0.5) * Math.PI * 5;
-        mouseRX = ((e.clientY / window.innerHeight) - 0.5) * -Math.PI * 2.5;
+        mouseRX = ((e.clientY / window.innerHeight) - 0.5) * -0.52;
 
         if (robotDrag) {
           const dx = e.clientX - robotStartX;
