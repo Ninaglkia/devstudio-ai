@@ -2001,6 +2001,14 @@
             robotOY += dy;
             robotStartX = e.clientX;
             robotStartY = e.clientY;
+            // Clamp within viewport bounds
+            const rect = container.getBoundingClientRect();
+            const minX = -rect.left - rect.width * 0.5;
+            const maxX = window.innerWidth - rect.left - rect.width * 0.5;
+            const minY = -rect.top - rect.height * 0.5;
+            const maxY = window.innerHeight - rect.top - rect.height * 0.5;
+            robotOX = Math.max(minX, Math.min(maxX, robotOX));
+            robotOY = Math.max(minY, Math.min(maxY, robotOY));
             container.style.transform = `translate(${robotOX}px, ${robotOY}px)`;
           }
         }
