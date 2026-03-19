@@ -1165,7 +1165,7 @@
           <span class="dot"></span>
           Disponibile per nuovi progetti
         </div>
-        <div id="heroText3dContainer" style="width: 100%; height: 350px; position: relative; margin-bottom: 1.5rem;">
+        <div id="heroText3dContainer" style="width: 100%; height: 350px; position: relative; margin-bottom: 1.5rem; overflow: visible;">
           <canvas id="heroTextCanvas" style="width: 100%; height: 100%;"></canvas>
         </div>
         <h1 class="hero-title" style="position:absolute;left:-9999px;" aria-hidden="false">Il tuo business merita un sito che spacca.</h1>
@@ -1936,7 +1936,6 @@
         heroTextModel.position.y = -(center.y * s);
         // Flip text to face camera correctly
         heroTextModel.rotation.x = Math.PI / 2;
-        heroTextModel.scale.x *= -1;
         // Color: white for first 2 lines, accent for "che spacca."
         let meshIndex = 0;
         heroTextModel.traverse((child) => {
@@ -1947,10 +1946,9 @@
         });
         // Store final scale, start far away
         heroTextModel._finalScale = s;
-        heroTextModel._flipX = heroTextModel.scale.x < 0 ? -1 : 1;
         heroTextModel.position.z = -30;
         const startS = s * 0.1;
-        heroTextModel.scale.set(startS * heroTextModel._flipX, startS, startS);
+        heroTextModel.scale.set(-startS, startS, startS);
         hScene.add(heroTextModel);
         heroAnimStart = performance.now();
       });
@@ -1963,32 +1961,27 @@
         if (heroTextModel && heroAnimStart) {
           const t = (performance.now() - heroAnimStart) / 1000;
           const fs = heroTextModel._finalScale;
-          const fx = heroTextModel._flipX;
 
           if (t < 1.5) {
-            // Fly in
             const p = t / 1.5;
             const ease = 1 - Math.pow(1 - p, 3);
             heroTextModel.position.z = -30 + 32 * ease;
             const sc = fs * (0.1 + 1.05 * ease);
-            heroTextModel.scale.set(sc * fx, sc, sc);
+            heroTextModel.scale.set(-sc, sc, sc);
           } else if (t < 2.2) {
-            // Slam — hold close
             heroTextModel.position.z = 2;
             const sc = fs * 1.15;
-            heroTextModel.scale.set(sc * fx, sc, sc);
+            heroTextModel.scale.set(-sc, sc, sc);
           } else if (t < 3.5) {
-            // Settle back
             const p = (t - 2.2) / 1.3;
             const ease = 1 - Math.pow(1 - p, 2);
             heroTextModel.position.z = 2 - 2 * ease;
             const sc = fs * (1.15 - 0.15 * ease);
-            heroTextModel.scale.set(sc * fx, sc, sc);
+            heroTextModel.scale.set(-sc, sc, sc);
           } else {
-            // Idle float
             heroTextModel.position.z = 0;
-            const baseY = heroTextModel.position.y;
-            heroTextModel.position.y = baseY + Math.sin(elapsed * 0.8) * 0.0005;
+            const sc = fs;
+            heroTextModel.scale.set(-sc, sc, sc);
           }
         }
 
