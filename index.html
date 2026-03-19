@@ -1949,18 +1949,27 @@
         });
         hScene.add(heroTextModel);
 
-        // Shockwave ring
-        const ringGeom = new THREE.RingGeometry(0.1, 0.15, 64);
-        const ringMat = new THREE.MeshBasicMaterial({
-          color: 0x8b7dff, transparent: true, opacity: 0,
-          side: THREE.DoubleSide, blending: THREE.AdditiveBlending,
+        // Material swap effect
+        const matGold = new THREE.MeshPhysicalMaterial({
+          color: 0xffd700, emissive: 0xff8c00, emissiveIntensity: 0.6,
+          metalness: 0.9, roughness: 0.05, clearcoat: 1.0, clearcoatRoughness: 0.02,
         });
-        const shockwave = new THREE.Mesh(ringGeom, ringMat);
-        shockwave.position.z = 0.1;
-        hScene.add(shockwave);
-        heroTextModel._shockwave = shockwave;
-        heroTextModel._shockActive = false;
-        heroTextModel._shockTime = 0;
+        const matNeon = new THREE.MeshPhysicalMaterial({
+          color: 0x00ffcc, emissive: 0x00ffcc, emissiveIntensity: 0.8,
+          metalness: 0.3, roughness: 0.02, clearcoat: 1.0, clearcoatRoughness: 0.0,
+        });
+        const matChrome = new THREE.MeshPhysicalMaterial({
+          color: 0xcccccc, emissive: 0x6d5cff, emissiveIntensity: 0.3,
+          metalness: 1.0, roughness: 0.0, clearcoat: 1.0, clearcoatRoughness: 0.0,
+        });
+        heroTextModel._matCycle = [matGold, matNeon, matChrome, matWhite, matAccent];
+        heroTextModel._matIndex = 0;
+        heroTextModel._swapActive = false;
+        heroTextModel._swapTime = 0;
+        heroTextModel._origMats = [];
+        heroTextModel.traverse((child) => {
+          if (child.isMesh) heroTextModel._origMats.push({ mesh: child, mat: child.material });
+        });
       });
 
       // Auto-oscillate + drag to rotate (clamped ±40 degrees)
@@ -2012,13 +2021,17 @@
           setTimeout(() => { if (!isDraggingText) autoActive = true; }, 2000);
         }
       });
-      // Click: trigger shockwave or pass through
+      // Click: cycle material or pass through
       heroCanvas.addEventListener('click', (e) => {
-        if (isOverText(e) && heroTextModel && !heroTextModel._shockActive) {
-          heroTextModel._shockActive = true;
-          heroTextModel._shockTime = 0;
-          heroTextModel._shockwave.scale.set(1, 1, 1);
-          heroTextModel._shockwave.material.opacity = 0.8;
+        if (isOverText(e) && heroTextModel && !heroTextModel._swapActive) {
+          heroTextModel._swapActive = true;
+          heroTextModel._swapTime = 0;
+          // Apply next material in cycle
+          const newMat = heroTextModel._matCycle[heroTextModel._matIndex];
+          heroTextModel.traverse((child) => {
+            if (child.isMesh) child.material = newMat;
+          });
+          heroTextModel._matIndex = (heroTextModel._matIndex + 1) % heroTextModel._matCycle.length;
         } else if (!isOverText(e)) {
           heroCanvas.style.pointerEvents = 'none';
           const el = document.elementFromPoint(e.clientX, e.clientY);
@@ -2064,29 +2077,28 @@
           heroTextModel.rotation.x = dragRotX;
           heroTextModel.rotation.y = dragRotY;
 
-          // Shockwave animation
-          if (heroTextModel._shockActive) {
-            heroTextModel._shockTime += 0.016;
-            const st = heroTextModel._shockTime;
-            const sw = heroTextModel._shockwave;
+          // Material swap animation — hold for 2s then restore
+          if (heroTextModel._swapActive) {
+            heroTextModel._swapTime += 0.016;
+            const st = heroTextModel._swapTime;
 
-            if (st < 1.2) {
-              // Expand ring
-              const scale = 1 + st * 12;
-              sw.scale.set(scale, scale, 1);
-              sw.material.opacity = 0.8 * (1 - st / 1.2);
-              // Color shift purple -> cyan
-              const c = st / 1.2;
-              sw.material.color.setRGB(0.55 - c * 0.3, 0.49 + c * 0.4, 1);
-              // Text pulses bigger then back
-              const pulse = st < 0.15 ? 1 + st * 2 : 1 + (0.3 - (st - 0.15) * 0.3);
-              const clampedPulse = Math.max(1, pulse);
-              heroTextModel.scale.setScalar(heroTextModel._baseScale * clampedPulse);
-            } else {
-              sw.material.opacity = 0;
-              sw.scale.set(1, 1, 1);
+            if (st < 0.1) {
+              // Quick pulse on swap
+              heroTextModel.scale.setScalar(heroTextModel._baseScale * (1 + st * 3));
+            } else if (st < 2.0) {
+              // Hold new material
               heroTextModel.scale.setScalar(heroTextModel._baseScale);
-              heroTextModel._shockActive = false;
+            } else if (st < 2.5) {
+              // Fade back — restore original materials
+              if (st < 2.05) {
+                let idx = 0;
+                heroTextModel._origMats.forEach(({ mesh, mat }) => {
+                  mesh.material = mat;
+                });
+              }
+              heroTextModel.scale.setScalar(heroTextModel._baseScale);
+            } else {
+              heroTextModel._swapActive = false;
             }
           }
         }
