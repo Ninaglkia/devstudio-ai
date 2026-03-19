@@ -1934,9 +1934,9 @@
         heroTextModel.scale.setScalar(s);
         heroTextModel.position.x = -(center.x * s);
         heroTextModel.position.y = -(center.y * s);
-        // Rotate so text faces camera correctly
+        // Flip text to face camera correctly
         heroTextModel.rotation.x = Math.PI / 2;
-        heroTextModel.rotation.y = Math.PI;
+        heroTextModel.scale.x *= -1;
         // Color: white for first 2 lines, accent for "che spacca."
         let meshIndex = 0;
         heroTextModel.traverse((child) => {
