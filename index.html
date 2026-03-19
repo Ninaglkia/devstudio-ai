@@ -1934,8 +1934,7 @@
         heroTextModel.scale.setScalar(s);
         heroTextModel.position.x = -(center.x * s);
         heroTextModel.position.y = -(center.y * s);
-        // Flip text to face camera correctly
-        heroTextModel.rotation.x = Math.PI / 2;
+        // No rotation needed — baked in Blender
         // Color: white for first 2 lines, accent for "che spacca."
         let meshIndex = 0;
         heroTextModel.traverse((child) => {
@@ -1946,9 +1945,9 @@
         });
         // Store final scale, start far away
         heroTextModel._finalScale = s;
-        heroTextModel.position.z = -30;
-        const startS = s * 0.1;
-        heroTextModel.scale.set(-startS, startS, startS);
+        heroTextModel.position.z = -15;
+        const startS = s * 0.2;
+        heroTextModel.scale.setScalar(startS);
         hScene.add(heroTextModel);
         heroAnimStart = performance.now();
       });
@@ -1962,26 +1961,28 @@
           const t = (performance.now() - heroAnimStart) / 1000;
           const fs = heroTextModel._finalScale;
 
-          if (t < 1.5) {
-            const p = t / 1.5;
+          if (t < 1.8) {
+            // Fly in from behind
+            const p = t / 1.8;
             const ease = 1 - Math.pow(1 - p, 3);
-            heroTextModel.position.z = -30 + 32 * ease;
-            const sc = fs * (0.1 + 1.05 * ease);
-            heroTextModel.scale.set(-sc, sc, sc);
-          } else if (t < 2.2) {
-            heroTextModel.position.z = 2;
-            const sc = fs * 1.15;
-            heroTextModel.scale.set(-sc, sc, sc);
+            heroTextModel.position.z = -15 + 16 * ease;
+            const sc = fs * (0.2 + 0.85 * ease);
+            heroTextModel.scale.setScalar(sc);
+          } else if (t < 2.4) {
+            // Slam close — slight overshoot
+            heroTextModel.position.z = 1;
+            heroTextModel.scale.setScalar(fs * 1.08);
           } else if (t < 3.5) {
-            const p = (t - 2.2) / 1.3;
+            // Settle back
+            const p = (t - 2.4) / 1.1;
             const ease = 1 - Math.pow(1 - p, 2);
-            heroTextModel.position.z = 2 - 2 * ease;
-            const sc = fs * (1.15 - 0.15 * ease);
-            heroTextModel.scale.set(-sc, sc, sc);
+            heroTextModel.position.z = 1 - 1 * ease;
+            const sc = fs * (1.08 - 0.08 * ease);
+            heroTextModel.scale.setScalar(sc);
           } else {
+            // Final position
             heroTextModel.position.z = 0;
-            const sc = fs;
-            heroTextModel.scale.set(-sc, sc, sc);
+            heroTextModel.scale.setScalar(fs);
           }
         }
 
