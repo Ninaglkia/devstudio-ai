@@ -1157,7 +1157,7 @@
       </video>
     </div>
     <div class="hero-video-overlay"></div>
-    <div id="heroText3dContainer" style="position: absolute; inset: 0; z-index: 4; pointer-events: none;">
+    <div id="heroText3dContainer" style="position: absolute; inset: 0; z-index: 4;">
       <canvas id="heroTextCanvas" style="width: 100%; height: 100%;"></canvas>
     </div>
     <div class="hero-glow hero-glow-1"></div>
@@ -1943,6 +1943,9 @@
             meshIndex++;
           }
         });
+        heroTextModel.traverse((child) => {
+          if (child.isMesh) heroMeshes.push(child);
+        });
         hScene.add(heroTextModel);
       });
 
@@ -1954,9 +1957,21 @@
       let autoActive = true;
 
       heroCanvas.style.pointerEvents = 'auto';
-      heroCanvas.style.cursor = 'grab';
+      heroCanvas.style.cursor = 'default';
+      const hRaycaster = new THREE.Raycaster();
+      const hMouse = new THREE.Vector2();
+      const heroMeshes = [];
+
+      function isOverText(e) {
+        const rect = heroCanvas.getBoundingClientRect();
+        hMouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+        hMouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+        hRaycaster.setFromCamera(hMouse, hCamera);
+        return hRaycaster.intersectObjects(heroMeshes, true).length > 0;
+      }
 
       heroCanvas.addEventListener('mousedown', (e) => {
+        if (!isOverText(e)) return;
         isDraggingText = true;
         autoActive = false;
         prevMX = e.clientX;
@@ -1964,13 +1979,16 @@
         heroCanvas.style.cursor = 'grabbing';
       });
       document.addEventListener('mousemove', (e) => {
-        if (!isDraggingText) return;
-        const dx = e.clientX - prevMX;
-        const dy = e.clientY - prevMY;
-        dragRotY = Math.max(-maxAngle, Math.min(maxAngle, dragRotY + dx * 0.005));
-        dragRotX = Math.max(-maxAngle, Math.min(maxAngle, dragRotX + dy * 0.005));
-        prevMX = e.clientX;
-        prevMY = e.clientY;
+        if (isDraggingText) {
+          const dx = e.clientX - prevMX;
+          const dy = e.clientY - prevMY;
+          dragRotY = Math.max(-maxAngle, Math.min(maxAngle, dragRotY + dx * 0.005));
+          dragRotX = Math.max(-maxAngle, Math.min(maxAngle, dragRotX + dy * 0.005));
+          prevMX = e.clientX;
+          prevMY = e.clientY;
+        } else {
+          heroCanvas.style.cursor = isOverText(e) ? 'grab' : 'default';
+        }
       });
       document.addEventListener('mouseup', () => {
         if (isDraggingText) {
@@ -1980,6 +1998,16 @@
           setTimeout(() => { if (!isDraggingText) autoActive = true; }, 2000);
         }
       });
+      // Pass clicks through when not on text
+      heroCanvas.addEventListener('click', (e) => {
+        if (!isOverText(e)) {
+          heroCanvas.style.pointerEvents = 'none';
+          const el = document.elementFromPoint(e.clientX, e.clientY);
+          if (el && el !== heroCanvas) el.click();
+          heroCanvas.style.pointerEvents = 'auto';
+        }
+      });
+
       heroCanvas.addEventListener('touchstart', (e) => {
         isDraggingText = true;
         autoActive = false;
