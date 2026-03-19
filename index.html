@@ -706,7 +706,7 @@
 
     .pricing-card {
       background: var(--bg-card);
-      border: 1px solid var(--glass-border);
+      border: 1px solid rgba(255,255,255,0.12);
       border-radius: var(--radius-lg);
       padding: 2.5rem 2rem;
       position: relative;
@@ -715,6 +715,10 @@
       overflow: visible;
       display: flex;
       flex-direction: column;
+    }
+    .pricing-card:hover {
+      border-color: rgba(109,92,255,0.4);
+      box-shadow: 0 0 30px rgba(109,92,255,0.1);
     }
     .pricing-card .tilt-glow {
       position: absolute; inset: 0;
@@ -728,7 +732,11 @@
 
     .pricing-card.featured {
       border-color: var(--accent);
-      background: linear-gradient(180deg, rgba(109,92,255,0.05) 0%, var(--bg-card) 40%);
+      background: linear-gradient(180deg, rgba(109,92,255,0.08) 0%, var(--bg-card) 40%);
+      box-shadow: 0 0 40px rgba(109,92,255,0.15), 0 0 0 1px rgba(109,92,255,0.3);
+    }
+    .pricing-card.featured:hover {
+      box-shadow: 0 0 50px rgba(109,92,255,0.25), 0 0 0 1px rgba(109,92,255,0.5);
     }
     .pricing-card.featured::before {
       content: '';
