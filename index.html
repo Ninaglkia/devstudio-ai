@@ -1930,7 +1930,7 @@
         const center = box.getCenter(new THREE.Vector3());
         const size = box.getSize(new THREE.Vector3());
         const maxDim = Math.max(size.x, size.y, size.z);
-        const s = 7.0 / maxDim;
+        const s = 4.5 / maxDim;
         heroTextModel.scale.setScalar(s);
         heroTextModel.position.x = -(center.x * s);
         heroTextModel.position.y = -(center.y * s);
