@@ -1883,7 +1883,7 @@
       animate();
     }
 
-    // ═══ 3D FLOATING SHAPES (Three.js) — draggable ═══
+    // ═══ 3D FLOATING SHAPES (Blender GLB models) — draggable ═══
     const shapesCanvas = document.getElementById('shapesCanvas');
     const shapesArea = document.getElementById('shapesArea');
     if (shapesCanvas && shapesArea) {
@@ -1900,7 +1900,7 @@
       sRenderer.toneMapping = THREE.ACESFilmicToneMapping;
       sRenderer.toneMappingExposure = 1.3;
 
-      // Lighting — richer
+      // Lighting
       sScene.add(new THREE.AmbientLight(0x6d5cff, 0.5));
       const sKey = new THREE.DirectionalLight(0xffffff, 2.0);
       sKey.position.set(3, 5, 5);
@@ -1912,74 +1912,31 @@
       sFill.position.set(5, -2, 3);
       sScene.add(sFill);
 
-      // Glass material — original colors
-      function glassMat(color, emissive, emInt) {
-        return new THREE.MeshPhysicalMaterial({
-          color, emissive: emissive || 0x000000,
-          emissiveIntensity: emInt || 0.4,
-          metalness: 0.05, roughness: 0.02,
-          transmission: 0.7, thickness: 2.0,
-          transparent: true, opacity: 0.9,
-          ior: 1.5, clearcoat: 1.0, clearcoatRoughness: 0.1,
-        });
-      }
-
-      // Sphere — glass orb purple/cyan (far top-left)
-      const sphere = new THREE.Mesh(
-        new THREE.SphereGeometry(0.9, 48, 48),
-        glassMat(0x8b7dff, 0x6d5cff, 0.5)
-      );
-      sphere.position.set(-6.5, 4, 0);
-      sphere._basePos = sphere.position.clone();
-      sScene.add(sphere);
-
-      // Cube — glass purple/cyan (far top-right)
-      const cube = new THREE.Mesh(
-        new THREE.BoxGeometry(1.1, 1.1, 1.1),
-        glassMat(0x6d5cff, 0x00e5ff, 0.4)
-      );
-      cube.position.set(7, 3.5, 0);
-      cube._basePos = cube.position.clone();
-      sScene.add(cube);
-
-      // Torus — neon ring purple (far mid-left)
-      const torus = new THREE.Mesh(
-        new THREE.TorusGeometry(0.7, 0.22, 24, 48),
-        glassMat(0x6d5cff, 0x6d5cff, 0.6)
-      );
-      torus.position.set(-7, -1.5, 0);
-      torus._basePos = torus.position.clone();
-      sScene.add(torus);
-
-      // Diamond — octahedron purple/cyan (far mid-right)
-      const diamond = new THREE.Mesh(
-        new THREE.OctahedronGeometry(0.8),
-        glassMat(0xa78bfa, 0x00e5ff, 0.5)
-      );
-      diamond.position.set(7, -1, 0);
-      diamond._basePos = diamond.position.clone();
-      sScene.add(diamond);
-
-      // Pyramid — purple (upper-right, inward)
-      const pyramid = new THREE.Mesh(
-        new THREE.ConeGeometry(0.7, 1.3, 4),
-        glassMat(0x6d5cff, 0xa78bfa, 0.4)
-      );
-      pyramid.position.set(4, 1.5, 0);
-      pyramid._basePos = pyramid.position.clone();
-      sScene.add(pyramid);
-
-      // Hexagon — cyan/purple (far bottom-left)
-      const hexagon = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.75, 0.75, 0.35, 6),
-        glassMat(0x00e5ff, 0x6d5cff, 0.5)
-      );
-      hexagon.position.set(-5, -4, 0);
-      hexagon._basePos = hexagon.position.clone();
-      sScene.add(hexagon);
-
-      const shapeMeshes = [sphere, cube, torus, diamond, pyramid, hexagon];
+      // Load Blender GLB shapes
+      const shapeLoader = new GLTFLoader();
+      const shapeMeshes = [];
       const bobSpeeds = [1.0, 0.85, 1.15, 0.75, 0.95, 1.1];
+
+      const shapeConfigs = [
+        { file: 'shapes/shape_sphere.glb',  pos: [-6.5, 4, 0],   scale: 1.8 },
+        { file: 'shapes/shape_cube.glb',    pos: [7, 3.5, 0],    scale: 1.5 },
+        { file: 'shapes/shape_torus.glb',   pos: [-7, -1.5, 0],  scale: 1.6 },
+        { file: 'shapes/shape_diamond.glb', pos: [7, -1, 0],     scale: 1.5 },
+        { file: 'shapes/shape_pyramid.glb', pos: [4, 1.5, 0],    scale: 1.4 },
+        { file: 'shapes/shape_hexagon.glb', pos: [-5, -4, 0],    scale: 1.5 },
+      ];
+
+      shapeConfigs.forEach((cfg, i) => {
+        shapeLoader.load(cfg.file, (gltf) => {
+          const mesh = gltf.scene;
+          mesh.position.set(...cfg.pos);
+          mesh.scale.setScalar(cfg.scale);
+          mesh._basePos = mesh.position.clone();
+          mesh._shapeIndex = i;
+          sScene.add(mesh);
+          shapeMeshes.push(mesh);
+        });
+      });
 
       // ── DRAG with raycasting ──
       const raycaster = new THREE.Raycaster();
