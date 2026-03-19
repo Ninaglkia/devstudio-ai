@@ -533,22 +533,29 @@
       line-height: 1.05;
       letter-spacing: -0.03em;
       margin-bottom: 1.5rem;
-      animation: heroZoomIn 1.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      animation: heroZoomIn 3s cubic-bezier(0.22, 1, 0.36, 1) 0.5s both;
     }
     @keyframes heroZoomIn {
       0% {
         opacity: 0;
-        transform: perspective(800px) translateZ(-600px) scale(0.3);
-        filter: blur(8px);
+        transform: perspective(600px) translateZ(-1000px) scale(0.1);
+        filter: blur(12px);
       }
-      60% {
+      45% {
         opacity: 1;
-        transform: perspective(800px) translateZ(50px) scale(1.05);
         filter: blur(0px);
+        transform: perspective(600px) translateZ(200px) scale(1.25);
+      }
+      55% {
+        transform: perspective(600px) translateZ(200px) scale(1.25);
+        filter: blur(0px);
+      }
+      75% {
+        transform: perspective(600px) translateZ(-20px) scale(0.97);
       }
       100% {
         opacity: 1;
-        transform: perspective(800px) translateZ(0) scale(1);
+        transform: perspective(600px) translateZ(0) scale(1);
         filter: blur(0px);
       }
     }
