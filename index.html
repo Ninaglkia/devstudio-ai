@@ -1934,6 +1934,8 @@
         heroTextModel.scale.setScalar(s);
         heroTextModel.position.x = -(center.x * s);
         heroTextModel.position.y = -(center.y * s);
+        // Rotate so text faces camera (Blender text is on XY, Three.js camera looks down Z)
+        heroTextModel.rotation.x = -Math.PI / 2;
         // Color: white for first 2 lines, accent for "che spacca."
         let meshIndex = 0;
         heroTextModel.traverse((child) => {
