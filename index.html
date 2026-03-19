@@ -1333,7 +1333,7 @@
 
   <!-- ROBOT VIDEO SHOWCASE -->
   <section id="robotVideoSection" style="position: relative; overflow: hidden; padding: 0; min-height: 85vh;">
-    <video id="robotVideo" muted loop playsinline preload="none" style="width: 100%; height: 85vh; object-fit: cover; display: block; filter: brightness(0.85);">
+    <video id="robotVideo" autoplay muted loop playsinline style="width: 100%; height: 85vh; object-fit: cover; display: block; filter: brightness(0.85);">
       <source src="robot-video.mp4" type="video/mp4">
     </video>
     <div style="position: absolute; inset: 0; background: linear-gradient(180deg, var(--bg-primary) 0%, transparent 15%, transparent 70%, rgba(5,5,5,0.9) 100%); display: flex; align-items: flex-end; padding: 3rem;">
@@ -1720,13 +1720,10 @@
       const videoAudioObs = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
           if (entry.isIntersecting) {
+            robotVideo.muted = false;
+            robotVideo.volume = 0.6;
             robotVideo.play().catch(() => {});
-            if (audioUnlocked) {
-              robotVideo.muted = false;
-              robotVideo.volume = 0.6;
-            }
           } else {
-            robotVideo.pause();
             robotVideo.muted = true;
           }
         });
@@ -1948,12 +1945,12 @@
             robotOY += dy;
             robotStartX = e.clientX;
             robotStartY = e.clientY;
-            // Clamp within viewport bounds
+            // Clamp so robot stays fully visible in viewport
             const rect = container.getBoundingClientRect();
-            const minX = -rect.left - rect.width * 0.5;
-            const maxX = window.innerWidth - rect.left - rect.width * 0.5;
-            const minY = -rect.top - rect.height * 0.5;
-            const maxY = window.innerHeight - rect.top - rect.height * 0.5;
+            const minX = -(rect.left - robotOX);
+            const maxX = window.innerWidth - (rect.right - robotOX);
+            const minY = -(rect.top - robotOY);
+            const maxY = window.innerHeight - (rect.bottom - robotOY);
             robotOX = Math.max(minX, Math.min(maxX, robotOX));
             robotOY = Math.max(minY, Math.min(maxY, robotOY));
             container.style.transform = `translate(${robotOX}px, ${robotOY}px)`;
