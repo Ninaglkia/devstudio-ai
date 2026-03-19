@@ -1996,18 +1996,10 @@
         if (hint) hint.textContent = isDancing ? 'Clicca per fermare' : 'Clicca per ballare';
       });
 
-      // Render loop with visibility pause
+      // Render loop
       const clock = new THREE.Clock();
-      let robotVisible = true;
-      document.addEventListener('visibilitychange', () => {
-        if (document.hidden) { robotVisible = false; clock.stop(); }
-        else { robotVisible = true; clock.start(); }
-      });
-      const robotVisObs = new IntersectionObserver(([e]) => { robotVisible = e.isIntersecting; }, { rootMargin: '100px' });
-      robotVisObs.observe(container);
       function animate() {
         requestAnimationFrame(animate);
-        if (!robotVisible) return;
         const delta = clock.getDelta();
         const elapsed = clock.getElapsedTime();
 
