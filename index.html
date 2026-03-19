@@ -1914,9 +1914,17 @@
       let heroTextModel = null;
       let heroAnimStart = null;
 
+      const matWhite = new THREE.MeshStandardMaterial({
+        color: 0xf4f4f5, emissive: 0xffffff, emissiveIntensity: 0.15,
+        metalness: 0.3, roughness: 0.15,
+      });
+      const matAccent = new THREE.MeshStandardMaterial({
+        color: 0x8b7dff, emissive: 0x00e5ff, emissiveIntensity: 0.5,
+        metalness: 0.4, roughness: 0.1,
+      });
+
       heroLoader.load('shapes/hero_text_3d.glb', (gltf) => {
         heroTextModel = gltf.scene;
-        // Center and scale
         const box = new THREE.Box3().setFromObject(heroTextModel);
         const center = box.getCenter(new THREE.Vector3());
         const size = box.getSize(new THREE.Vector3());
@@ -1925,19 +1933,14 @@
         heroTextModel.scale.setScalar(s);
         heroTextModel.position.x = -(center.x * s);
         heroTextModel.position.y = -(center.y * s);
-        // Apply material — gradient purple to cyan
+        // Color: white for first 2 lines, accent for "che spacca."
+        let meshIndex = 0;
         heroTextModel.traverse((child) => {
           if (child.isMesh) {
-            child.material = new THREE.MeshStandardMaterial({
-              color: 0x8b7dff,
-              emissive: 0x6d5cff,
-              emissiveIntensity: 0.4,
-              metalness: 0.5,
-              roughness: 0.1,
-            });
+            child.material = meshIndex === 0 ? matWhite : matAccent;
+            meshIndex++;
           }
         });
-        // Start far away
         heroTextModel.position.z = -30;
         heroTextModel.scale.setScalar(s * 0.1);
         hScene.add(heroTextModel);
