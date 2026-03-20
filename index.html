@@ -1156,8 +1156,8 @@
       </video>
     </div>
     <div class="hero-video-overlay"></div>
-    <div id="heroText3dContainer" style="position: absolute; inset: 0; z-index: 4;">
-      <canvas id="heroTextCanvas" style="width: 100%; height: 100%;"></canvas>
+    <div id="heroText3dContainer" style="position: absolute; inset: 0; z-index: 4; pointer-events: none;">
+      <canvas id="heroTextCanvas" style="width: 100%; height: 100%; pointer-events: auto;"></canvas>
     </div>
     <div class="hero-glow hero-glow-1"></div>
     <div class="hero-glow hero-glow-2"></div>
@@ -1926,7 +1926,8 @@
         const center = box.getCenter(new THREE.Vector3());
         const size = box.getSize(new THREE.Vector3());
         const maxDim = Math.max(size.x, size.y, size.z);
-        const s = 3.2 / maxDim;
+        const isMobile = window.innerWidth < 768;
+        const s = (isMobile ? 1.8 : 3.2) / maxDim;
         heroTextModel.scale.setScalar(s);
         heroTextModel._baseScale = s;
         heroTextModel.position.x = -(center.x * s);
@@ -2101,6 +2102,15 @@
         hCamera.aspect = nW / nH;
         hCamera.updateProjectionMatrix();
         hRenderer.setSize(nW, nH);
+        if (heroTextModel && heroTextModel._baseScale) {
+          const mob = window.innerWidth < 768;
+          const box2 = new THREE.Box3().setFromObject(heroTextModel);
+          const sz2 = box2.getSize(new THREE.Vector3());
+          const md2 = Math.max(sz2.x, sz2.y, sz2.z) / heroTextModel.scale.x;
+          const ns = (mob ? 1.8 : 3.2) / md2;
+          heroTextModel.scale.setScalar(ns);
+          heroTextModel._baseScale = ns;
+        }
       });
     }
 
