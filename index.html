@@ -1887,8 +1887,9 @@
       const hW = heroContainer.offsetWidth;
       const hH = heroContainer.offsetHeight;
       const hScene = new THREE.Scene();
+      const heroIsMobile = window.innerWidth < 768;
       const hCamera = new THREE.PerspectiveCamera(40, hW / hH, 0.1, 100);
-      hCamera.position.set(0, -0.3, 6);
+      hCamera.position.set(0, -0.3, heroIsMobile ? 12 : 6);
       hCamera.lookAt(0, -0.3, 0);
 
       const hRenderer = new THREE.WebGLRenderer({ canvas: heroCanvas, alpha: true, antialias: true });
@@ -1927,7 +1928,7 @@
         const size = box.getSize(new THREE.Vector3());
         const maxDim = Math.max(size.x, size.y, size.z);
         const isMobile = window.innerWidth < 768;
-        const s = (isMobile ? 1.8 : 3.2) / maxDim;
+        const s = (isMobile ? 1.0 : 3.2) / maxDim;
         heroTextModel.scale.setScalar(s);
         heroTextModel._baseScale = s;
         heroTextModel.position.x = -(center.x * s);
@@ -2107,7 +2108,8 @@
           const box2 = new THREE.Box3().setFromObject(heroTextModel);
           const sz2 = box2.getSize(new THREE.Vector3());
           const md2 = Math.max(sz2.x, sz2.y, sz2.z) / heroTextModel.scale.x;
-          const ns = (mob ? 1.8 : 3.2) / md2;
+          const ns = (mob ? 1.0 : 3.2) / md2;
+          hCamera.position.z = mob ? 12 : 6;
           heroTextModel.scale.setScalar(ns);
           heroTextModel._baseScale = ns;
         }
