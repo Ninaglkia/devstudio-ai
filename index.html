@@ -2442,13 +2442,13 @@
 
       const isMobileShapes = window.innerWidth < 768;
       const shapeConfigs = isMobileShapes ? [
-        // Mobile: around the robot (robot is at center y≈0)
-        { file: 'shapes/shape_sphere.glb',  pos: [-2.8, 1.5, 0],  scale: 1.0 },
-        { file: 'shapes/shape_torus.glb',   pos: [2.8, 1.2, 0],   scale: 0.9 },
-        { file: 'shapes/shape_diamond.glb', pos: [-2.5, -0.5, 0], scale: 0.8 },
-        { file: 'shapes/shape_pyramid.glb', pos: [2.5, -0.8, 0],  scale: 1.0 },
-        { file: 'shapes/shape_star.glb',    pos: [-2, -2.5, 0],   scale: 0.8 },
-        { file: 'shapes/shape_capsule.glb', pos: [2, -2.2, 0],    scale: 0.8 },
+        // Mobile: around the robot, lower and bigger
+        { file: 'shapes/shape_sphere.glb',  pos: [-2.8, -0.5, 0], scale: 1.3 },
+        { file: 'shapes/shape_torus.glb',   pos: [2.8, -0.8, 0],  scale: 1.2 },
+        { file: 'shapes/shape_diamond.glb', pos: [-2.5, -2.5, 0], scale: 1.1 },
+        { file: 'shapes/shape_pyramid.glb', pos: [2.5, -2.8, 0],  scale: 1.3 },
+        { file: 'shapes/shape_star.glb',    pos: [-2, -4.5, 0],   scale: 1.1 },
+        { file: 'shapes/shape_capsule.glb', pos: [2, -4.2, 0],    scale: 1.1 },
       ] : [
         // Desktop: full set, wide spread
         { file: 'shapes/shape_sphere.glb',  pos: [-7.5, 3.5, 0],  scale: 1.8 },
