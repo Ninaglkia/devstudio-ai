@@ -2043,11 +2043,12 @@
         container.style.cursor = 'grab';
       });
 
-      // ── MOBILE TOUCH: tap=dance, swipe=spin like a top, vertical=scroll ──
+      // ── MOBILE TOUCH: tap=dance, flick=spin like a top, vertical=scroll ──
       let spinVelocity = 0;
       (function() {
         let startX = 0, startY = 0, startTime = 0, lastX = 0, lastTime = 0;
         let direction = null;
+        let isTouchingRobot = false;
 
         container.addEventListener('touchstart', function(e) {
           const t = e.touches[0];
@@ -2055,51 +2056,59 @@
           startY = t.clientY;
           startTime = lastTime = Date.now();
           direction = null;
-          spinVelocity = 0; // stop any ongoing spin
+          isTouchingRobot = true;
+          spinVelocity = 0;
         }, { passive: true });
 
         container.addEventListener('touchmove', function(e) {
-          if (!model) return;
+          if (!model || !isTouchingRobot) return;
           const t = e.touches[0];
           const dx = t.clientX - startX;
           const dy = t.clientY - startY;
-          const now = Date.now();
 
-          if (!direction && (Math.abs(dx) > 8 || Math.abs(dy) > 8)) {
+          if (!direction && (Math.abs(dx) > 10 || Math.abs(dy) > 10)) {
             direction = Math.abs(dx) > Math.abs(dy) ? 'h' : 'v';
           }
 
           if (direction === 'h') {
             e.preventDefault();
             const moveDx = t.clientX - lastX;
-            const moveDt = Math.max(now - lastTime, 1);
-            model.rotation.y += moveDx * 0.04;
-            spinVelocity = moveDx / moveDt; // track velocity for inertia
+            model.rotation.y += moveDx * 0.02;
+            // Track last positions for velocity calculation at release
             lastX = t.clientX;
-            lastTime = now;
+            lastTime = Date.now();
           }
         }, { passive: false });
 
         container.addEventListener('touchend', function(e) {
+          isTouchingRobot = false;
           if (!model) return;
           const t = e.changedTouches[0];
-          const dx = Math.abs(t.clientX - startX);
-          const dy = Math.abs(t.clientY - startY);
-          const dt = Date.now() - startTime;
+          const totalDx = Math.abs(t.clientX - startX);
+          const totalDy = Math.abs(t.clientY - startY);
+          const totalDt = Date.now() - startTime;
 
-          if (dx < 15 && dy < 15 && dt < 400) {
-            // Tap = toggle dance
+          if (totalDx < 15 && totalDy < 15 && totalDt < 400) {
+            // TAP = toggle dance
             if (danceAction) {
               isDancing = !isDancing;
               danceAction.paused = !isDancing;
               if (isDancing) danceAction.timeScale = 1;
               if (navigator.vibrate) navigator.vibrate(30);
               const hint = document.getElementById('robotClickHint');
-              if (hint) hint.textContent = isDancing ? 'Clicca per fermare' : 'Clicca per ballare';
+              if (hint) hint.textContent = isDancing ? 'Tocca per fermare' : 'Tocca per ballare';
             }
-            spinVelocity = 0;
+          } else if (direction === 'h') {
+            // FLICK = calculate release velocity for inertia spin
+            const releaseDt = Math.max(Date.now() - lastTime, 1);
+            const releaseDx = t.clientX - lastX;
+            // Only apply inertia if the last move was recent (< 100ms ago)
+            if (releaseDt < 100) {
+              const flickDx = t.clientX - startX;
+              const flickDt = Math.max(totalDt, 1);
+              spinVelocity = (flickDx / flickDt) * 0.15;
+            }
           }
-          // else: spinVelocity stays, inertia kicks in via render loop
           direction = null;
         }, { passive: true });
       })();
@@ -2114,15 +2123,16 @@
         if (mixer) mixer.update(delta);
 
         if (model) {
-          // Spin inertia from mobile swipe (decays like a top)
-          if (Math.abs(spinVelocity) > 0.001) {
-            model.rotation.y += spinVelocity * 8;
-            spinVelocity *= 0.96; // friction — slows down gradually
-          } else if ('ontouchstart' in window) {
-            // On mobile, don't follow mouse — just idle
-            spinVelocity = 0;
+          // Spin inertia from mobile flick
+          if (Math.abs(spinVelocity) > 0.0005) {
+            model.rotation.y += spinVelocity;
+            spinVelocity *= 0.98; // smooth friction
           } else {
-            // Desktop: rotation toward cursor — strong follow
+            spinVelocity = 0;
+          }
+
+          // Desktop: rotation toward cursor
+          if (!('ontouchstart' in window) && Math.abs(spinVelocity) < 0.001) {
             model.rotation.y += ((Math.PI * 1.15 + mouseRY) - model.rotation.y) * 0.08;
             model.rotation.x += (mouseRX - model.rotation.x) * 0.08;
           }
