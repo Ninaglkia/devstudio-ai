@@ -1359,11 +1359,11 @@
     </div>
   </section>
 
+  <!-- 3D SHAPES (Three.js canvas, draggable) — outside shapes-area to guarantee root stacking context -->
+  <canvas id="shapesCanvas" style="position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none;z-index:9998;"></canvas>
+
   <!-- TRUST + TECH PARTNERS (with contained floating 3D shapes) -->
   <div class="shapes-area" id="shapesArea">
-
-    <!-- 3D SHAPES (Three.js canvas, draggable) -->
-    <canvas id="shapesCanvas" style="position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none;z-index:9998;"></canvas>
 
     <!-- TRUST -->
     <div class="trust">
@@ -1910,6 +1910,9 @@
     import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
     import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
 
+    // Shared drag state for cross-component coordination
+    window._robotDrag = false;
+
     const canvas = document.getElementById('robotCanvas');
     const container = document.getElementById('robot3dContainer');
     if (canvas && container) {
@@ -1989,10 +1992,12 @@
       canvas.addEventListener('mousedown', (e) => {
         e.preventDefault();
         robotDrag = true;
+        window._robotDrag = true;
         robotDragMoved = false;
         robotStartX = e.clientX;
         robotStartY = e.clientY;
         canvas.style.cursor = 'grabbing';
+        container.style.cursor = 'grabbing';
       });
 
       document.addEventListener('mousemove', (e) => {
@@ -2033,7 +2038,9 @@
           }
         }
         robotDrag = false;
+        window._robotDrag = false;
         canvas.style.cursor = 'grab';
+        container.style.cursor = 'grab';
       });
 
       // ── MOBILE TOUCH: tap=dance, horizontal swipe=rotate, vertical=scroll ──
@@ -2473,8 +2480,9 @@
         return raycaster.intersectObjects(shapeMeshes, true);
       }
 
-      // Mouse: hover cursor + drag
+      // Mouse: hover cursor + drag (skip when robot is being dragged)
       document.addEventListener('mousemove', (e) => {
+        if (window._robotDrag) return;
         if (isDragging && dragShape) {
           screenToNDC(e.clientX, e.clientY);
           raycaster.setFromCamera(mouse, sCamera);
@@ -2488,7 +2496,7 @@
       });
 
       document.addEventListener('mousedown', (e) => {
-        if (isDragging) return;
+        if (isDragging || window._robotDrag) return;
         const hits = hitShapes(e.clientX, e.clientY);
         if (hits.length > 0) {
           isDragging = true;
