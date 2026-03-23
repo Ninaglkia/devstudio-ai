@@ -2130,12 +2130,10 @@
         heroTextModel._baseScale = s;
         heroTextModel.position.x = -(center.x * s);
         heroTextModel.position.y = -(center.y * s);
-        // Colors: white top lines, accent "che spacca."
-        let meshIndex = 0;
+        // Colors: accent (blue/purple) as default
         heroTextModel.traverse((child) => {
           if (child.isMesh) {
-            child.material = meshIndex === 0 ? matWhite : matAccent;
-            meshIndex++;
+            child.material = matAccent;
           }
         });
         heroTextModel.traverse((child) => {
@@ -2157,7 +2155,7 @@
           metalness: 1.0, roughness: 0.0, clearcoat: 1.0, clearcoatRoughness: 0.0,
         });
         heroTextModel._matCycle = [
-          matWhite, matAccent, matGold, matNeon, matChrome,
+          matGold, matNeon, matChrome, matWhite,
           new THREE.MeshPhysicalMaterial({ color: 0xff3366, emissive: 0xff0044, emissiveIntensity: 0.6, metalness: 0.5, roughness: 0.05, clearcoat: 1.0 }), // rosa
           new THREE.MeshPhysicalMaterial({ color: 0xff6600, emissive: 0xff4400, emissiveIntensity: 0.5, metalness: 0.6, roughness: 0.05, clearcoat: 1.0 }), // arancione
           new THREE.MeshPhysicalMaterial({ color: 0x00ff88, emissive: 0x00cc66, emissiveIntensity: 0.5, metalness: 0.4, roughness: 0.05, clearcoat: 1.0 }), // verde
