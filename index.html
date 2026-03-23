@@ -2477,6 +2477,7 @@
         }
       });
 
+      let dragScrollRAF = null;
       document.addEventListener('mousemove', (e) => {
         if (!isDragging || !dragShape) return;
         getMouseNDC(e);
@@ -2484,6 +2485,23 @@
         raycaster.ray.intersectPlane(dragPlane, intersection);
         dragShape.position.copy(intersection.add(dragOffset));
         dragShape._basePos.copy(dragShape.position);
+
+        // Auto-scroll when dragging near top/bottom edges
+        const edgeZone = 80;
+        const speed = 8;
+        cancelAnimationFrame(dragScrollRAF);
+        function autoScroll() {
+          if (!isDragging) return;
+          if (e.clientY < edgeZone) {
+            window.scrollBy(0, -speed);
+          } else if (e.clientY > window.innerHeight - edgeZone) {
+            window.scrollBy(0, speed);
+          }
+          dragScrollRAF = requestAnimationFrame(autoScroll);
+        }
+        if (e.clientY < edgeZone || e.clientY > window.innerHeight - edgeZone) {
+          autoScroll();
+        }
       });
 
       document.addEventListener('mouseup', () => {
@@ -2491,12 +2509,15 @@
           isDragging = false;
           dragShape = null;
           shapesCanvas.style.cursor = 'grab';
+          cancelAnimationFrame(dragScrollRAF);
         }
       });
 
-      // Touch drag
+      // Touch drag — horizontal moves shape, vertical scrolls page
+      let shapeTouchStartY = 0;
       shapesCanvas.addEventListener('touchstart', (e) => {
         const t = e.touches[0];
+        shapeTouchStartY = t.clientY;
         getMouseNDC(t);
         raycaster.setFromCamera(mouse, sCamera);
         const hits = raycaster.intersectObjects(shapeMeshes, true);
@@ -2506,22 +2527,21 @@
           dragPlane.setFromNormalAndCoplanarPoint(new THREE.Vector3(0, 0, 1), dragShape.position);
           raycaster.ray.intersectPlane(dragPlane, intersection);
           dragOffset.copy(dragShape.position).sub(intersection);
-          e.preventDefault();
         }
-      }, { passive: false });
+      }, { passive: true });
 
-      document.addEventListener('touchmove', (e) => {
+      shapesCanvas.addEventListener('touchmove', (e) => {
         if (!isDragging || !dragShape) return;
-        e.preventDefault();
+        // Don't preventDefault — let the page scroll naturally
         const t = e.touches[0];
         getMouseNDC(t);
         raycaster.setFromCamera(mouse, sCamera);
         raycaster.ray.intersectPlane(dragPlane, intersection);
         dragShape.position.copy(intersection.add(dragOffset));
         dragShape._basePos.copy(dragShape.position);
-      }, { passive: false });
+      }, { passive: true });
 
-      document.addEventListener('touchend', () => {
+      shapesCanvas.addEventListener('touchend', () => {
         if (isDragging) { isDragging = false; dragShape = null; }
       });
 
