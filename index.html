@@ -1363,7 +1363,7 @@
   <div class="shapes-area" id="shapesArea">
 
     <!-- 3D SHAPES (Three.js canvas, draggable) -->
-    <canvas id="shapesCanvas" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:auto;z-index:10;cursor:grab;"></canvas>
+    <canvas id="shapesCanvas" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:auto;z-index:10;cursor:grab;" data-base-z="10"></canvas>
 
     <!-- TRUST -->
     <div class="trust">
@@ -1986,13 +1986,12 @@
       let robotStartX = 0, robotStartY = 0;
       let robotOX = 0, robotOY = 0;
 
-      container.addEventListener('mousedown', (e) => {
+      canvas.addEventListener('mousedown', (e) => {
         e.preventDefault();
         robotDrag = true;
         robotDragMoved = false;
         robotStartX = e.clientX;
         robotStartY = e.clientY;
-        container.style.cursor = 'grabbing';
         canvas.style.cursor = 'grabbing';
       });
 
@@ -2034,7 +2033,6 @@
           }
         }
         robotDrag = false;
-        container.style.cursor = 'grab';
         canvas.style.cursor = 'grab';
       });
 
@@ -2470,6 +2468,7 @@
           raycaster.ray.intersectPlane(dragPlane, intersection);
           dragOffset.copy(dragShape.position).sub(intersection);
           shapesCanvas.style.cursor = 'grabbing';
+          shapesCanvas.style.zIndex = '9999';
         } else {
           // Click missed shapes — pass through to element below
           shapesCanvas.style.pointerEvents = 'none';
@@ -2511,6 +2510,7 @@
           isDragging = false;
           dragShape = null;
           shapesCanvas.style.cursor = 'grab';
+          shapesCanvas.style.zIndex = '10';
           cancelAnimationFrame(dragScrollRAF);
         }
       });
@@ -2529,6 +2529,7 @@
           dragPlane.setFromNormalAndCoplanarPoint(new THREE.Vector3(0, 0, 1), dragShape.position);
           raycaster.ray.intersectPlane(dragPlane, intersection);
           dragOffset.copy(dragShape.position).sub(intersection);
+          shapesCanvas.style.zIndex = '9999';
         }
       }, { passive: true });
 
@@ -2544,7 +2545,7 @@
       }, { passive: true });
 
       shapesCanvas.addEventListener('touchend', () => {
-        if (isDragging) { isDragging = false; dragShape = null; }
+        if (isDragging) { isDragging = false; dragShape = null; shapesCanvas.style.zIndex = '10'; }
       });
 
       // Click pass-through for non-shape areas
