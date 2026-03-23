@@ -2048,7 +2048,8 @@
         let startX = 0, startY = 0, startTime = 0, lastX = 0;
         let direction = null; // null, 'h', 'v'
 
-        canvas.addEventListener('touchstart', function(e) {
+        // Listen on container (not just canvas) so tapping anywhere on robot area works
+        container.addEventListener('touchstart', function(e) {
           const t = e.touches[0];
           startX = lastX = t.clientX;
           startY = t.clientY;
@@ -2056,7 +2057,7 @@
           direction = null;
         }, { passive: true });
 
-        canvas.addEventListener('touchmove', function(e) {
+        container.addEventListener('touchmove', function(e) {
           if (!model) return;
           const t = e.touches[0];
           const dx = t.clientX - startX;
@@ -2069,12 +2070,12 @@
 
           if (direction === 'h') {
             e.preventDefault();
-            model.rotation.y += (t.clientX - lastX) * 0.012;
+            model.rotation.y += (t.clientX - lastX) * 0.035;
             lastX = t.clientX;
           }
         }, { passive: false });
 
-        canvas.addEventListener('touchend', function(e) {
+        container.addEventListener('touchend', function(e) {
           if (!model || !danceAction) return;
           const t = e.changedTouches[0];
           const dx = Math.abs(t.clientX - startX);
