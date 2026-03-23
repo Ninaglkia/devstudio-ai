@@ -1916,9 +1916,10 @@
       const W = 320, H = 500;
       const scene = new THREE.Scene();
       const camera = new THREE.PerspectiveCamera(35, W / H, 0.1, 100);
-      // Frontal view — far enough to see full dance with arms raised
-      camera.position.set(0, 1.5, 8.5);
-      camera.lookAt(0, 1.2, 0);
+      // Frontal view — closer on desktop, farther on mobile for dance arms
+      const isMobileRobot = window.innerWidth < 768;
+      camera.position.set(0, isMobileRobot ? 1.5 : 1.0, isMobileRobot ? 8.5 : 5.5);
+      camera.lookAt(0, isMobileRobot ? 1.2 : 0.9, 0);
 
       const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
       renderer.setSize(W, H);
