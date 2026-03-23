@@ -1359,11 +1359,9 @@
     </div>
   </section>
 
-  <!-- 3D SHAPES (Three.js canvas, draggable) — outside shapes-area to guarantee root stacking context -->
-  <canvas id="shapesCanvas" style="position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none;z-index:9998;"></canvas>
-
   <!-- TRUST + TECH PARTNERS (with contained floating 3D shapes) -->
   <div class="shapes-area" id="shapesArea">
+    <canvas id="shapesCanvas" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:auto;z-index:2;cursor:grab;"></canvas>
 
     <!-- TRUST -->
     <div class="trust">
@@ -2358,16 +2356,11 @@
     const shapesCanvas = document.getElementById('shapesCanvas');
     const shapesArea = document.getElementById('shapesArea');
     if (shapesCanvas && shapesArea) {
-      const sW = window.innerWidth;
-      const sH = window.innerHeight;
+      const sW = shapesArea.offsetWidth;
+      const sH = shapesArea.offsetHeight;
       const sScene = new THREE.Scene();
       const sCamera = new THREE.PerspectiveCamera(50, sW / sH, 0.1, 100);
       sCamera.position.z = 14;
-
-      // Calculate scroll-to-3D conversion
-      const visibleHeight3D = 2 * 14 * Math.tan(25 * Math.PI / 180);
-      const pxPerUnit = sH / visibleHeight3D;
-      const shapesAreaCenterY = shapesArea.offsetTop + shapesArea.offsetHeight / 2;
 
       const sRenderer = new THREE.WebGLRenderer({ canvas: shapesCanvas, alpha: true, antialias: true });
       sRenderer.setSize(sW, sH);
@@ -2466,84 +2459,77 @@
         return hit.object._parentGroup || hit.object;
       }
 
-      // ── Drag shapes via document events (canvas is pointer-events:none) ──
+      // ── DRAG shapes on canvas ──
       let isDragging = false;
 
-      function screenToNDC(clientX, clientY) {
-        mouse.x = (clientX / window.innerWidth) * 2 - 1;
-        mouse.y = -(clientY / window.innerHeight) * 2 + 1;
-      }
-
-      function hitShapes(clientX, clientY) {
-        screenToNDC(clientX, clientY);
+      shapesCanvas.addEventListener('mousedown', (e) => {
+        getMouseNDC(e);
         raycaster.setFromCamera(mouse, sCamera);
-        return raycaster.intersectObjects(shapeMeshes, true);
-      }
+        const hits = raycaster.intersectObjects(shapeMeshes, true);
+        if (hits.length > 0) {
+          isDragging = true;
+          dragShape = getGroup(hits[0]);
+          dragPlane.setFromNormalAndCoplanarPoint(new THREE.Vector3(0, 0, 1), dragShape.position);
+          raycaster.ray.intersectPlane(dragPlane, intersection);
+          dragOffset.copy(dragShape.position).sub(intersection);
+          shapesCanvas.style.cursor = 'grabbing';
+        } else {
+          // Pass click through to elements below
+          shapesCanvas.style.pointerEvents = 'none';
+          const el = document.elementFromPoint(e.clientX, e.clientY);
+          if (el && el !== shapesCanvas) el.click();
+          shapesCanvas.style.pointerEvents = 'auto';
+        }
+      });
 
-      // Mouse: hover cursor + drag (skip when robot is being dragged)
-      document.addEventListener('mousemove', (e) => {
-        if (window._robotDrag) return;
+      shapesCanvas.addEventListener('mousemove', (e) => {
         if (isDragging && dragShape) {
-          screenToNDC(e.clientX, e.clientY);
+          getMouseNDC(e);
           raycaster.setFromCamera(mouse, sCamera);
           raycaster.ray.intersectPlane(dragPlane, intersection);
           dragShape.position.copy(intersection.add(dragOffset));
           dragShape._basePos.copy(dragShape.position);
         } else {
-          const hits = hitShapes(e.clientX, e.clientY);
-          document.body.style.cursor = hits.length > 0 ? 'grab' : '';
-        }
-      });
-
-      document.addEventListener('mousedown', (e) => {
-        if (isDragging || window._robotDrag) return;
-        const hits = hitShapes(e.clientX, e.clientY);
-        if (hits.length > 0) {
-          isDragging = true;
-          dragShape = getGroup(hits[0]);
-          dragPlane.setFromNormalAndCoplanarPoint(new THREE.Vector3(0, 0, 1), dragShape.position);
-          raycaster.ray.intersectPlane(dragPlane, intersection);
-          dragOffset.copy(dragShape.position).sub(intersection);
-          document.body.style.cursor = 'grabbing';
-        }
-      });
-
-      document.addEventListener('mouseup', () => {
-        if (isDragging) {
-          isDragging = false;
-          dragShape = null;
-          document.body.style.cursor = '';
-        }
-      });
-
-      // Touch: drag shape + allow scroll simultaneously
-      document.addEventListener('touchstart', (e) => {
-        const t = e.touches[0];
-        const hits = hitShapes(t.clientX, t.clientY);
-        if (hits.length > 0) {
-          isDragging = true;
-          dragShape = getGroup(hits[0]);
-          screenToNDC(t.clientX, t.clientY);
+          getMouseNDC(e);
           raycaster.setFromCamera(mouse, sCamera);
+          const hits = raycaster.intersectObjects(shapeMeshes, true);
+          shapesCanvas.style.cursor = hits.length > 0 ? 'grab' : 'default';
+        }
+      });
+
+      shapesCanvas.addEventListener('mouseup', () => {
+        isDragging = false;
+        dragShape = null;
+        shapesCanvas.style.cursor = 'grab';
+      });
+
+      shapesCanvas.addEventListener('touchstart', (e) => {
+        const t = e.touches[0];
+        getMouseNDC(t);
+        raycaster.setFromCamera(mouse, sCamera);
+        const hits = raycaster.intersectObjects(shapeMeshes, true);
+        if (hits.length > 0) {
+          isDragging = true;
+          dragShape = getGroup(hits[0]);
           dragPlane.setFromNormalAndCoplanarPoint(new THREE.Vector3(0, 0, 1), dragShape.position);
           raycaster.ray.intersectPlane(dragPlane, intersection);
           dragOffset.copy(dragShape.position).sub(intersection);
+          e.preventDefault();
         }
-      }, { passive: true });
+      }, { passive: false });
 
-      document.addEventListener('touchmove', (e) => {
+      shapesCanvas.addEventListener('touchmove', (e) => {
         if (!isDragging || !dragShape) return;
+        e.preventDefault();
         const t = e.touches[0];
-        screenToNDC(t.clientX, t.clientY);
+        getMouseNDC(t);
         raycaster.setFromCamera(mouse, sCamera);
         raycaster.ray.intersectPlane(dragPlane, intersection);
         dragShape.position.copy(intersection.add(dragOffset));
         dragShape._basePos.copy(dragShape.position);
-      }, { passive: true });
+      }, { passive: false });
 
-      document.addEventListener('touchend', () => {
-        if (isDragging) { isDragging = false; dragShape = null; }
-      });
+      shapesCanvas.addEventListener('touchend', () => { isDragging = false; dragShape = null; });
 
       let sMX = 0, sMY = 0;
       document.addEventListener('mousemove', (e) => {
@@ -2571,19 +2557,14 @@
           group.rotation.z += 0.003 + i * 0.001;
         });
 
-        // Move camera Y to follow scroll — shapes stay anchored to page position
-        const viewportCenter = window.scrollY + window.innerHeight / 2;
-        const deltaPixels = shapesAreaCenterY - viewportCenter;
-        sCamera.position.y = deltaPixels / pxPerUnit;
-
         sRenderer.render(sScene, sCamera);
       }
       animateShapes();
 
       // Resize
       window.addEventListener('resize', () => {
-        const nW = window.innerWidth;
-        const nH = window.innerHeight;
+        const nW = shapesArea.offsetWidth;
+        const nH = shapesArea.offsetHeight;
         sCamera.aspect = nW / nH;
         sCamera.updateProjectionMatrix();
         sRenderer.setSize(nW, nH);
