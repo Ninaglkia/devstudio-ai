@@ -2043,74 +2043,74 @@
         container.style.cursor = 'grab';
       });
 
-      // ── MOBILE TOUCH: tap=dance, flick=spin like a top, vertical=scroll ──
+      // ── MOBILE TOUCH: tap=dance, flick=spin like a top ──
       let spinVelocity = 0;
       (function() {
         let startX = 0, startY = 0, startTime = 0, lastX = 0, lastTime = 0;
         let direction = null;
-        let isTouchingRobot = false;
 
-        container.addEventListener('touchstart', function(e) {
-          const t = e.touches[0];
-          startX = lastX = t.clientX;
-          startY = t.clientY;
-          startTime = lastTime = Date.now();
-          direction = null;
-          isTouchingRobot = true;
-          spinVelocity = 0;
-        }, { passive: true });
-
-        container.addEventListener('touchmove', function(e) {
-          if (!model || !isTouchingRobot) return;
-          const t = e.touches[0];
-          const dx = t.clientX - startX;
-          const dy = t.clientY - startY;
-
-          if (!direction && (Math.abs(dx) > 10 || Math.abs(dy) > 10)) {
-            direction = Math.abs(dx) > Math.abs(dy) ? 'h' : 'v';
+        function toggleDance() {
+          if (!model || !danceAction) return;
+          isDancing = !isDancing;
+          if (isDancing) {
+            danceAction.paused = false;
+            danceAction.timeScale = 1;
+            danceAction.play();
+          } else {
+            danceAction.paused = true;
           }
+          if (navigator.vibrate) navigator.vibrate(30);
+          const hint = document.getElementById('robotClickHint');
+          if (hint) hint.textContent = isDancing ? 'Tocca per fermare' : 'Tocca per ballare';
+        }
 
-          if (direction === 'h') {
-            e.preventDefault();
-            const moveDx = t.clientX - lastX;
-            model.rotation.y += moveDx * 0.02;
-            // Track last positions for velocity calculation at release
-            lastX = t.clientX;
-            lastTime = Date.now();
-          }
-        }, { passive: false });
+        // Listen on BOTH canvas and container for tap
+        [canvas, container].forEach(function(el) {
+          el.addEventListener('touchstart', function(e) {
+            const t = e.touches[0];
+            startX = lastX = t.clientX;
+            startY = t.clientY;
+            startTime = lastTime = Date.now();
+            direction = null;
+          }, { passive: true });
 
-        container.addEventListener('touchend', function(e) {
-          isTouchingRobot = false;
-          if (!model) return;
-          const t = e.changedTouches[0];
-          const totalDx = Math.abs(t.clientX - startX);
-          const totalDy = Math.abs(t.clientY - startY);
-          const totalDt = Date.now() - startTime;
+          el.addEventListener('touchmove', function(e) {
+            if (!model) return;
+            const t = e.touches[0];
+            const dx = t.clientX - startX;
+            const dy = t.clientY - startY;
 
-          if (totalDx < 15 && totalDy < 15 && totalDt < 400) {
-            // TAP = toggle dance
-            if (danceAction) {
-              isDancing = !isDancing;
-              danceAction.paused = !isDancing;
-              if (isDancing) danceAction.timeScale = 1;
-              if (navigator.vibrate) navigator.vibrate(30);
-              const hint = document.getElementById('robotClickHint');
-              if (hint) hint.textContent = isDancing ? 'Tocca per fermare' : 'Tocca per ballare';
+            if (!direction && (Math.abs(dx) > 10 || Math.abs(dy) > 10)) {
+              direction = Math.abs(dx) > Math.abs(dy) ? 'h' : 'v';
             }
-          } else if (direction === 'h') {
-            // FLICK = calculate release velocity for inertia spin
-            const releaseDt = Math.max(Date.now() - lastTime, 1);
-            const releaseDx = t.clientX - lastX;
-            // Only apply inertia if the last move was recent (< 100ms ago)
-            if (releaseDt < 100) {
+
+            if (direction === 'h') {
+              e.preventDefault();
+              model.rotation.y += (t.clientX - lastX) * 0.02;
+              lastX = t.clientX;
+              lastTime = Date.now();
+            }
+          }, { passive: false });
+
+          el.addEventListener('touchend', function(e) {
+            if (!model) return;
+            const t = e.changedTouches[0];
+            const totalDx = Math.abs(t.clientX - startX);
+            const totalDy = Math.abs(t.clientY - startY);
+            const totalDt = Date.now() - startTime;
+
+            if (totalDx < 15 && totalDy < 15 && totalDt < 400) {
+              // TAP = toggle dance
+              toggleDance();
+            } else if (direction === 'h' && (Date.now() - lastTime) < 100) {
+              // FLICK = ADD velocity (accumulates with multiple flicks!)
               const flickDx = t.clientX - startX;
               const flickDt = Math.max(totalDt, 1);
-              spinVelocity = (flickDx / flickDt) * 0.15;
+              spinVelocity += (flickDx / flickDt) * 0.12;
             }
-          }
-          direction = null;
-        }, { passive: true });
+            direction = null;
+          }, { passive: true });
+        });
       })();
 
       // Render loop
