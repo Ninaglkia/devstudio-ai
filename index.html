@@ -1071,42 +1071,85 @@
     /* ═══ PWA INSTALL BUTTON ═══ */
     .install-app-section {
       width: 100%;
-      margin-top: 1.5rem;
+      margin-top: 2rem;
       padding-top: 1.5rem;
       border-top: 1px solid var(--glass-border);
+    }
+    .install-app-card {
       display: flex;
       align-items: center;
-      justify-content: center;
       gap: 1rem;
+      padding: 1rem 1.25rem;
+      border-radius: 14px;
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      box-shadow:
+        0 0 0 1px rgba(109, 92, 255, 0.08) inset,
+        0 4px 24px rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      transition: border-color 0.3s, box-shadow 0.3s;
     }
-    .install-app-section span {
-      font-size: 0.8rem;
-      color: var(--text-muted);
+    .install-app-card:hover {
+      border-color: rgba(109, 92, 255, 0.2);
+      box-shadow:
+        0 0 0 1px rgba(109, 92, 255, 0.15) inset,
+        0 4px 32px rgba(109, 92, 255, 0.12),
+        0 4px 24px rgba(0, 0, 0, 0.4);
+    }
+    .install-app-icon-wrap {
+      flex-shrink: 0;
+      width: 36px; height: 36px;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: 9px;
+      background: rgba(109, 92, 255, 0.12);
+      border: 1px solid rgba(109, 92, 255, 0.2);
+      color: var(--accent-light);
+    }
+    .install-app-icon-wrap svg { width: 18px; height: 18px; }
+    .install-app-copy { flex: 1; min-width: 0; }
+    .install-app-title {
+      font-family: var(--font-heading);
+      font-size: 0.82rem; font-weight: 600;
+      color: #e8e4ff; margin: 0 0 2px;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .install-app-sub {
+      font-family: var(--font-body);
+      font-size: 0.72rem; font-weight: 400;
+      color: var(--text-muted); margin: 0;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
     .install-btn {
+      flex-shrink: 0;
       display: inline-flex;
       align-items: center;
-      gap: 0.5rem;
-      padding: 0.5rem 1.25rem;
+      gap: 0.4rem;
+      padding: 0.45rem 1rem;
       border-radius: 8px;
-      border: 1px solid var(--accent);
-      background: var(--accent-subtle);
+      border: 1px solid rgba(109, 92, 255, 0.5);
+      background: linear-gradient(135deg, rgba(109, 92, 255, 0.25), rgba(109, 92, 255, 0.1));
       color: var(--accent-light);
       font-family: var(--font-body);
-      font-size: 0.8rem;
-      font-weight: 500;
+      font-size: 0.76rem; font-weight: 600;
+      letter-spacing: 0.01em;
       cursor: pointer;
-      transition: all 0.3s;
+      transition: all 0.25s ease;
+      animation: install-pulse 3s ease-in-out infinite;
     }
     .install-btn:hover {
-      background: rgba(109, 92, 255, 0.2);
-      box-shadow: 0 0 20px var(--accent-glow);
+      background: linear-gradient(135deg, rgba(109, 92, 255, 0.45), rgba(109, 92, 255, 0.25));
+      border-color: var(--accent);
+      box-shadow: 0 0 18px var(--accent-glow), 0 0 6px rgba(109, 92, 255, 0.3);
+      transform: translateY(-1px);
     }
-    .install-btn svg {
-      width: 16px; height: 16px;
-      stroke: currentColor; fill: none; stroke-width: 2;
+    .install-btn:active { transform: translateY(0); box-shadow: 0 0 10px var(--accent-glow); }
+    .install-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+    .install-btn svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2.5; }
+    @keyframes install-pulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(109, 92, 255, 0); }
+      50% { box-shadow: 0 0 14px 3px rgba(109, 92, 255, 0.28); }
     }
-    .install-btn.visible { display: inline-flex; }
 
     /* Tech partners */
     .tech-logos { opacity: 0.7; transition: all 0.6s ease; }
@@ -1570,11 +1613,27 @@
           </a>
         </div>
         <div class="install-app-section">
-          <span>Disponibile come app</span>
-          <button class="install-btn" id="installBtn" aria-label="Installa DevStudio AI">
-            <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-            Installa App
-          </button>
+          <div class="install-app-card">
+            <div class="install-app-icon-wrap">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="5" y="2" width="14" height="20" rx="3"/>
+                <line x1="12" y1="6" x2="12" y2="6.01"/>
+                <line x1="9" y1="18" x2="15" y2="18"/>
+              </svg>
+            </div>
+            <div class="install-app-copy">
+              <p class="install-app-title">Scarica DevStudio AI</p>
+              <p class="install-app-sub">Accedi ai nostri servizi ovunque</p>
+            </div>
+            <button class="install-btn" id="installBtn" aria-label="Installa DevStudio AI">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="7 10 12 15 17 10"/>
+                <line x1="12" y1="15" x2="12" y2="3"/>
+              </svg>
+              Installa
+            </button>
+          </div>
         </div>
       </div>
     </div>
