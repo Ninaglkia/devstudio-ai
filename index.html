@@ -2035,21 +2035,28 @@
         container.style.cursor = 'grab';
       });
 
-      // ── MOBILE: simple tap to toggle dance (no drag, no pinch) ──
+      // ── MOBILE: tap to toggle dance, allow scroll ──
+      let robotTouchStart = null;
       container.addEventListener('touchstart', (e) => {
-        e.preventDefault();
-      }, { passive: false });
+        robotTouchStart = { x: e.touches[0].clientX, y: e.touches[0].clientY, time: Date.now() };
+      }, { passive: true });
 
       container.addEventListener('touchend', (e) => {
-        e.preventDefault();
-        if (!model || !danceAction) return;
-        isDancing = !isDancing;
-        danceAction.paused = !isDancing;
-        if (isDancing) danceAction.timeScale = 1;
-        if (navigator.vibrate) navigator.vibrate(30);
-        const hint = document.getElementById('robotClickHint');
-        if (hint) hint.textContent = isDancing ? 'Clicca per fermare' : 'Clicca per ballare';
-      });
+        if (!robotTouchStart || !model || !danceAction) return;
+        const dx = Math.abs(e.changedTouches[0].clientX - robotTouchStart.x);
+        const dy = Math.abs(e.changedTouches[0].clientY - robotTouchStart.y);
+        const dt = Date.now() - robotTouchStart.time;
+        // Only toggle dance on tap (small movement, short duration)
+        if (dx < 15 && dy < 15 && dt < 300) {
+          isDancing = !isDancing;
+          danceAction.paused = !isDancing;
+          if (isDancing) danceAction.timeScale = 1;
+          if (navigator.vibrate) navigator.vibrate(30);
+          const hint = document.getElementById('robotClickHint');
+          if (hint) hint.textContent = isDancing ? 'Clicca per fermare' : 'Clicca per ballare';
+        }
+        robotTouchStart = null;
+      }, { passive: true });
 
       // Render loop
       const clock = new THREE.Clock();
