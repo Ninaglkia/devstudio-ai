@@ -1918,8 +1918,8 @@
       const camera = new THREE.PerspectiveCamera(35, W / H, 0.1, 100);
       // Frontal view — closer on desktop, farther on mobile for dance arms
       const isMobileRobot = window.innerWidth < 768;
-      camera.position.set(0, isMobileRobot ? 1.5 : 1.0, isMobileRobot ? 8.5 : 7.2);
-      camera.lookAt(0, isMobileRobot ? 1.2 : 0.9, 0);
+      camera.position.set(0, isMobileRobot ? 1.0 : 0.8, isMobileRobot ? 7.0 : 6.0);
+      camera.lookAt(0, isMobileRobot ? 0.8 : 0.7, 0);
 
       const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
       renderer.setSize(W, H);
@@ -1957,7 +1957,7 @@
         const center = box.getCenter(new THREE.Vector3());
         const size = box.getSize(new THREE.Vector3());
         const maxDim = Math.max(size.x, size.y, size.z);
-        const s = 2.4 / maxDim;
+        const s = 2.0 / maxDim;
         modelBaseScale = s;
         model.scale.set(s, s, s);
         baseY = -(box.min.y * s);
