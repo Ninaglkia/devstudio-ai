@@ -2454,46 +2454,54 @@
         return hit.object._parentGroup || hit.object;
       }
 
+      // ── Optimized drag — skip raycast on idle mousemove ──
+      let isDragging = false;
+
       shapesCanvas.addEventListener('mousedown', (e) => {
         getMouseNDC(e);
         raycaster.setFromCamera(mouse, sCamera);
-        const hits = raycaster.intersectObjects(shapeMeshes);
+        const hits = raycaster.intersectObjects(shapeMeshes, true);
         if (hits.length > 0) {
+          isDragging = true;
           dragShape = getGroup(hits[0]);
           dragPlane.setFromNormalAndCoplanarPoint(new THREE.Vector3(0, 0, 1), dragShape.position);
           raycaster.ray.intersectPlane(dragPlane, intersection);
           dragOffset.copy(dragShape.position).sub(intersection);
           shapesCanvas.style.cursor = 'grabbing';
-          e.stopPropagation();
-        }
-      });
-
-      shapesCanvas.addEventListener('mousemove', (e) => {
-        getMouseNDC(e);
-        if (dragShape) {
-          raycaster.setFromCamera(mouse, sCamera);
-          raycaster.ray.intersectPlane(dragPlane, intersection);
-          dragShape.position.copy(intersection.add(dragOffset));
-          dragShape._basePos.copy(dragShape.position);
-          e.stopPropagation();
         } else {
-          raycaster.setFromCamera(mouse, sCamera);
-          const hits = raycaster.intersectObjects(shapeMeshes);
-          shapesCanvas.style.cursor = hits.length > 0 ? 'grab' : 'default';
+          // Click missed shapes — pass through to element below
+          shapesCanvas.style.pointerEvents = 'none';
+          const el = document.elementFromPoint(e.clientX, e.clientY);
+          if (el) el.dispatchEvent(new MouseEvent('mousedown', e));
+          shapesCanvas.style.pointerEvents = 'auto';
         }
       });
 
-      shapesCanvas.addEventListener('mouseup', () => {
-        dragShape = null;
-        shapesCanvas.style.cursor = 'grab';
+      document.addEventListener('mousemove', (e) => {
+        if (!isDragging || !dragShape) return;
+        getMouseNDC(e);
+        raycaster.setFromCamera(mouse, sCamera);
+        raycaster.ray.intersectPlane(dragPlane, intersection);
+        dragShape.position.copy(intersection.add(dragOffset));
+        dragShape._basePos.copy(dragShape.position);
       });
 
+      document.addEventListener('mouseup', () => {
+        if (isDragging) {
+          isDragging = false;
+          dragShape = null;
+          shapesCanvas.style.cursor = 'grab';
+        }
+      });
+
+      // Touch drag
       shapesCanvas.addEventListener('touchstart', (e) => {
         const t = e.touches[0];
         getMouseNDC(t);
         raycaster.setFromCamera(mouse, sCamera);
-        const hits = raycaster.intersectObjects(shapeMeshes);
+        const hits = raycaster.intersectObjects(shapeMeshes, true);
         if (hits.length > 0) {
+          isDragging = true;
           dragShape = getGroup(hits[0]);
           dragPlane.setFromNormalAndCoplanarPoint(new THREE.Vector3(0, 0, 1), dragShape.position);
           raycaster.ray.intersectPlane(dragPlane, intersection);
@@ -2502,8 +2510,8 @@
         }
       }, { passive: false });
 
-      shapesCanvas.addEventListener('touchmove', (e) => {
-        if (!dragShape) return;
+      document.addEventListener('touchmove', (e) => {
+        if (!isDragging || !dragShape) return;
         e.preventDefault();
         const t = e.touches[0];
         getMouseNDC(t);
@@ -2513,13 +2521,15 @@
         dragShape._basePos.copy(dragShape.position);
       }, { passive: false });
 
-      shapesCanvas.addEventListener('touchend', () => { dragShape = null; });
+      document.addEventListener('touchend', () => {
+        if (isDragging) { isDragging = false; dragShape = null; }
+      });
 
-      // When not dragging over a shape, let clicks pass through
+      // Click pass-through for non-shape areas
       shapesCanvas.addEventListener('click', (e) => {
         getMouseNDC(e);
         raycaster.setFromCamera(mouse, sCamera);
-        const hits = raycaster.intersectObjects(shapeMeshes);
+        const hits = raycaster.intersectObjects(shapeMeshes, true);
         if (hits.length === 0) {
           shapesCanvas.style.pointerEvents = 'none';
           const el = document.elementFromPoint(e.clientX, e.clientY);
