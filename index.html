@@ -1918,7 +1918,7 @@
       const camera = new THREE.PerspectiveCamera(35, W / H, 0.1, 100);
       // Frontal view — closer on desktop, farther on mobile for dance arms
       const isMobileRobot = window.innerWidth < 768;
-      camera.position.set(0, isMobileRobot ? 1.5 : 1.0, isMobileRobot ? 8.5 : 6.5);
+      camera.position.set(0, isMobileRobot ? 1.5 : 1.0, isMobileRobot ? 8.5 : 7.2);
       camera.lookAt(0, isMobileRobot ? 1.2 : 0.9, 0);
 
       const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
@@ -2404,15 +2404,15 @@
       const bobSpeeds = [1.0, 0.85, 1.15, 0.75, 0.95, 1.1, 0.9, 1.05, 0.8, 1.2];
 
       const shapeConfigs = [
-        { file: 'shapes/shape_sphere.glb',  pos: [-9.5, 4.5, 0],  scale: 1.8 },
-        { file: 'shapes/shape_cube.glb',    pos: [9.5, 4, 0],     scale: 1.5 },
-        { file: 'shapes/shape_torus.glb',   pos: [-10.5, -1, 0],  scale: 1.6 },
-        { file: 'shapes/shape_diamond.glb', pos: [10.5, -1.5, 0], scale: 1.5 },
-        { file: 'shapes/shape_pyramid.glb', pos: [10, 1.5, 0],    scale: 2.0 },
-        { file: 'shapes/shape_hexagon.glb', pos: [-8.5, -4.5, 0], scale: 1.5 },
-        { file: 'shapes/shape_star.glb',    pos: [-9, 2, 0],      scale: 1.6 },
-        { file: 'shapes/shape_dodecahedron.glb', pos: [9, -4, 0], scale: 1.4 },
-        { file: 'shapes/shape_capsule.glb', pos: [-8, -2.5, 0],   scale: 1.5 },
+        { file: 'shapes/shape_sphere.glb',  pos: [-7.5, 3.5, 0],  scale: 1.8 },
+        { file: 'shapes/shape_cube.glb',    pos: [7.5, 3, 0],     scale: 1.5 },
+        { file: 'shapes/shape_torus.glb',   pos: [-7, -1.5, 0],   scale: 1.6 },
+        { file: 'shapes/shape_diamond.glb', pos: [7, -2, 0],      scale: 1.5 },
+        { file: 'shapes/shape_pyramid.glb', pos: [8, 1, 0],       scale: 2.0 },
+        { file: 'shapes/shape_hexagon.glb', pos: [-6, -4.5, 0],   scale: 1.5 },
+        { file: 'shapes/shape_star.glb',    pos: [-7, 1, 0],      scale: 1.6 },
+        { file: 'shapes/shape_dodecahedron.glb', pos: [7, -4.5, 0], scale: 1.4 },
+        { file: 'shapes/shape_capsule.glb', pos: [-5.5, -2.5, 0], scale: 1.5 },
       ];
 
       const shapeGroups = [];
