@@ -1363,7 +1363,7 @@
   <div class="shapes-area" id="shapesArea">
 
     <!-- 3D SHAPES (Three.js canvas, draggable) -->
-    <canvas id="shapesCanvas" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:auto;z-index:10;cursor:grab;" data-base-z="10"></canvas>
+    <canvas id="shapesCanvas" style="position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:9998;cursor:grab;"></canvas>
 
     <!-- TRUST -->
     <div class="trust">
@@ -2351,8 +2351,8 @@
     const shapesCanvas = document.getElementById('shapesCanvas');
     const shapesArea = document.getElementById('shapesArea');
     if (shapesCanvas && shapesArea) {
-      const sW = shapesArea.offsetWidth;
-      const sH = shapesArea.offsetHeight;
+      const sW = window.innerWidth;
+      const sH = window.innerHeight;
       const sScene = new THREE.Scene();
       const sCamera = new THREE.PerspectiveCamera(50, sW / sH, 0.1, 100);
       sCamera.position.z = 14;
@@ -2454,54 +2454,59 @@
         return hit.object._parentGroup || hit.object;
       }
 
-      // ── Optimized drag — skip raycast on idle mousemove ──
+      // ── Shape drag via document events — canvas is pointer-events:none ──
       let isDragging = false;
+      let dragScrollRAF = null;
 
-      shapesCanvas.addEventListener('mousedown', (e) => {
-        getMouseNDC(e);
+      // Check if mouse is over a shape (canvas coords mapped from page coords)
+      function hitTestShapes(clientX, clientY) {
+        const rect = shapesCanvas.getBoundingClientRect();
+        mouse.x = ((clientX - rect.left) / rect.width) * 2 - 1;
+        mouse.y = -((clientY - rect.top) / rect.height) * 2 + 1;
         raycaster.setFromCamera(mouse, sCamera);
-        const hits = raycaster.intersectObjects(shapeMeshes, true);
+        return raycaster.intersectObjects(shapeMeshes, true);
+      }
+
+      // Update cursor globally when hovering shapes area
+      document.addEventListener('mousemove', (e) => {
+        if (isDragging && dragShape) {
+          const rect = shapesCanvas.getBoundingClientRect();
+          mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+          mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+          raycaster.setFromCamera(mouse, sCamera);
+          raycaster.ray.intersectPlane(dragPlane, intersection);
+          dragShape.position.copy(intersection.add(dragOffset));
+          dragShape._basePos.copy(dragShape.position);
+
+          // Auto-scroll near edges
+          const edgeZone = 80, speed = 8;
+          cancelAnimationFrame(dragScrollRAF);
+          if (e.clientY < edgeZone || e.clientY > window.innerHeight - edgeZone) {
+            (function autoScroll() {
+              if (!isDragging) return;
+              if (e.clientY < edgeZone) window.scrollBy(0, -speed);
+              else if (e.clientY > window.innerHeight - edgeZone) window.scrollBy(0, speed);
+              dragScrollRAF = requestAnimationFrame(autoScroll);
+            })();
+          }
+        } else {
+          // Show grab cursor when hovering over shapes
+          const hits = hitTestShapes(e.clientX, e.clientY);
+          document.body.style.cursor = hits.length > 0 ? 'grab' : '';
+        }
+      });
+
+      document.addEventListener('mousedown', (e) => {
+        if (isDragging) return;
+        const hits = hitTestShapes(e.clientX, e.clientY);
         if (hits.length > 0) {
           isDragging = true;
           dragShape = getGroup(hits[0]);
           dragPlane.setFromNormalAndCoplanarPoint(new THREE.Vector3(0, 0, 1), dragShape.position);
           raycaster.ray.intersectPlane(dragPlane, intersection);
           dragOffset.copy(dragShape.position).sub(intersection);
-          shapesCanvas.style.cursor = 'grabbing';
-          shapesCanvas.style.zIndex = '9999';
-        } else {
-          // Click missed shapes — pass through to element below
-          shapesCanvas.style.pointerEvents = 'none';
-          const el = document.elementFromPoint(e.clientX, e.clientY);
-          if (el) el.dispatchEvent(new MouseEvent('mousedown', e));
-          shapesCanvas.style.pointerEvents = 'auto';
-        }
-      });
-
-      let dragScrollRAF = null;
-      document.addEventListener('mousemove', (e) => {
-        if (!isDragging || !dragShape) return;
-        getMouseNDC(e);
-        raycaster.setFromCamera(mouse, sCamera);
-        raycaster.ray.intersectPlane(dragPlane, intersection);
-        dragShape.position.copy(intersection.add(dragOffset));
-        dragShape._basePos.copy(dragShape.position);
-
-        // Auto-scroll when dragging near top/bottom edges
-        const edgeZone = 80;
-        const speed = 8;
-        cancelAnimationFrame(dragScrollRAF);
-        function autoScroll() {
-          if (!isDragging) return;
-          if (e.clientY < edgeZone) {
-            window.scrollBy(0, -speed);
-          } else if (e.clientY > window.innerHeight - edgeZone) {
-            window.scrollBy(0, speed);
-          }
-          dragScrollRAF = requestAnimationFrame(autoScroll);
-        }
-        if (e.clientY < edgeZone || e.clientY > window.innerHeight - edgeZone) {
-          autoScroll();
+          document.body.style.cursor = 'grabbing';
+          e.preventDefault();
         }
       });
 
@@ -2509,56 +2514,42 @@
         if (isDragging) {
           isDragging = false;
           dragShape = null;
-          shapesCanvas.style.cursor = 'grab';
-          shapesCanvas.style.zIndex = '10';
+          document.body.style.cursor = '';
           cancelAnimationFrame(dragScrollRAF);
         }
       });
 
-      // Touch drag — horizontal moves shape, vertical scrolls page
-      let shapeTouchStartY = 0;
-      shapesCanvas.addEventListener('touchstart', (e) => {
+      // Touch drag for shapes
+      document.addEventListener('touchstart', (e) => {
         const t = e.touches[0];
-        shapeTouchStartY = t.clientY;
-        getMouseNDC(t);
-        raycaster.setFromCamera(mouse, sCamera);
-        const hits = raycaster.intersectObjects(shapeMeshes, true);
+        const hits = hitTestShapes(t.clientX, t.clientY);
         if (hits.length > 0) {
           isDragging = true;
           dragShape = getGroup(hits[0]);
           dragPlane.setFromNormalAndCoplanarPoint(new THREE.Vector3(0, 0, 1), dragShape.position);
+          const rect = shapesCanvas.getBoundingClientRect();
+          mouse.x = ((t.clientX - rect.left) / rect.width) * 2 - 1;
+          mouse.y = -((t.clientY - rect.top) / rect.height) * 2 + 1;
+          raycaster.setFromCamera(mouse, sCamera);
           raycaster.ray.intersectPlane(dragPlane, intersection);
           dragOffset.copy(dragShape.position).sub(intersection);
-          shapesCanvas.style.zIndex = '9999';
         }
       }, { passive: true });
 
-      shapesCanvas.addEventListener('touchmove', (e) => {
+      document.addEventListener('touchmove', (e) => {
         if (!isDragging || !dragShape) return;
-        // Don't preventDefault — let the page scroll naturally
         const t = e.touches[0];
-        getMouseNDC(t);
+        const rect = shapesCanvas.getBoundingClientRect();
+        mouse.x = ((t.clientX - rect.left) / rect.width) * 2 - 1;
+        mouse.y = -((t.clientY - rect.top) / rect.height) * 2 + 1;
         raycaster.setFromCamera(mouse, sCamera);
         raycaster.ray.intersectPlane(dragPlane, intersection);
         dragShape.position.copy(intersection.add(dragOffset));
         dragShape._basePos.copy(dragShape.position);
       }, { passive: true });
 
-      shapesCanvas.addEventListener('touchend', () => {
-        if (isDragging) { isDragging = false; dragShape = null; shapesCanvas.style.zIndex = '10'; }
-      });
-
-      // Click pass-through for non-shape areas
-      shapesCanvas.addEventListener('click', (e) => {
-        getMouseNDC(e);
-        raycaster.setFromCamera(mouse, sCamera);
-        const hits = raycaster.intersectObjects(shapeMeshes, true);
-        if (hits.length === 0) {
-          shapesCanvas.style.pointerEvents = 'none';
-          const el = document.elementFromPoint(e.clientX, e.clientY);
-          if (el && el !== shapesCanvas) el.click();
-          shapesCanvas.style.pointerEvents = 'auto';
-        }
+      document.addEventListener('touchend', () => {
+        if (isDragging) { isDragging = false; dragShape = null; }
       });
 
       let sMX = 0, sMY = 0;
@@ -2593,8 +2584,8 @@
 
       // Resize
       window.addEventListener('resize', () => {
-        const nW = shapesArea.offsetWidth;
-        const nH = shapesArea.offsetHeight;
+        const nW = window.innerWidth;
+        const nH = window.innerHeight;
         sCamera.aspect = nW / nH;
         sCamera.updateProjectionMatrix();
         sRenderer.setSize(nW, nH);
