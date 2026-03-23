@@ -1084,7 +1084,7 @@
       color: var(--text-muted);
     }
     .install-btn {
-      display: none;
+      display: inline-flex;
       align-items: center;
       gap: 0.5rem;
       padding: 0.5rem 1.25rem;
@@ -2405,13 +2405,26 @@
     });
 
     installBtn.addEventListener('click', async () => {
-      if (!deferredPrompt) return;
-      deferredPrompt.prompt();
-      const result = await deferredPrompt.userChoice;
-      if (result.outcome === 'accepted') {
-        installBtn.style.display = 'none';
+      // Android/Chrome — native install prompt
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        const result = await deferredPrompt.userChoice;
+        if (result.outcome === 'accepted') {
+          installBtn.style.display = 'none';
+        }
+        deferredPrompt = null;
+        return;
       }
-      deferredPrompt = null;
+
+      // iOS — manual instructions
+      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+      if (isIOS) {
+        alert('Per installare DevStudio AI:\n\n1. Tocca il pulsante Condividi (rettangolo con freccia in su)\n2. Scorri e tocca "Aggiungi alla schermata Home"\n3. Conferma con "Aggiungi"');
+        return;
+      }
+
+      // Desktop — hint
+      alert('Per installare DevStudio AI:\n\nSu Chrome: clicca l\'icona di installazione nella barra degli indirizzi (a destra)\nSu Edge: clicca ⋯ → App → Installa questo sito come app');
     });
 
     window.addEventListener('appinstalled', () => {
@@ -2419,14 +2432,9 @@
       deferredPrompt = null;
     });
 
-    // On iOS show install hint (iOS doesn't support beforeinstallprompt)
-    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-    const isStandalone = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone;
-    if (isIOS && !isStandalone) {
-      installBtn.classList.add('visible');
-      installBtn.addEventListener('click', () => {
-        alert('Per installare DevStudio AI:\n\n1. Tocca il pulsante Condividi (rettangolo con freccia in su)\n2. Scorri e tocca "Aggiungi alla schermata Home"\n3. Conferma con "Aggiungi"');
-      });
+    // Hide button if already installed as PWA
+    if (window.matchMedia('(display-mode: standalone)').matches || navigator.standalone) {
+      installBtn.style.display = 'none';
     }
   </script>
 
