@@ -2043,18 +2043,19 @@
         container.style.cursor = 'grab';
       });
 
-      // ── MOBILE TOUCH: tap=dance, horizontal swipe=rotate, vertical=scroll ──
+      // ── MOBILE TOUCH: tap=dance, swipe=spin like a top, vertical=scroll ──
+      let spinVelocity = 0;
       (function() {
-        let startX = 0, startY = 0, startTime = 0, lastX = 0;
-        let direction = null; // null, 'h', 'v'
+        let startX = 0, startY = 0, startTime = 0, lastX = 0, lastTime = 0;
+        let direction = null;
 
-        // Listen on container (not just canvas) so tapping anywhere on robot area works
         container.addEventListener('touchstart', function(e) {
           const t = e.touches[0];
           startX = lastX = t.clientX;
           startY = t.clientY;
-          startTime = Date.now();
+          startTime = lastTime = Date.now();
           direction = null;
+          spinVelocity = 0; // stop any ongoing spin
         }, { passive: true });
 
         container.addEventListener('touchmove', function(e) {
@@ -2062,34 +2063,43 @@
           const t = e.touches[0];
           const dx = t.clientX - startX;
           const dy = t.clientY - startY;
+          const now = Date.now();
 
-          // Decide direction once after 8px
           if (!direction && (Math.abs(dx) > 8 || Math.abs(dy) > 8)) {
             direction = Math.abs(dx) > Math.abs(dy) ? 'h' : 'v';
           }
 
           if (direction === 'h') {
             e.preventDefault();
-            model.rotation.y += (t.clientX - lastX) * 0.035;
+            const moveDx = t.clientX - lastX;
+            const moveDt = Math.max(now - lastTime, 1);
+            model.rotation.y += moveDx * 0.04;
+            spinVelocity = moveDx / moveDt; // track velocity for inertia
             lastX = t.clientX;
+            lastTime = now;
           }
         }, { passive: false });
 
         container.addEventListener('touchend', function(e) {
-          if (!model || !danceAction) return;
+          if (!model) return;
           const t = e.changedTouches[0];
           const dx = Math.abs(t.clientX - startX);
           const dy = Math.abs(t.clientY - startY);
           const dt = Date.now() - startTime;
 
-          if (dx < 12 && dy < 12 && dt < 400) {
-            isDancing = !isDancing;
-            danceAction.paused = !isDancing;
-            if (isDancing) danceAction.timeScale = 1;
-            if (navigator.vibrate) navigator.vibrate(30);
-            const hint = document.getElementById('robotClickHint');
-            if (hint) hint.textContent = isDancing ? 'Clicca per fermare' : 'Clicca per ballare';
+          if (dx < 15 && dy < 15 && dt < 400) {
+            // Tap = toggle dance
+            if (danceAction) {
+              isDancing = !isDancing;
+              danceAction.paused = !isDancing;
+              if (isDancing) danceAction.timeScale = 1;
+              if (navigator.vibrate) navigator.vibrate(30);
+              const hint = document.getElementById('robotClickHint');
+              if (hint) hint.textContent = isDancing ? 'Clicca per fermare' : 'Clicca per ballare';
+            }
+            spinVelocity = 0;
           }
+          // else: spinVelocity stays, inertia kicks in via render loop
           direction = null;
         }, { passive: true });
       })();
@@ -2104,9 +2114,18 @@
         if (mixer) mixer.update(delta);
 
         if (model) {
-          // Rotation toward cursor — strong follow
-          model.rotation.y += ((Math.PI * 1.15 + mouseRY) - model.rotation.y) * 0.08;
-          model.rotation.x += (mouseRX - model.rotation.x) * 0.08;
+          // Spin inertia from mobile swipe (decays like a top)
+          if (Math.abs(spinVelocity) > 0.001) {
+            model.rotation.y += spinVelocity * 8;
+            spinVelocity *= 0.96; // friction — slows down gradually
+          } else if ('ontouchstart' in window) {
+            // On mobile, don't follow mouse — just idle
+            spinVelocity = 0;
+          } else {
+            // Desktop: rotation toward cursor — strong follow
+            model.rotation.y += ((Math.PI * 1.15 + mouseRY) - model.rotation.y) * 0.08;
+            model.rotation.x += (mouseRX - model.rotation.x) * 0.08;
+          }
 
           // Gentle floating when not dancing
           if (!isDancing) {
