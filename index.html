@@ -1240,7 +1240,7 @@
     }
 
     /* Tech partners */
-    .tech-logos { opacity: 0.7; transition: all 0.6s ease; }
+    .tech-logos { opacity: 0.7; transition: all 0.6s ease; position: relative; z-index: 5; }
     .tech-logos:hover { opacity: 1; }
     .tech-logos span { transition: all 0.3s ease; cursor: default; display: flex; align-items: center; gap: 0.5rem; white-space: nowrap; }
     .tech-logos span:hover { transform: scale(1.08); }
@@ -1327,7 +1327,7 @@
   <!-- HERO -->
   <section class="hero">
     <div class="hero-video-bg" aria-hidden="true">
-      <video autoplay muted loop playsinline>
+      <video autoplay muted loop playsinline preload="auto">
         <source src="hero-bg.mp4" type="video/mp4">
       </video>
     </div>
@@ -1393,7 +1393,7 @@
 
   
     <!-- TECH PARTNERS -->
-    <section style="padding: 2.5rem 0; text-align: center;">
+    <section style="padding: 2.5rem 0; text-align: center; position: relative; z-index: 5;">
       <div class="container">
         <p class="reveal" style="font-family: var(--font-body); font-size: 0.85rem; color: var(--text-muted); margin-bottom: 2.5rem;">Tecnologie e partner che utilizziamo <strong style="color: var(--text-secondary);">per i nostri progetti</strong></p>
         <!-- Row 1 -->
@@ -2533,6 +2533,28 @@
         sRenderer.setSize(nW, nH);
       });
     }
+  </script>
+
+  <!-- Force autoplay videos -->
+  <script>
+    function forcePlayVideos() {
+      document.querySelectorAll('video').forEach(v => {
+        v.muted = true;
+        v.play().catch(() => {});
+      });
+    }
+    // Try immediately
+    forcePlayVideos();
+    // Retry on DOM ready
+    document.addEventListener('DOMContentLoaded', forcePlayVideos);
+    // Retry on first user interaction
+    ['click', 'touchstart', 'scroll'].forEach(evt => {
+      document.addEventListener(evt, forcePlayVideos, { once: true });
+    });
+    // Retry on visibility change (tab switch)
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden) forcePlayVideos();
+    });
   </script>
 
   <!-- PWA Install -->
