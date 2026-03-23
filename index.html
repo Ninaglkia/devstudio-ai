@@ -1436,7 +1436,7 @@
         </div>
       </div>
       <!-- 3D ROBOT centered under logos -->
-      <div id="robot3dContainer" style="width: 320px; height: 500px; margin: -2rem auto 0; cursor: grab; position: relative; z-index: 50;">
+      <div id="robot3dContainer" style="width: 340px; height: 550px; margin: -3rem auto 0; cursor: grab; position: relative; z-index: 50;">
         <canvas id="robotCanvas" style="width: 100%; height: 100%;" aria-label="Robot 3D interattivo" role="img"></canvas>
         <div id="robotClickHint" style="position: absolute; bottom: -5px; left: 50%; transform: translateX(-50%); font-family: var(--font-mono); font-size: 0.55rem; color: var(--accent-light); letter-spacing: 0.1em; text-transform: uppercase; opacity: 0.7; white-space: nowrap; animation: pulse-soft 2s ease-in-out infinite;">Clicca per ballare &bull; Trascina per spostare</div>
         <script>if ('ontouchstart' in window) document.getElementById('robotClickHint').textContent = 'Tocca per ballare \u2022 Scorri per girare';</script>
@@ -1913,12 +1913,12 @@
     const canvas = document.getElementById('robotCanvas');
     const container = document.getElementById('robot3dContainer');
     if (canvas && container) {
-      const W = 320, H = 500;
+      const W = 340, H = 550;
       const scene = new THREE.Scene();
       const camera = new THREE.PerspectiveCamera(35, W / H, 0.1, 100);
       // Frontal view — closer on desktop, farther on mobile for dance arms
       const isMobileRobot = window.innerWidth < 768;
-      camera.position.set(0, isMobileRobot ? 1.5 : 1.0, isMobileRobot ? 8.5 : 5.5);
+      camera.position.set(0, isMobileRobot ? 1.5 : 1.0, isMobileRobot ? 8.5 : 5.8);
       camera.lookAt(0, isMobileRobot ? 1.2 : 0.9, 0);
 
       const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
