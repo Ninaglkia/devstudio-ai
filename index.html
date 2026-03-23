@@ -1290,7 +1290,7 @@
       .services, .pricing, .process, .testimonials, .cta-section { padding: 2.5rem 0; }
       .section-subtitle { margin-bottom: 1.5rem; }
       .hero { min-height: 85vh; padding-top: 4rem; }
-      #heroText3dContainer { transform: scale(0.65); }
+      #heroText3dContainer { transform: scale(0.85); }
     }
   </style>
 </head>
@@ -1345,7 +1345,7 @@
         </div>
         <div style="height: 55vh;"></div>
         <div style="text-align: center; margin-top: -2rem; margin-bottom: 1rem; position: relative; z-index: 11;">
-          <span style="font-family: var(--font-mono); font-size: 0.5rem; color: var(--accent-light); letter-spacing: 0.15em; text-transform: uppercase; opacity: 0.6;">Clicca per cambiare colore</span>
+          <span style="font-family: var(--font-mono); font-size: 0.6rem; color: var(--accent-light); letter-spacing: 0.15em; text-transform: uppercase; opacity: 0.8; text-shadow: 0 0 10px rgba(109,92,255,0.5);">Clicca per cambiare colore</span>
         </div>
         <h1 class="hero-title" style="position:absolute;left:-9999px;" aria-hidden="false">Il tuo business merita un sito che spacca.</h1>
         <p class="hero-subtitle reveal reveal-delay-2">
@@ -2098,26 +2098,29 @@
       hRenderer.toneMapping = THREE.ACESFilmicToneMapping;
       hRenderer.toneMappingExposure = 1.3;
 
-      // Lighting
-      hScene.add(new THREE.AmbientLight(0x6d5cff, 0.6));
-      const hKey = new THREE.DirectionalLight(0xffffff, 2.0);
+      // Lighting — brighter for visibility
+      hScene.add(new THREE.AmbientLight(0xffffff, 0.8));
+      const hKey = new THREE.DirectionalLight(0xffffff, 3.0);
       hKey.position.set(2, 3, 5);
       hScene.add(hKey);
-      const hRim = new THREE.PointLight(0x00e5ff, 1.2, 20);
+      const hRim = new THREE.PointLight(0x00e5ff, 2.0, 20);
       hRim.position.set(-3, 1, 3);
       hScene.add(hRim);
+      const hFill = new THREE.PointLight(0x6d5cff, 1.5, 20);
+      hFill.position.set(3, -1, 4);
+      hScene.add(hFill);
 
       const heroLoader = new GLTFLoader();
       let heroTextModel = null;
       let heroAnimStart = null;
 
       const matWhite = new THREE.MeshPhysicalMaterial({
-        color: 0xffffff, emissive: 0xeeeeff, emissiveIntensity: 0.2,
-        metalness: 0.7, roughness: 0.05, clearcoat: 1.0, clearcoatRoughness: 0.05,
+        color: 0xffffff, emissive: 0xffffff, emissiveIntensity: 0.5,
+        metalness: 0.8, roughness: 0.02, clearcoat: 1.0, clearcoatRoughness: 0.02,
       });
       const matAccent = new THREE.MeshPhysicalMaterial({
-        color: 0x8b7dff, emissive: 0x00e5ff, emissiveIntensity: 0.6,
-        metalness: 0.5, roughness: 0.05, clearcoat: 1.0, clearcoatRoughness: 0.02,
+        color: 0x8b7dff, emissive: 0x6d5cff, emissiveIntensity: 1.0,
+        metalness: 0.6, roughness: 0.02, clearcoat: 1.0, clearcoatRoughness: 0.01,
       });
 
       heroLoader.load('shapes/hero_text_3d.glb', (gltf) => {
