@@ -18,6 +18,10 @@
   <meta name="twitter:description" content="Siti web moderni potenziati dall'AI. Dal design al lancio in 7 giorni.">
   <meta name="twitter:image" content="https://devstudio-ai.vercel.app/og-image.jpg">
   <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="apple-touch-icon" href="/icons/icon-192.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -1064,6 +1068,46 @@
     }
     .footer-social a:hover svg { stroke: var(--accent-light); }
 
+    /* ═══ PWA INSTALL BUTTON ═══ */
+    .install-app-section {
+      width: 100%;
+      margin-top: 1.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--glass-border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+    }
+    .install-app-section span {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+    .install-btn {
+      display: none;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1.25rem;
+      border-radius: 8px;
+      border: 1px solid var(--accent);
+      background: var(--accent-subtle);
+      color: var(--accent-light);
+      font-family: var(--font-body);
+      font-size: 0.8rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .install-btn:hover {
+      background: rgba(109, 92, 255, 0.2);
+      box-shadow: 0 0 20px var(--accent-glow);
+    }
+    .install-btn svg {
+      width: 16px; height: 16px;
+      stroke: currentColor; fill: none; stroke-width: 2;
+    }
+    .install-btn.visible { display: inline-flex; }
+
     /* Tech partners */
     .tech-logos { opacity: 0.7; transition: all 0.6s ease; }
     .tech-logos:hover { opacity: 1; }
@@ -1524,6 +1568,13 @@
           <a href="#" aria-label="LinkedIn">
             <svg viewBox="0 0 24 24"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
           </a>
+        </div>
+        <div class="install-app-section">
+          <span>Disponibile come app</span>
+          <button class="install-btn" id="installBtn" aria-label="Installa DevStudio AI">
+            <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Installa App
+          </button>
         </div>
       </div>
     </div>
@@ -2332,6 +2383,49 @@
         sCamera.aspect = nW / nH;
         sCamera.updateProjectionMatrix();
         sRenderer.setSize(nW, nH);
+      });
+    }
+  </script>
+
+  <!-- PWA Install -->
+  <script>
+    // Register Service Worker
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js');
+    }
+
+    // PWA Install prompt
+    let deferredPrompt;
+    const installBtn = document.getElementById('installBtn');
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      installBtn.classList.add('visible');
+    });
+
+    installBtn.addEventListener('click', async () => {
+      if (!deferredPrompt) return;
+      deferredPrompt.prompt();
+      const result = await deferredPrompt.userChoice;
+      if (result.outcome === 'accepted') {
+        installBtn.style.display = 'none';
+      }
+      deferredPrompt = null;
+    });
+
+    window.addEventListener('appinstalled', () => {
+      installBtn.style.display = 'none';
+      deferredPrompt = null;
+    });
+
+    // On iOS show install hint (iOS doesn't support beforeinstallprompt)
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone;
+    if (isIOS && !isStandalone) {
+      installBtn.classList.add('visible');
+      installBtn.addEventListener('click', () => {
+        alert('Per installare DevStudio AI:\n\n1. Tocca il pulsante Condividi (rettangolo con freccia in su)\n2. Scorri e tocca "Aggiungi alla schermata Home"\n3. Conferma con "Aggiungi"');
       });
     }
   </script>
