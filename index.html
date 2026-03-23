@@ -2035,18 +2035,40 @@
         container.style.cursor = 'grab';
       });
 
-      // ── MOBILE: tap to toggle dance, allow scroll ──
+      // ── MOBILE: swipe horizontal = rotate, vertical = scroll, tap = dance ──
       let robotTouchStart = null;
+      let robotTouchLocked = null; // 'rotate' or 'scroll'
+
       container.addEventListener('touchstart', (e) => {
         robotTouchStart = { x: e.touches[0].clientX, y: e.touches[0].clientY, time: Date.now() };
+        robotTouchLocked = null;
       }, { passive: true });
 
+      container.addEventListener('touchmove', (e) => {
+        if (!robotTouchStart || !model) return;
+        const dx = e.touches[0].clientX - robotTouchStart.x;
+        const dy = e.touches[0].clientY - robotTouchStart.y;
+
+        // Lock direction after 10px movement
+        if (!robotTouchLocked && (Math.abs(dx) > 10 || Math.abs(dy) > 10)) {
+          robotTouchLocked = Math.abs(dx) > Math.abs(dy) ? 'rotate' : 'scroll';
+        }
+
+        if (robotTouchLocked === 'rotate') {
+          e.preventDefault(); // block scroll, rotate robot
+          model.rotation.y += dx * 0.01;
+          robotTouchStart.x = e.touches[0].clientX;
+          robotTouchStart.y = e.touches[0].clientY;
+        }
+        // if 'scroll' → do nothing, let browser scroll naturally
+      }, { passive: false });
+
       container.addEventListener('touchend', (e) => {
-        if (!robotTouchStart || !model || !danceAction) return;
+        if (!robotTouchStart || !model || !danceAction) { robotTouchStart = null; return; }
         const dx = Math.abs(e.changedTouches[0].clientX - robotTouchStart.x);
         const dy = Math.abs(e.changedTouches[0].clientY - robotTouchStart.y);
         const dt = Date.now() - robotTouchStart.time;
-        // Only toggle dance on tap (small movement, short duration)
+        // Tap = toggle dance
         if (dx < 15 && dy < 15 && dt < 300) {
           isDancing = !isDancing;
           danceAction.paused = !isDancing;
@@ -2056,6 +2078,7 @@
           if (hint) hint.textContent = isDancing ? 'Clicca per fermare' : 'Clicca per ballare';
         }
         robotTouchStart = null;
+        robotTouchLocked = null;
       }, { passive: true });
 
       // Render loop
