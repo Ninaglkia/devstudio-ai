@@ -1916,9 +1916,9 @@
       const W = 320, H = 500;
       const scene = new THREE.Scene();
       const camera = new THREE.PerspectiveCamera(35, W / H, 0.1, 100);
-      // Frontal view — pulled back to see full body + arms raised
-      camera.position.set(0, 1.2, 6.5);
-      camera.lookAt(0, 1.0, 0);
+      // Frontal view — far enough to see full dance with arms raised
+      camera.position.set(0, 1.5, 8.5);
+      camera.lookAt(0, 1.2, 0);
 
       const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
       renderer.setSize(W, H);
