@@ -1897,10 +1897,11 @@
       });
     }
 
-    // Pricing cards: stronger tilt
-    document.querySelectorAll('[data-tilt]').forEach(card => initTilt(card, 8));
-    // Service cards: subtler tilt
-    document.querySelectorAll('[data-tilt-light]').forEach(card => initTilt(card, 4));
+    // Tilt effects — desktop only (breaks touch on mobile)
+    if (window.innerWidth > 768) {
+      document.querySelectorAll('[data-tilt]').forEach(card => initTilt(card, 8));
+      document.querySelectorAll('[data-tilt-light]').forEach(card => initTilt(card, 4));
+    }
 
     // ═══ CTA PARTICLES ═══
     function createCtaParticles() {
