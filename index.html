@@ -2623,9 +2623,11 @@
           const mult = 0.8 + i * 0.15;
           // Bob
           group.position.y = group._basePos.y + Math.sin(t * bobSpeeds[i % bobSpeeds.length]) * 0.25;
-          // Cursor follow — shapes shift toward mouse
-          group.position.x = group._basePos.x + sMX * 0.3 * mult;
-          group.position.y += sMY * -0.2 * mult;
+          // Cursor follow — shapes shift toward mouse (desktop only)
+          if (!isMobileShapes) {
+            group.position.x = group._basePos.x + sMX * 0.3 * mult;
+            group.position.y += sMY * -0.2 * mult;
+          }
           // Rotation toward cursor
           group.rotation.x += (sMY * -0.5 * mult - group.rotation.x) * 0.02;
           group.rotation.y += (sMX * 0.8 * mult - group.rotation.y) * 0.02;
