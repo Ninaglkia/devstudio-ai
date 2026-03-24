@@ -2734,8 +2734,9 @@
         <div style="width:48px; height:48px; border-radius:14px; background:linear-gradient(135deg, rgba(109,92,255,0.2), rgba(109,92,255,0.05)); border:1px solid rgba(109,92,255,0.3); display:flex; align-items:center; justify-content:center; margin:0 auto 1rem;">
           <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="var(--accent-light)" stroke-width="1.5"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
         </div>
-        <h3 id="modalTitle" style="font-family:var(--font-heading); font-size:1.25rem; font-weight:700; color:var(--text-primary); margin-bottom:0.4rem;"></h3>
-        <p id="modalSubtitle" style="font-family:var(--font-mono); font-size:0.85rem; color:var(--accent-light);"></p>
+        <h3 id="modalTitle" style="font-family:var(--font-heading); font-size:1.5rem; font-weight:700; color:var(--text-primary); margin-bottom:0.5rem;"></h3>
+        <p id="modalSubtitle" style="font-family:var(--font-heading); font-size:2rem; font-weight:700; color:var(--accent-light); margin-bottom:0.5rem;"></p>
+        <p id="modalDesc" style="font-size:0.8rem; color:var(--text-muted); line-height:1.5;"></p>
       </div>
 
       <!-- Manutenzione upsell -->
@@ -2838,17 +2839,18 @@
   <script>
   (function() {
     const plans = {
-      starter:  { name: 'Starter',  price: '497' },
-      business: { name: 'Business', price: '997' },
-      premium:  { name: 'Premium',  price: '1.997' }
+      starter:  { name: 'Starter',  price: '497', desc: 'Landing page o sito fino a 5 pagine. Design, SEO, dominio e hosting inclusi. Consegna in 7 giorni.' },
+      business: { name: 'Business', price: '997', desc: 'Sito completo fino a 10 pagine con e-commerce, SEO avanzato, Google Analytics e integrazioni social. Consegna in 14 giorni.' },
+      premium:  { name: 'Premium',  price: '1.997', desc: 'E-commerce avanzato illimitato, redesign brand completo, web app custom. Supporto 30 giorni post-lancio. Consegna in 21 giorni.' }
     };
     let currentPlan = null;
 
     window.openCheckout = function(planKey) {
       currentPlan = planKey;
       const plan = plans[planKey];
-      document.getElementById('modalTitle').textContent = 'Hai scelto il pacchetto ' + plan.name;
+      document.getElementById('modalTitle').textContent = 'Pacchetto ' + plan.name;
       document.getElementById('modalSubtitle').textContent = '\u20AC' + plan.price;
+      document.getElementById('modalDesc').textContent = plan.desc;
       document.getElementById('addManutenzione').checked = false;
       toggleManutenzioneOptions();
       document.getElementById('checkoutModal').style.display = 'flex';
