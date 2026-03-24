@@ -1564,7 +1564,7 @@
             <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Setup dominio + hosting</li>
             <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Consegna in 7 giorni</li>
           </ul>
-          <a href="https://wa.me/393285515590?text=Ciao!%20Sono%20interessato%20al%20pacchetto%20STARTER%20(%E2%82%AC497)%20per%20una%20landing%20page%20%2F%20sito%20vetrina.%20Possiamo%20parlarne%3F" target="_blank" rel="noopener noreferrer" class="pricing-btn pricing-btn-outline">Inizia ora</a>
+          <button onclick="openCheckout('starter')" class="pricing-btn pricing-btn-outline">Inizia ora</button>
         </div>
 
         <!-- BUSINESS -->
@@ -1583,7 +1583,7 @@
             <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Form contatti + WhatsApp</li>
             <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Consegna in 14 giorni</li>
           </ul>
-          <a href="https://wa.me/393285515590?text=Ciao!%20Sono%20interessato%20al%20pacchetto%20BUSINESS%20(%E2%82%AC997)%20con%20e-commerce%20e%20sito%20completo.%20Possiamo%20parlarne%3F" target="_blank" rel="noopener noreferrer" class="pricing-btn pricing-btn-fill">Inizia ora</a>
+          <button onclick="openCheckout('business')" class="pricing-btn pricing-btn-fill">Inizia ora</button>
         </div>
 
         <!-- PREMIUM -->
@@ -1600,7 +1600,7 @@
             <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Supporto 30 giorni post-lancio</li>
             <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Consegna in 21 giorni</li>
           </ul>
-          <a href="https://wa.me/393285515590?text=Ciao!%20Sono%20interessato%20al%20pacchetto%20PREMIUM%20(%E2%82%AC1.997)%20con%20e-commerce%20avanzato%20e%20web%20app%20custom.%20Possiamo%20parlarne%3F" target="_blank" rel="noopener noreferrer" class="pricing-btn pricing-btn-outline">Inizia ora</a>
+          <button onclick="openCheckout('premium')" class="pricing-btn pricing-btn-outline">Inizia ora</button>
         </div>
 
       </div>
@@ -1619,10 +1619,11 @@
         <div style="display: flex; align-items: center; gap: 1.5rem; flex-shrink: 0;">
           <div style="text-align: right;">
             <div style="font-family: var(--font-heading); font-size: 1.8rem; font-weight: 700; color: var(--text-primary); line-height: 1;"><span style="font-size: 0.9rem; color: var(--text-secondary); vertical-align: super;">&euro;</span>49<span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 400;">/mese</span></div>
+            <div style="font-size: 0.7rem; color: var(--accent-light); margin-top: 0.3rem;">o &euro;490/anno (risparmi &euro;98)</div>
           </div>
-          <a href="https://wa.me/393285515590?text=Ciao!%20Vorrei%20aggiungere%20il%20piano%20Manutenzione%20%26%20Supporto%20(%E2%82%AC49%2Fmese)%20al%20mio%20pacchetto.%20Possiamo%20parlarne%3F" target="_blank" rel="noopener noreferrer" style="display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.6rem 1.25rem; border-radius: 10px; border: 1px solid rgba(109,92,255,0.5); background: linear-gradient(135deg, rgba(109,92,255,0.2), rgba(109,92,255,0.08)); color: var(--accent-light); font-family: var(--font-mono); font-size: 0.7rem; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; transition: all 0.3s; text-decoration: none;">Aggiungi
+          <button onclick="checkoutManutenzione()" style="display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.6rem 1.25rem; border-radius: 10px; border: 1px solid rgba(109,92,255,0.5); background: linear-gradient(135deg, rgba(109,92,255,0.2), rgba(109,92,255,0.08)); color: var(--accent-light); font-family: var(--font-mono); font-size: 0.7rem; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; transition: all 0.3s; cursor: pointer;">Aggiungi
             <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-          </a>
+          </button>
         </div>
       </div>
 
@@ -2717,6 +2718,249 @@
     if (window.matchMedia('(display-mode: standalone)').matches || navigator.standalone) {
       installBtn.style.display = 'none';
     }
+  </script>
+
+  <!-- CHECKOUT MODAL -->
+  <div id="checkoutModal" style="display:none; position:fixed; inset:0; z-index:10000; align-items:center; justify-content:center; padding:1rem;">
+    <div id="checkoutOverlay" onclick="closeCheckout()" style="position:absolute; inset:0; background:rgba(0,0,0,0.7); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);"></div>
+    <div id="checkoutCard" style="position:relative; width:100%; max-width:480px; background:linear-gradient(145deg, rgba(13,13,13,0.97), rgba(5,5,5,0.99)); border:1px solid rgba(109,92,255,0.25); border-radius:20px; padding:2.5rem 2rem; box-shadow:0 25px 60px rgba(0,0,0,0.6), 0 0 80px rgba(109,92,255,0.08); animation:modalIn 0.35s cubic-bezier(0.16,1,0.3,1); font-family:var(--font-body);">
+      <!-- Close -->
+      <button onclick="closeCheckout()" style="position:absolute; top:1rem; right:1rem; background:none; border:none; color:var(--text-muted); cursor:pointer; padding:0.5rem; transition:color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='var(--text-muted)'">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+      </button>
+
+      <!-- Header -->
+      <div style="text-align:center; margin-bottom:2rem;">
+        <div style="width:48px; height:48px; border-radius:14px; background:linear-gradient(135deg, rgba(109,92,255,0.2), rgba(109,92,255,0.05)); border:1px solid rgba(109,92,255,0.3); display:flex; align-items:center; justify-content:center; margin:0 auto 1rem;">
+          <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="var(--accent-light)" stroke-width="1.5"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+        </div>
+        <h3 id="modalTitle" style="font-family:var(--font-heading); font-size:1.25rem; font-weight:700; color:var(--text-primary); margin-bottom:0.4rem;"></h3>
+        <p id="modalSubtitle" style="font-family:var(--font-mono); font-size:0.85rem; color:var(--accent-light);"></p>
+      </div>
+
+      <!-- Manutenzione upsell -->
+      <div id="manutenzioneSection" style="background:rgba(109,92,255,0.06); border:1px solid rgba(109,92,255,0.15); border-radius:14px; padding:1.25rem; margin-bottom:1.5rem;">
+        <div style="display:flex; align-items:center; gap:0.75rem; margin-bottom:1rem;">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="var(--accent-light)" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          <span style="font-family:var(--font-heading); font-size:0.95rem; font-weight:600; color:var(--text-primary);">Vuoi aggiungere Manutenzione & Supporto?</span>
+        </div>
+
+        <label id="manutenzioneToggle" style="display:flex; align-items:center; gap:0.75rem; cursor:pointer; margin-bottom:1rem; padding:0.5rem 0;">
+          <div style="position:relative; width:44px; height:24px; flex-shrink:0;">
+            <input type="checkbox" id="addManutenzione" style="position:absolute; opacity:0; width:100%; height:100%; cursor:pointer; margin:0; z-index:1;" onchange="toggleManutenzioneOptions()">
+            <div id="toggleTrack" style="position:absolute; inset:0; border-radius:12px; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.15); transition:all 0.3s;"></div>
+            <div id="toggleThumb" style="position:absolute; top:2px; left:2px; width:20px; height:20px; border-radius:50%; background:#fff; transition:all 0.3s; box-shadow:0 1px 3px rgba(0,0,0,0.3);"></div>
+          </div>
+          <span style="font-size:0.85rem; color:var(--text-secondary);">Si, aggiungi manutenzione</span>
+        </label>
+
+        <div id="manutenzioneOptions" style="display:none; padding-left:0.25rem;">
+          <label style="display:flex; align-items:center; gap:0.75rem; cursor:pointer; padding:0.65rem 0.75rem; border-radius:10px; border:1px solid rgba(255,255,255,0.08); margin-bottom:0.5rem; transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(109,92,255,0.3)'" onmouseout="if(!this.querySelector('input').checked)this.style.borderColor='rgba(255,255,255,0.08)'">
+            <input type="radio" name="manutenzionePeriod" value="mensile" checked style="accent-color:#6d5cff; width:16px; height:16px; cursor:pointer;">
+            <div>
+              <div style="font-size:0.85rem; color:var(--text-primary); font-weight:500;">&euro;49/mese</div>
+              <div style="font-size:0.7rem; color:var(--text-muted);">Fatturazione mensile</div>
+            </div>
+          </label>
+          <label style="display:flex; align-items:center; gap:0.75rem; cursor:pointer; padding:0.65rem 0.75rem; border-radius:10px; border:1px solid rgba(255,255,255,0.08); transition:all 0.2s; position:relative;" onmouseover="this.style.borderColor='rgba(109,92,255,0.3)'" onmouseout="if(!this.querySelector('input').checked)this.style.borderColor='rgba(255,255,255,0.08)'">
+            <input type="radio" name="manutenzionePeriod" value="annuale" style="accent-color:#6d5cff; width:16px; height:16px; cursor:pointer;">
+            <div>
+              <div style="font-size:0.85rem; color:var(--text-primary); font-weight:500;">&euro;490/anno</div>
+              <div style="font-size:0.7rem; color:var(--text-muted);">Risparmi &euro;98!</div>
+            </div>
+            <span style="position:absolute; right:0.75rem; top:50%; transform:translateY(-50%); font-family:var(--font-mono); font-size:0.6rem; font-weight:600; color:#22c55e; background:rgba(34,197,94,0.1); border:1px solid rgba(34,197,94,0.2); padding:0.2rem 0.5rem; border-radius:6px; text-transform:uppercase; letter-spacing:0.05em;">-17%</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <button id="btnProceed" onclick="proceedCheckout(true)" style="width:100%; padding:0.9rem; border-radius:12px; border:none; background:linear-gradient(135deg, #6d5cff, #8b7dff); color:#fff; font-family:var(--font-heading); font-size:0.95rem; font-weight:600; cursor:pointer; transition:all 0.3s; box-shadow:0 4px 20px rgba(109,92,255,0.3); letter-spacing:0.02em;" onmouseover="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 6px 25px rgba(109,92,255,0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 20px rgba(109,92,255,0.3)'">
+        Procedi al pagamento
+      </button>
+      <button onclick="proceedCheckout(false)" style="width:100%; margin-top:0.75rem; padding:0.7rem; border-radius:10px; border:none; background:transparent; color:var(--text-muted); font-family:var(--font-body); font-size:0.8rem; cursor:pointer; transition:color 0.2s;" onmouseover="this.style.color='var(--text-secondary)'" onmouseout="this.style.color='var(--text-muted)'">
+        No grazie, procedi senza manutenzione
+      </button>
+    </div>
+  </div>
+
+  <!-- MANUTENZIONE STANDALONE MODAL -->
+  <div id="manutenzioneModal" style="display:none; position:fixed; inset:0; z-index:10000; align-items:center; justify-content:center; padding:1rem;">
+    <div onclick="closeManutenzioneModal()" style="position:absolute; inset:0; background:rgba(0,0,0,0.7); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);"></div>
+    <div style="position:relative; width:100%; max-width:420px; background:linear-gradient(145deg, rgba(13,13,13,0.97), rgba(5,5,5,0.99)); border:1px solid rgba(109,92,255,0.25); border-radius:20px; padding:2.5rem 2rem; box-shadow:0 25px 60px rgba(0,0,0,0.6), 0 0 80px rgba(109,92,255,0.08); animation:modalIn 0.35s cubic-bezier(0.16,1,0.3,1); font-family:var(--font-body);">
+      <button onclick="closeManutenzioneModal()" style="position:absolute; top:1rem; right:1rem; background:none; border:none; color:var(--text-muted); cursor:pointer; padding:0.5rem; transition:color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='var(--text-muted)'">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+      </button>
+      <div style="text-align:center; margin-bottom:1.5rem;">
+        <div style="width:48px; height:48px; border-radius:14px; background:linear-gradient(135deg, rgba(109,92,255,0.2), rgba(109,92,255,0.05)); border:1px solid rgba(109,92,255,0.3); display:flex; align-items:center; justify-content:center; margin:0 auto 1rem;">
+          <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="var(--accent-light)" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <h3 style="font-family:var(--font-heading); font-size:1.15rem; font-weight:700; color:var(--text-primary); margin-bottom:0.3rem;">Manutenzione & Supporto</h3>
+        <p style="font-size:0.8rem; color:var(--text-muted);">Scegli il piano che preferisci</p>
+      </div>
+      <div style="margin-bottom:1.5rem;">
+        <label style="display:flex; align-items:center; gap:0.75rem; cursor:pointer; padding:0.75rem; border-radius:10px; border:1px solid rgba(255,255,255,0.08); margin-bottom:0.5rem; transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(109,92,255,0.3)'" onmouseout="if(!this.querySelector('input').checked)this.style.borderColor='rgba(255,255,255,0.08)'">
+          <input type="radio" name="manutStandalone" value="mensile" checked style="accent-color:#6d5cff; width:16px; height:16px; cursor:pointer;">
+          <div>
+            <div style="font-size:0.9rem; color:var(--text-primary); font-weight:500;">&euro;49/mese</div>
+            <div style="font-size:0.7rem; color:var(--text-muted);">Fatturazione mensile</div>
+          </div>
+        </label>
+        <label style="display:flex; align-items:center; gap:0.75rem; cursor:pointer; padding:0.75rem; border-radius:10px; border:1px solid rgba(255,255,255,0.08); transition:all 0.2s; position:relative;" onmouseover="this.style.borderColor='rgba(109,92,255,0.3)'" onmouseout="if(!this.querySelector('input').checked)this.style.borderColor='rgba(255,255,255,0.08)'">
+          <input type="radio" name="manutStandalone" value="annuale" style="accent-color:#6d5cff; width:16px; height:16px; cursor:pointer;">
+          <div>
+            <div style="font-size:0.9rem; color:var(--text-primary); font-weight:500;">&euro;490/anno</div>
+            <div style="font-size:0.7rem; color:var(--text-muted);">Risparmi &euro;98!</div>
+          </div>
+          <span style="position:absolute; right:0.75rem; top:50%; transform:translateY(-50%); font-family:var(--font-mono); font-size:0.6rem; font-weight:600; color:#22c55e; background:rgba(34,197,94,0.1); border:1px solid rgba(34,197,94,0.2); padding:0.2rem 0.5rem; border-radius:6px; text-transform:uppercase; letter-spacing:0.05em;">-17%</span>
+        </label>
+      </div>
+      <button onclick="proceedManutenzioneCheckout()" style="width:100%; padding:0.9rem; border-radius:12px; border:none; background:linear-gradient(135deg, #6d5cff, #8b7dff); color:#fff; font-family:var(--font-heading); font-size:0.95rem; font-weight:600; cursor:pointer; transition:all 0.3s; box-shadow:0 4px 20px rgba(109,92,255,0.3);" onmouseover="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 6px 25px rgba(109,92,255,0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 20px rgba(109,92,255,0.3)'">
+        Procedi al pagamento
+      </button>
+    </div>
+  </div>
+
+  <style>
+    @keyframes modalIn {
+      from { opacity: 0; transform: scale(0.95) translateY(10px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    #checkoutModal[style*="flex"],
+    #manutenzioneModal[style*="flex"] {
+      display: flex !important;
+    }
+  </style>
+
+  <script>
+  (function() {
+    const plans = {
+      starter:  { name: 'Starter',  price: '497' },
+      business: { name: 'Business', price: '997' },
+      premium:  { name: 'Premium',  price: '1.997' }
+    };
+    let currentPlan = null;
+
+    window.openCheckout = function(planKey) {
+      currentPlan = planKey;
+      const plan = plans[planKey];
+      document.getElementById('modalTitle').textContent = 'Hai scelto il pacchetto ' + plan.name;
+      document.getElementById('modalSubtitle').textContent = '\u20AC' + plan.price;
+      document.getElementById('addManutenzione').checked = false;
+      toggleManutenzioneOptions();
+      document.getElementById('checkoutModal').style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+    };
+
+    window.closeCheckout = function() {
+      document.getElementById('checkoutModal').style.display = 'none';
+      document.body.style.overflow = '';
+      currentPlan = null;
+    };
+
+    window.toggleManutenzioneOptions = function() {
+      var checked = document.getElementById('addManutenzione').checked;
+      document.getElementById('manutenzioneOptions').style.display = checked ? 'block' : 'none';
+      var track = document.getElementById('toggleTrack');
+      var thumb = document.getElementById('toggleThumb');
+      if (checked) {
+        track.style.background = 'rgba(109,92,255,0.5)';
+        track.style.borderColor = 'rgba(109,92,255,0.6)';
+        thumb.style.left = '22px';
+      } else {
+        track.style.background = 'rgba(255,255,255,0.1)';
+        track.style.borderColor = 'rgba(255,255,255,0.15)';
+        thumb.style.left = '2px';
+      }
+    };
+
+    window.proceedCheckout = async function(withManutenzione) {
+      if (!currentPlan) return;
+      var addManut = withManutenzione && document.getElementById('addManutenzione').checked;
+      var period = 'mensile';
+      if (addManut) {
+        var selected = document.querySelector('input[name="manutenzionePeriod"]:checked');
+        if (selected) period = selected.value;
+      }
+      var body = { plan: currentPlan, addManutenzione: addManut };
+      if (addManut) body.manutenzionePeriod = period;
+
+      var btn = document.getElementById('btnProceed');
+      btn.textContent = 'Caricamento...';
+      btn.disabled = true;
+      btn.style.opacity = '0.7';
+
+      try {
+        var res = await fetch('/api/checkout', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body)
+        });
+        var data = await res.json();
+        if (data.url) {
+          window.location.href = data.url;
+        } else {
+          alert('Errore durante il checkout. Riprova.');
+          btn.textContent = 'Procedi al pagamento';
+          btn.disabled = false;
+          btn.style.opacity = '1';
+        }
+      } catch (e) {
+        alert('Errore di connessione. Riprova.');
+        btn.textContent = 'Procedi al pagamento';
+        btn.disabled = false;
+        btn.style.opacity = '1';
+      }
+    };
+
+    window.checkoutManutenzione = function() {
+      document.getElementById('manutenzioneModal').style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+    };
+
+    window.closeManutenzioneModal = function() {
+      document.getElementById('manutenzioneModal').style.display = 'none';
+      document.body.style.overflow = '';
+    };
+
+    window.proceedManutenzioneCheckout = async function() {
+      var selected = document.querySelector('input[name="manutStandalone"]:checked');
+      var period = selected ? selected.value : 'mensile';
+      var btn = event.target;
+      btn.textContent = 'Caricamento...';
+      btn.disabled = true;
+      btn.style.opacity = '0.7';
+
+      try {
+        var res = await fetch('/api/checkout', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ plan: 'manutenzione', addManutenzione: true, manutenzionePeriod: period })
+        });
+        var data = await res.json();
+        if (data.url) {
+          window.location.href = data.url;
+        } else {
+          alert('Errore durante il checkout. Riprova.');
+          btn.textContent = 'Procedi al pagamento';
+          btn.disabled = false;
+          btn.style.opacity = '1';
+        }
+      } catch (e) {
+        alert('Errore di connessione. Riprova.');
+        btn.textContent = 'Procedi al pagamento';
+        btn.disabled = false;
+        btn.style.opacity = '1';
+      }
+    };
+
+    // Close modals on Escape key
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        closeCheckout();
+        closeManutenzioneModal();
+      }
+    });
+  })();
   </script>
 
 </body>

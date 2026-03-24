@@ -1,0 +1,24 @@
+{
+  "name": "devstudio-ai",
+  "version": "1.0.0",
+  "description": "",
+  "main": "sw.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ninaglkia/devstudio-ai.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Ninaglkia/devstudio-ai/issues"
+  },
+  "homepage": "https://github.com/Ninaglkia/devstudio-ai#readme",
+  "dependencies": {
+    "stripe": "^20.4.1"
+  }
+}
