@@ -339,15 +339,16 @@
     /* ═══ NAVBAR ═══ */
     .navbar {
       position: fixed; top: 0; left: 0; right: 0;
-      z-index: 100;
+      z-index: 99999;
       padding: 1rem 0;
       transition: all 0.3s ease;
     }
     .navbar.scrolled {
-      background: rgba(5, 5, 5, 0.85);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
+      background: rgba(5, 5, 5, 0.95);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
       border-bottom: 1px solid var(--glass-border);
+      box-shadow: 0 4px 30px rgba(0,0,0,0.5);
     }
     .navbar .container {
       display: flex; align-items: center; justify-content: space-between;
