@@ -447,6 +447,16 @@
     .hero-video-bg video {
       width: 100%; height: 100%;
       object-fit: cover;
+      pointer-events: none;
+    }
+    .hero-video-bg video::-webkit-media-controls {
+      display: none !important;
+    }
+    .hero-video-bg video::-webkit-media-controls-start-playback-button {
+      display: none !important;
+    }
+    .hero-video-bg video::-webkit-media-controls-panel {
+      display: none !important;
     }
     .hero-video-overlay {
       position: absolute; inset: 0;
