@@ -2608,16 +2608,24 @@
       });
 
       const sClock = new THREE.Clock();
+      let cachedShapesAreaCenterY = shapesArea.offsetTop + shapesArea.offsetHeight / 2;
+      let smoothCamY = 0;
+      // Recalculate on resize only
+      window.addEventListener('resize', () => {
+        cachedShapesAreaCenterY = shapesArea.offsetTop + shapesArea.offsetHeight / 2;
+      });
+
       function animateShapes() {
         requestAnimationFrame(animateShapes);
         const t = sClock.getElapsedTime();
 
-        // Camera scroll tracking — anchor shapes to shapesArea on the page
-        const shapesAreaCenterY = shapesArea.offsetTop + shapesArea.offsetHeight / 2;
+        // Camera scroll tracking — smooth interpolation
         const viewportCenterY = window.scrollY + window.innerHeight / 2;
-        const deltaPixels = shapesAreaCenterY - viewportCenterY;
+        const deltaPixels = cachedShapesAreaCenterY - viewportCenterY;
         const pxPerUnit = window.innerHeight / visibleHeight3D;
-        sCamera.position.y = deltaPixels / pxPerUnit;
+        const targetCamY = deltaPixels / pxPerUnit;
+        smoothCamY += (targetCamY - smoothCamY) * 0.15;
+        sCamera.position.y = smoothCamY;
 
         shapeGroups.forEach((group, i) => {
           if (group === dragShape) return;
