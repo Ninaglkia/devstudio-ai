@@ -2672,21 +2672,30 @@
     function forcePlayVideos() {
       document.querySelectorAll('video').forEach(v => {
         v.muted = true;
-        v.play().catch(() => {});
+        v.setAttribute('playsinline', '');
+        v.setAttribute('webkit-playsinline', '');
+        const p = v.play();
+        if (p) p.catch(() => {});
       });
     }
-    // Try immediately
+    // Try immediately + on DOM ready
     forcePlayVideos();
-    // Retry on DOM ready
     document.addEventListener('DOMContentLoaded', forcePlayVideos);
-    // Retry on first user interaction
-    ['click', 'touchstart', 'scroll'].forEach(evt => {
+    // Retry on any user interaction
+    ['click', 'touchstart', 'touchend', 'scroll', 'mousemove'].forEach(evt => {
       document.addEventListener(evt, forcePlayVideos, { once: true });
     });
-    // Retry on visibility change (tab switch)
+    // Retry on visibility change
     document.addEventListener('visibilitychange', () => {
       if (!document.hidden) forcePlayVideos();
     });
+    // Aggressive retry every 500ms for first 5 seconds
+    let retryCount = 0;
+    const retryInterval = setInterval(() => {
+      forcePlayVideos();
+      retryCount++;
+      if (retryCount >= 10) clearInterval(retryInterval);
+    }, 500);
   </script>
 
   <!-- PWA Install -->
