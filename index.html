@@ -449,14 +449,12 @@
       object-fit: cover;
       pointer-events: none;
     }
-    .hero-video-bg video::-webkit-media-controls {
-      display: none !important;
-    }
-    .hero-video-bg video::-webkit-media-controls-start-playback-button {
-      display: none !important;
-    }
-    .hero-video-bg video::-webkit-media-controls-panel {
-      display: none !important;
+    /* Cover native iOS play button */
+    .hero-video-bg::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: 1;
     }
     .hero-video-overlay {
       position: absolute; inset: 0;
