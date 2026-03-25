@@ -1328,6 +1328,7 @@
   <section class="hero">
     <div class="hero-video-bg" aria-hidden="true">
       <video autoplay muted loop playsinline preload="metadata" poster="" webkit-playsinline="true" x-webkit-airplay="deny" disableRemotePlayback>
+        <source src="hero-bg-mobile.mp4" type="video/mp4" media="(max-width: 768px)">
         <source src="hero-bg.mp4" type="video/mp4">
       </video>
     </div>
@@ -2654,6 +2655,14 @@
 
   <!-- Force autoplay videos -->
   <script>
+    // Swap hero video to compressed mobile version on small screens
+    if (window.innerWidth < 768) {
+      document.querySelectorAll('video source[src="hero-bg.mp4"]').forEach(function(s) {
+        s.src = 'hero-bg-mobile.mp4';
+        s.parentElement.load();
+      });
+    }
+
     function forcePlayVideos() {
       document.querySelectorAll('video').forEach(v => {
         v.muted = true;
